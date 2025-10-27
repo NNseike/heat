@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>英語タイピング練習</title>
+    <style>
+        /* 白を基調としたシンプルなUIデザイン */
+        body {
+            font-family: 'Segoe UI', Meiryo, 'Hiragino Kaku Gothic ProN', 'MS PGothic', sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        #game-container {
+            width: 100%;
+            max-width: 800px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            border: 1px solid #ddd;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 1.8em;
+        }
+        p {
+            text-align: center;
+            color: #666;
+            margin-top: 0;
+            margin-bottom: 30px;
+        }
+        #character-display {
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #555;
+            margin-bottom: 15px;
+            height: 25px;
+            text-align: center;
+        }
+        #japanese-display {
+            font-size: 1.4em;
+            color: #222;
+            margin-bottom: 20px;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            background-color: #f9f9f9;
+            border: 1px solid #eee;
+            border-radius: 4px;
+            padding: 10px;
+        }
+        #typing-input {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.2em;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            color: #333;
+            border-radius: 4px;
+            box-sizing: border-box;
+            text-align: center;
+            transition: border-color 0.1s, box-shadow 0.1s;
+        }
+        #typing-input:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.25);
+        }
+        #typing-input.correct {
+            border-color: #28a745;
+            background-color: #f0fff4;
+        }
+        #typing-input.incorrect-flash {
+            border-color: #dc3545;
+        }
+        #answer-display {
+            margin-top: 15px;
+            font-size: 1.2em;
+            color: #555;
+            min-height: 50px;
+            text-align: center;
+            padding: 10px;
+            line-height: 1.6;
+        }
+        #progress-container {
+            margin-top: 20px;
+            width: 100%;
+            background-color: #e9ecef;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        #progress-bar {
+            width: 0%;
+            height: 10px;
+            background-color: #007bff;
+            transition: width 0.5s;
+        }
+        /* 「もう一度」ボタンのためのスタイル */
+        .restart-button {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            margin-top: 20px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            background-color: #007bff;
+            color: #ffffff;
+            border: none;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        .restart-button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="game-container">
+        <h1>英語タイピング練習</h1>
+        <p>正解すると自動で次の問題に進みます。<br>ヒントが必要な場合は、いつでもEnterキーを押してください。</p>
+
+        <div id="character-display"></div>
+        <div id="japanese-display">入力欄をクリックし、Enterキーを押して開始します。</div>
+        
+        <input type="text" id="typing-input" placeholder="ここに英語で入力..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+        
+        <div id="answer-display"></div>
+
+        <div id="progress-container">
+            <div id="progress-bar"></div>
+        </div>
+    </div>
+
+    <script>
+        const script = [
+            { char: 'SPEAKER A', en: 'Seven years in Folsom.', ja: 'フォルサムに7年。' },
+            { char: 'SPEAKER A', en: 'In the hole for three.', ja: 'うち3年は独房だ。' },
+            { char: 'SPEAKER A', en: 'McNeil before that.', ja: 'その前はマクニール。' },
+            { char: 'SPEAKER A', en: 'McNeil as tough as they say?', ja: 'マクニールは噂通りきつかったか？' },
+            { char: 'SPEAKER B', en: 'You looking to become a penologist?', ja: '刑務所の専門家になりたいのか？' },
+            { char: 'SPEAKER A', en: 'You’re looking to go back?', ja: '戻りたいのか？' },
+            { char: 'SPEAKER A', en: 'You know, I chase down some crews…', ja: '私が追っているチームの中には…' },
+            { char: 'SPEAKER A', en: 'guys just looking to fuck up, get busted back.', ja: 'ただ失敗して、また捕まりたいだけの者もいる。' },
+            { char: 'SPEAKER A', en: 'That you?', ja: '君もそうか？' },
+            { char: 'SPEAKER B', en: 'You must’ve worked some dipshit crews.', ja: 'ずいぶんと未熟なチームを相手にしてきたんだな。' },
+            { char: 'SPEAKER A', en: 'I worked all kinds.', ja: 'あらゆる種類を相手にしてきた。' },
+            { char: 'SPEAKER B', en: 'You see me doing thrill-seeking liquor-store holdups…', ja: '私がスリルを求めて酒店の強盗でもするように見えるか？' },
+            { char: 'SPEAKER B', en: 'with a “Born to Lose” tattoo on my chest?', ja: '胸に「負け犬」の刺青を入れているとでも？' },
+            { char: 'SPEAKER A', en: 'No, I do not.', ja: 'いや、見えない。' },
+            { char: 'SPEAKER B', en: 'Right. I am never going back.', ja: 'その通り。二度と戻るつもりはない。' },
+            { char: 'SPEAKER A', en: 'Then don’t take down scores.', ja: 'ならば、仕事はするな。' },
+            { char: 'SPEAKER B', en: 'I do what I do best, I take scores.', ja: '私は得意なことをする。それが仕事だ。' },
+            { char: 'SPEAKER B', en: 'You do what you do best, trying to stop guys like me.', ja: 'あなたも得意なことをする。私のような人間を止めようとする。' },
+            { char: 'SPEAKER A', en: 'So you never wanted a regular-type life?', ja: 'では、普通の生活を望んだことはないのか？' },
+            { char: 'SPEAKER B', en: 'What the fuck is that? Barbecues and ball games?', ja: 'それは一体何だ？バーベキューと野球観戦か？' },
+            { char: 'SPEAKER A', en: 'Yeah.', ja: 'ああ。' },
+            { char: 'SPEAKER B', en: 'This regular-type life like your life?', ja: 'その普通の生活とは、あなたの人生のようなものか？' },
+            { char: 'SPEAKER A', en: 'My life? No, my life… No, my life’s a disaster zone.', ja: '私の人生か？いや、私の人生は…災害地帯のようなものだ。' },
+            { char: 'SPEAKER A', en: 'I got a stepdaughter so fucked up… because her real father is this large-type asshole.', ja: '義理の娘がいるが、実の父親がひどい男で、彼女は問題を抱えている。' },
+            { char: 'SPEAKER A', en: 'I got a wife. We’re passing each other on the down slope of a marriage… my third…', ja: '妻もいる。結婚生活の下降線をたどっている…これで3度目だ…' },
+            { char: 'SPEAKER A', en: 'because I spend all my time chasing guys like you around the block.', ja: 'なぜなら、全ての時間を君のような人間を追いかけるのに費やしているからだ。' },
+            { char: 'SPEAKER A', en: 'That’s my life.', ja: 'それが私の人生だ。' },
+            { char: 'SPEAKER B', en: 'A guy told me one time: “Don’t let yourself get attached to anything…', ja: '昔、ある男に言われた。「何にも執着するな…」' },
+            { char: 'SPEAKER B', en: 'you are not willing to walk out on in 30 seconds flat…', ja: '「30秒で捨て去る覚悟ができていないものには…」' },
+            { char: 'SPEAKER B', en: 'if you feel the heat around the corner.”', ja: '「もし角の向こうに危険を感じたらな。」' },
+            { char: 'SPEAKER B', en: 'Now, if you’re on me, and you gotta move when I move…', ja: 'さて、あなたが私を追っていて、私が動く時にあなたも動かなければならないとしたら…' },
+            { char: 'SPEAKER B', en: 'how do you expect to keep a marriage?', ja: 'どうやって結婚生活を維持するつもりだ？' },
+            { char: 'SPEAKER A', en: 'Well, that’s an interesting point.', ja: 'なるほど、興味深い点だ。' },
+            { char: 'SPEAKER A', en: 'What are you, a monk?', ja: '君は、まるで修道僧だな？' },
+            { char: 'SPEAKER B', en: 'I have a woman.', ja: '女性がいる。' },
+            { char: 'SPEAKER A', en: 'What do you tell her?', ja: '彼女には何と説明している？' },
+            { char: 'SPEAKER B', en: 'I tell her I’m a salesman.', ja: 'セールスマンだと。' },
+            { char: 'SPEAKER A', en: 'So then, if you spot me coming around that corner…', ja: 'では、もし君が角の向こうに私を見つけたら…' },
+            { char: 'SPEAKER A', en: 'you’re just gonna walk out on this woman?', ja: 'その女性を置き去りにするのか？' },
+            { char: 'SPEAKER A', en: 'Not say goodbye?', ja: 'さよならも言わずに？' },
+            { char: 'SPEAKER B', en: 'That’s the discipline.', ja: 'それが規律だ。' },
+            { char: 'SPEAKER A', en: 'That’s pretty vacant, no?', ja: 'それはかなり空虚じゃないか？' },
+            { char: 'SPEAKER B', 'en': 'Yeah, it is what it is.', ja: 'ああ、そういうものだ。' },
+            { char: 'SPEAKER B', en: 'It’s that, or we both better go do something else, pal.', ja: 'そうするか、さもなければ、お互い別のことをした方がいい。' },
+            { char: 'SPEAKER A', en: 'I don’t know how to do anything else.', ja: '私には他に何もできない。' },
+            { char: 'SPEAKER B', en: 'Neither do I.', ja: '私もだ。' },
+            { char: 'SPEAKER A', en: 'I don’t much want to either.', ja: 'あまりそうしたいとも思わない。' },
+            { char: 'SPEAKER B', en: 'Neither do I.', ja: '私もだ。' },
+            { char: 'SPEAKER A', en: 'You know, I have this, uh, recurring dream.', ja: '私には、繰り返し見る夢があるんだ。' },
+            { char: 'SPEAKER A', en: 'I’m sitting at this big banquet table…', ja: '大きな晩餐会のテーブルに座っている…' },
+            { char: 'SPEAKER A', en: 'and all the victims of all the murders I ever worked are sitting at this table', ja: '私が今まで扱った事件の犠牲者が全員そのテーブルに座っている。' },
+            { char: 'SPEAKER A', en: 'and they’re staring at me with these black eyeballs…', ja: 'そして彼らは、黒くなった眼で私をじっと見つめている…' },
+            { char: 'SPEAKER A', en: 'because they got eight-ball hemorrhages from the head wounds.', ja: '頭の傷からの出血でそうなったんだ。' },
+            { char: 'SPEAKER A', en: 'And there they are, these big balloon people…', ja: 'そこに彼らはいる、大きく膨らんだ人々が…' },
+            { char: 'SPEAKER A', en: 'because I found them two weeks after they’d been under the bed.', ja: 'ベッドの下で2週間経ってから私が見つけたからだ。' },
+            { char: 'SPEAKER A', en: 'The neighbors reported the smell… and there they are, all of them just sitting there.', ja: '近所の人が異臭を報告して…そして彼らは、そこにただ座っている。' },
+            { char: 'SPEAKER B', en: 'What do they say?', ja: '彼らは何を言う？' },
+            { char: 'SPEAKER A', en: 'Nothing.', ja: '何も言わない。' },
+            { char: 'SPEAKER B', en: 'No talk?', ja: '話さないのか？' },
+            { char: 'SPEAKER A', en: 'None. Just… They don’t have anything to say.', ja: '全く。ただ…彼らは何も言うことがないんだ。' },
+            { char: 'SPEAKER A', en: 'See, we just look at each other. They look at me.', ja: '私たちはただ見つめ合う。彼らが私を見る。' },
+            { char: 'SPEAKER A', en: 'And that’s it, that’s the dream.', ja: 'それだけだ、それが夢の内容だ。' },
+            { char: 'SPEAKER B', en: 'I have one where I’m drowning.', ja: '私は溺れる夢を見る。' },
+            { char: 'SPEAKER B', en: 'And I gotta wake myself up and start breathing, or I’ll die in my sleep.', ja: 'そして自分で目を覚まして呼吸を始めなければ、眠ったまま死んでしまう。' },
+            { char: 'SPEAKER A', en: 'You know what that’s about?', ja: 'それが何を意味するか分かるか？' },
+            { char: 'SPEAKER B', en: 'Yeah. Having enough time.', ja: 'ああ。十分な時間を持つことだ。' },
+            { char: 'SPEAKER A', en: 'Enough time to do what you wanna do?', ja: 'やりたいことをするのに十分な時間か？' },
+            { char: 'SPEAKER B', en: 'That’s right.', ja: 'その通りだ。' },
+            { char: 'SPEAKER A', en: 'You doing it now?', ja: '今、それをやっているのか？' },
+            { char: 'SPEAKER B', en: 'No, not yet.', ja: 'いや、まだだ。' },
+            { char: 'SPEAKER A', en: 'You know, we’re sitting here… you and I, like a couple of regular fellows.', ja: '私たちはここに座っている…君と私、まるで普通の仲間のように。' },
+            { char: 'SPEAKER A', en: 'You do what you do, and I do what I gotta do.', ja: '君は君のやるべきことをやり、私は私のやるべきことをやる。' },
+            { char: 'SPEAKER A', en: 'And now that we’ve been face to face…', ja: 'そして今、私たちは顔を合わせた…' },
+            { char: 'SPEAKER A', en: 'if I’m there and I gotta put you away, I won’t like it.', ja: 'もし私がそこにいて、君を捕まえなければならなくなっても、それは本意ではない。' },
+            { char: 'SPEAKER A', en: 'But I’ll tell you… if it’s between you and some poor bastard…', ja: 'だが言っておく…もしそれが君と、ある哀れな男との間なら…' },
+            { char: 'SPEAKER A', en: 'whose wife you’re gonna turn into a widow… brother, you are going down.', ja: '君がその妻を未亡人にしようものなら…君は終わりだ。' },
+            { char: 'SPEAKER B', en: 'There’s a flip side to that coin.', ja: 'そのコインには裏側もある。' },
+            { char: 'SPEAKER B', en: 'What if you do got me boxed in and I gotta put you down?', ja: 'もしあなたが私を追い詰めて、私があなたを倒さなければならなくなったらどうする？' },
+            { char: 'SPEAKER B', en: 'Because no matter what, you will not get in my way.', ja: 'なぜなら、何があろうと、あなたは私の邪魔はできない。' },
+            { char: 'SPEAKER B', en: 'We’ve been face to face, yeah… but I will not hesitate.', ja: '私たちは顔を合わせた、そう…だが私はためらわない。' },
+            { char: 'SPEAKER B', en: 'Not for a second.', ja: '一瞬たりともな。' },
+            { char: 'SPEAKER A', en: 'Maybe that’s the way it’ll be.', ja: 'たぶん、そうなるだろう。' },
+            { char: 'SPEAKER A', en: 'Or who knows?', ja: 'あるいは、どうなるか誰にも分からない。' },
+            { char: 'SPEAKER B', en: 'Or maybe we’ll never see each other again.', ja: 'あるいは、もう二度と会うことはないかもしれない。' }
+        ];
+
+        // キャラクター名を一般的なものに変更
+        script.forEach(line => {
+            if (line.char === 'Vincent Hanna') {
+                line.char = 'SPEAKER A';
+            } else if (line.char === 'Neil McCauley') {
+                line.char = 'SPEAKER B';
+            }
+        });
+
+        let currentLineIndex = 0;
+        let gameStarted = false;
+
+        const gameContainer = document.getElementById('game-container');
+        const characterDisplay = document.getElementById('character-display');
+        const japaneseDisplay = document.getElementById('japanese-display');
+        const typingInput = document.getElementById('typing-input');
+        const answerDisplay = document.getElementById('answer-display');
+        const progressBar = document.getElementById('progress-bar');
+
+        function setupLine() {
+            if (currentLineIndex >= script.length) {
+                showEndScreen();
+                return;
+            }
+
+            const currentLine = script[currentLineIndex];
+            characterDisplay.textContent = currentLine.char;
+            japaneseDisplay.textContent = currentLine.ja;
+            
+            typingInput.value = '';
+            typingInput.className = '';
+            typingInput.disabled = false;
+            typingInput.focus();
+
+            answerDisplay.textContent = '';
+            
+            updateProgressBar();
+        }
+        
+        function updateProgressBar() {
+            const progress = (currentLineIndex / script.length) * 100;
+            progressBar.style.width = progress + '%';
+        }
+        
+        function handleInput() {
+            if (typingInput.disabled || !gameStarted) return;
+
+            const currentLine = script[currentLineIndex];
+            const correctAnswer = currentLine.en;
+            const userInput = typingInput.value;
+            
+            if (correctAnswer.startsWith(userInput)) {
+                typingInput.classList.remove('incorrect-flash');
+
+                // 全ての文字が正しく入力された場合
+                if (userInput === correctAnswer) {
+                    typingInput.classList.add('correct');
+                    answerDisplay.innerHTML = `<strong style="color: #28a745;">正解！</strong>`;
+                    typingInput.disabled = true;
+                    
+                    // --- ここが自動で次に進む処理 ---
+                    setTimeout(() => {
+                        nextLine();
+                    }, 800); // 0.8秒待ってから次の問題へ
+                }
+            } else {
+                typingInput.value = userInput.slice(0, -1);
+                
+                typingInput.classList.add('incorrect-flash');
+                setTimeout(() => {
+                    typingInput.classList.remove('incorrect-flash');
+                }, 200);
+            }
+        }
+
+        function nextLine() {
+            currentLineIndex++;
+            setupLine();
+        }
+        
+        function showEndScreen() {
+            characterDisplay.textContent = '完了';
+            japaneseDisplay.textContent = '全ての練習が終了しました。お疲れ様でした。';
+            typingInput.style.display = 'none';
+            answerDisplay.textContent = '';
+            progressBar.style.width = '100%';
+
+            // 「もう一度練習する」ボタンを動的に作成
+            const restartButton = document.createElement('button');
+            restartButton.textContent = 'もう一度練習する';
+            restartButton.className = 'restart-button';
+            restartButton.onclick = () => window.location.reload();
+            gameContainer.appendChild(restartButton);
+        }
+
+        typingInput.addEventListener('input', handleInput);
+
+        typingInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault(); 
+                
+                if (!gameStarted) {
+                    gameStarted = true;
+                    setupLine();
+                    return;
+                }
+
+                const correctAnswer = script[currentLineIndex].en;
+                answerDisplay.innerHTML = `正解: <strong style="color: #007bff;">${correctAnswer}</strong>`;
+            }
+        });
+        
+    </script>
+</body>
+</html>
