@@ -3,821 +3,6311 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>実用タイピング練習所</title>
+    <title>タイピング練習</title>
     <style>
-        /* --- 業務ツール風のカラー・フォント設定 --- */
-        :root {
-            --bg-color: #f0f2f5;
-            --container-bg: #ffffff;
-            --primary-color: #1a73e8;
-            --primary-hover: #1557b0;
-            --text-main: #333333;
-            --text-muted: #666666;
-            --border-color: #cccccc;
-            --error-color: #d32f2f;
-            --success-color: #2e7d32;
-            --font-main: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
-            --font-mono: "Consolas", "Courier New", monospace;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
+        /* --- ここから白UI用のスタイル --- */
         body {
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            font-family: var(--font-main);
+            background-color: #f0f2f5; /* 少しグレーがかった背景 */
+            color: #333; /* 基本の文字色を黒に */
+            font-family: 'Meiryo', 'Hiragino Kaku Gothic ProN', sans-serif; /* 見やすいゴシック体に変更 */
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
-        }
-
-        #app {
-            width: 100%;
-            max-width: 900px;
-            background-color: var(--container-bg);
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            overflow: hidden;
-            border: 1px solid var(--border-color);
-        }
-
-        /* --- ヘッダー --- */
-        header {
-            background-color: var(--primary-color);
-            color: white;
-            padding: 1.5rem 2rem;
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-        }
-
-        header h1 {
-            font-size: 26px;
-            font-weight: bold;
-            letter-spacing: 2px;
-            margin-bottom: 5px;
-        }
-
-        header span {
-            font-size: 13px;
-            opacity: 0.9;
-        }
-
-        /* --- 画面切り替え --- */
-        .screen {
-            display: none;
-            padding: 2.5rem;
-            min-height: 400px;
-        }
-        .screen.active {
-            display: block;
-            animation: fadeIn 0.2s ease-in;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        /* --- ホーム画面 --- */
-        .menu-title {
+            height: 100vh;
+            margin: 0;
             font-size: 18px;
-            font-weight: bold;
-            margin-bottom: 20px;
-            color: var(--text-main);
-            border-bottom: 2px solid var(--primary-color);
-            padding-bottom: 10px;
-            display: inline-block;
         }
-
-        .menu-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
+        #container {
+            width: 80%;
+            max-width: 800px;
+            padding: 25px;
+            border: 1px solid #ddd; /* 薄いグレーの境界線 */
+            border-radius: 8px;
+            background-color: #fff; /* コンテナの背景は白 */
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08); /* 少し影をつける */
         }
-        
-        @media (max-width: 768px) {
-            .menu-grid {
-                grid-template-columns: 1fr;
-            }
+        h1 {
+            text-align: center;
+            color: #444; /* 見出しの色 */
+            border-bottom: 1px solid #eee; /* 薄い下線 */
+            padding-bottom: 15px;
+            margin-top: 0;
+            font-weight: 600;
         }
-
-        .menu-card {
-            background-color: #f8f9fa;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
+        #text-display {
+            background-color: #f9f9f9; /* テキストエリアの背景をほんのりグレーに */
             padding: 20px;
-            cursor: pointer;
-            text-align: left;
-            transition: all 0.2s;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .menu-card:hover {
-            border-color: var(--primary-color);
-            background-color: #e8f0fe;
-        }
-
-        .menu-card h3 {
-            font-size: 17px;
-            color: var(--primary-color);
-            margin-bottom: 8px;
-        }
-
-        .menu-card p {
-            font-size: 13px;
-            color: var(--text-muted);
-            line-height: 1.4;
-        }
-
-        /* --- タイピング画面 --- */
-        .typing-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 10px;
-        }
-
-        .progress-text {
-            font-size: 14px;
-            font-weight: bold;
-            color: var(--primary-color);
-        }
-
-        .quit-btn {
-            background: none;
-            border: 1px solid var(--border-color);
-            padding: 5px 15px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 13px;
-            color: var(--text-muted);
-        }
-        .quit-btn:hover {
-            background-color: #f1f1f1;
-        }
-
-        .task-box {
-            background-color: #fff9e6;
-            border-left: 4px solid #fbbc04;
-            padding: 15px;
-            margin-bottom: 20px;
-        }
-
-        .instruction {
-            font-size: 14px;
-            font-weight: bold;
-            color: #b08d00;
-            margin-bottom: 8px;
-        }
-
-        .question {
-            font-size: 16px;
-            color: var(--text-main);
-            font-weight: bold;
-            line-height: 1.5;
+            border-radius: 5px;
+            border: 1px solid #eee;
+            height: 220px;
+            overflow-y: auto;
+            line-height: 1.7; /* 行間を少し広げる */
+            color: #454545; /* テキストの文字色 */
             white-space: pre-wrap;
         }
-
-        #hidden-input {
-            position: absolute;
-            opacity: 0;
-            top: -1000px;
-        }
-
-        .typing-area-container {
-            background-color: #f8f9fa;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            padding: 30px;
-            cursor: text;
-            margin-bottom: 15px;
-            transition: opacity 0.3s;
-        }
-
-        .typing-area {
-            font-family: var(--font-mono);
-            font-size: 26px;
-            letter-spacing: 2px;
-            display: flex;
-            flex-wrap: wrap;
-            line-height: 1.6;
-        }
-
-        .char {
-            color: #d1d1d1;
-            position: relative;
-            border-bottom: 2px solid #e0e0e0;
-            margin: 0 1px;
-            min-width: 14px;
-            text-align: center;
-        }
-
-        .char.correct {
-            color: var(--text-main);
-            border-bottom-color: var(--primary-color);
-        }
-
-        .char.incorrect {
-            color: white;
-            background-color: var(--error-color);
-            border-bottom-color: var(--error-color);
-            border-radius: 2px;
-        }
-
-        .char.space {
-            border-bottom: none;
-            min-width: 12px;
-        }
-
-        .char.active::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            bottom: 2px;
-            height: 3px;
+        #input-box {
             width: 100%;
-            background-color: var(--primary-color);
-            animation: blink 1s infinite;
-        }
-        
-        .caret-end::after {
-            content: '';
-            position: absolute;
-            right: -10px;
-            bottom: 2px;
-            height: 3px;
-            width: 14px;
-            background-color: var(--primary-color);
-            animation: blink 1s infinite;
-        }
-
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0; }
-        }
-
-        /* --- サポート・解説エリア --- */
-        .answer-display {
-            display: none;
-            background-color: #e8f0fe;
-            border-left: 4px solid var(--primary-color);
-            padding: 15px;
-            margin-bottom: 20px;
-        }
-
-        .answer-row {
-            font-weight: bold;
-            font-size: 16px;
-            color: var(--primary-color);
-            font-family: var(--font-mono);
-            margin-bottom: 10px;
-            padding-bottom: 10px;
-            border-bottom: 1px dashed #aecbfa;
-        }
-
-        .explanation-row {
-            font-size: 14px;
-            color: var(--text-main);
-            line-height: 1.6;
-        }
-
-        .next-prompt {
-            display: none;
-            text-align: center;
-            color: var(--success-color);
-            font-weight: bold;
-            font-size: 15px;
-            margin-top: 10px;
-            margin-bottom: 15px;
-            animation: blinkText 1.5s infinite;
-            cursor: pointer;
-        }
-
-        @keyframes blinkText {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.4; }
-        }
-
-        .support-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-        }
-
-        .action-btn {
-            background-color: #ffffff;
-            border: 1px solid #a0a0a0;
-            color: #555555;
-            padding: 8px 16px;
-            font-size: 13px;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .action-btn:hover {
-            background-color: #f1f1f1;
+            padding: 12px;
+            margin-top: 20px;
+            box-sizing: border-box;
+            font-size: 18px;
+            background-color: #fff;
+            border: 1px solid #ccc;
             color: #333;
+            border-radius: 5px;
+            font-family: 'Courier New', Courier, monospace; /* 入力欄は等幅フォントを維持 */
         }
-
-        /* --- リザルト画面 --- */
-        .result-container {
-            text-align: center;
-            padding: 40px 0;
+        #input-box:focus {
+            outline: none;
+            border-color: #007bff; /* フォーカス時に青い線を表示 */
+            box-shadow: 0 0 5px rgba(0,123,255,0.25);
         }
-
-        .result-title {
-            font-size: 28px;
-            color: var(--primary-color);
-            margin-bottom: 20px;
-            font-weight: bold;
-        }
-        
-        .result-stats {
+        #page-info {
+            text-align: right;
+            margin-top: 10px;
             font-size: 16px;
-            margin-bottom: 30px;
-            color: var(--text-main);
+            color: #888; /* ページ情報の文字色 */
         }
-
-        .btn {
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            padding: 12px 30px;
-            font-size: 16px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: background-color 0.2s;
-        }
-
-        .btn:hover {
-            background-color: var(--primary-hover);
-        }
-
+        /* --- ここまで白UI用のスタイル --- */
     </style>
 </head>
 <body>
 
-<div id="app">
-    <!-- ヘッダー -->
-    <header>
-        <h1>実用タイピング練習所</h1>
-        <span>法人・教育機関向け タイピングスキル向上プログラム</span>
-    </header>
-
-    <!-- ホーム画面 -->
-    <div id="home-screen" class="screen active">
-        <div class="menu-title">トレーニングコース選択</div>
-        <div class="menu-grid">
-            <button class="menu-card" onclick="startGame('phrasal')">
-                <h3>コースA：基礎語彙入力</h3>
-                <p>文脈に合うように、空白部分（句動詞など）を補完してタイピングしてください。</p>
-            </button>
-            <button class="menu-card" onclick="startGame('grammar')">
-                <h3>コースB：基礎文法・文章構成入力</h3>
-                <p>中学基礎レベルから時制まで、指定された条件に従って正しい英文をタイピングしてください。</p>
-            </button>
-            <button class="menu-card" onclick="startGame('natural')">
-                <h3>コースC：実践ビジネス・日常表現</h3>
-                <p>直訳的で硬い文章を、より自然で実践的な表現（イディオム等）に意訳してください。</p>
-            </button>
-            <button class="menu-card" onclick="startGame('conversation')">
-                <h3 style="color: #d32f2f;">コースD：対話型応答入力</h3>
-                <p>相手の発言に対し、ネイティブがよく使う自然な「相槌や返答」をタイピングしてください。</p>
-            </button>
-        </div>
+    <div id="container">
+        <h1>タイピング練習</h1>
+        <div id="text-display"></div>
+        <input type="text" id="input-box" autofocus>
+        <div id="page-info"></div>
     </div>
 
-    <!-- タイピング画面 -->
-    <div id="typing-screen" class="screen">
-        <div class="typing-header">
-            <div class="progress-text" id="progress-text">問題: 1 / 10</div>
-            <button class="quit-btn" onclick="quitGame()">コース選択に戻る</button>
-        </div>
-        
-        <div class="task-box">
-            <div id="instruction" class="instruction">【課題】指示文がここに入ります</div>
-            <div id="question" class="question">問題文がここに入ります</div>
-        </div>
+    <script>
+        // ここに表示したい文章を入れます
+        const fullText =  `
+涼宮ハルヒの憂鬱
 
-        <!-- 解答・解説表示エリア -->
-        <div id="answer-display" class="answer-display">
-            <div class="answer-row">模範解答: <span id="answer-text"></span></div>
-            <div class="explanation-row" id="explanation-text"></div>
-        </div>
-        
-        <input type="text" id="hidden-input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
-        
-        <div class="typing-area-container" onclick="document.getElementById('hidden-input').focus()" id="typing-area-container">
-            <div id="typing-area" class="typing-area"></div>
-        </div>
 
-        <!-- 正解時の次へ進む案内 -->
-        <div id="next-prompt" class="next-prompt">
-            正解です。解説を確認し、[ Enter ] キーを押して次の課題へ進んでください。
-        </div>
 
-        <div class="support-actions" id="support-actions">
-            <button class="action-btn" onclick="showAnswerAndExp(false)">解答と解説を確認する</button>
-            <button class="action-btn" onclick="skipQuestion()">次の課題へスキップ</button>
-        </div>
-    </div>
 
-    <!-- リザルト画面 -->
-    <div id="result-screen" class="screen">
-        <div class="result-container">
-            <div class="result-title">コースクリア</div>
-            <div class="result-stats" id="result-stats">
-                全ての問題のタイピング入力を完了しました。
-            </div>
-            <button class="btn" onclick="showHome()">トップメニューへ戻る</button>
-        </div>
-    </div>
-</div>
 
-<script>
-    // --- 問題データベース（大増量版＆全問解説付き） ---
-const questionDatabase = {
-        phrasal:[
-            { inst: "【課題】日本語の意味になるように、空白部分を埋めてください", q: "I'm looking _______ to seeing you. (楽しみにしている)", a: "forward", exp: "look forward to は「〜を楽しみに待つ」という意味。to の後は動詞のing形か名詞が来ます。" },
-            { inst: "【課題】日本語の意味になるように、空白部分を埋めてください", q: "I ran _______ an old friend today. (偶然出会う)", a: "into", exp: "run into は「（人）にばったり偶然出会う」という意味のよく使われる表現です。" },
-            { inst: "【課題】日本語の意味になるように、空白部分を埋めてください", q: "We need to figure _______ what happened. (理解する/解決する)", a: "out", exp: "figure out は「考えて理解する、原因や解決策を見つけ出す」というニュアンスを持ちます。" },
-            { inst: "【課題】日本語の意味になるように、空白部分を埋めてください", q: "We are running _______ of time. (〜が尽きる/なくなる)", a: "out", exp: "run out of ~ で「（時間やお金、在庫などが）使い果たされる、尽きる」という意味になります。" },
-            { inst: "【課題】日本語の意味になるように、空白部分を埋めてください", q: "Please don't let me _______. (がっかりさせないで)", a: "down", exp: "let ~ down は「（期待を裏切って）人をがっかりさせる」という意味です。" },
-            { inst: "【課題】日本語の意味になるように、空白部分を埋めてください", q: "Please take _______ your shoes here. (脱ぐ)", a: "off", exp: "take off は「服や靴を脱ぐ」以外にも、飛行機が「離陸する」という意味でも使われます。" },
-            { inst: "【課題】日本語の意味になるように、空白部分を埋めてください", q: "Don't give _______ on your dreams. (諦める)", a: "up", exp: "give up は「諦める」。後ろに動詞が来る場合はing形（動名詞）になります。" },
-            { inst: "【課題】日本語の意味になるように、空白部分を埋めてください", q: "They put _______ the meeting until tomorrow. (延期する)", a: "off", exp: "put off は「延期する」。フォーマルな単語 postpone と同じ意味です。" },
-            { inst: "【課題】日本語の意味になるように、空白部分を埋めてください", q: "The game was called _______ due to rain. (中止される)", a: "off", exp: "call off は「中止する」。cancel と同じ意味で使われます。" },
-            { inst: "【課題】日本語の意味になるように、空白部分を埋めてください", q: "It turned _______ to be a great day. (結果として〜になる)", a: "out", exp: "turn out to be ~ で「（最初はわからなかったが）結局〜だとわかる、〜という結果になる」という意味です。" },
-            { inst: "【課題】日本語の意味になるように、空白部分を埋めてください", q: "I get _______ with my coworkers. (仲良くする)", a: "along", exp: "get along with ~ は「〜と仲良くやっていく、うまく付き合う」という意味です。" },
-            { inst: "【課題】日本語の意味になるように、空白部分を埋めてください", q: "Could you look _______ my cat? (世話をする)", a: "after", exp: "look after は「〜の世話をする、面倒を見る」という意味。take care of と同じです。" },
-            { inst: "【課題】日本語の意味になるように、空白部分を埋めてください", q: "Please feel free to drop _______ anytime. (立ち寄る)", a: "by", exp: "drop by は「ふらっと立ち寄る、ひょっこり訪ねる」というカジュアルな表現です。" },
-            { inst: "【課題】日本語の意味になるように、空白部分を埋めてください", q: "Let me point _______ one mistake. (指摘する)", a: "out", exp: "point out は「指摘する、言い及ぶ」。問題点や事実を相手に示す時に使います。" },
-            { inst: "【課題】日本語の意味になるように、空白部分を埋めてください", q: "Don't make _______ an excuse. (でっちあげる/作る)", a: "up", exp: "make up は「作り話をする、でっち上げる」の他、「仲直りする」「化粧する」など様々な意味があります。" },
-            { inst: "【課題】日本語の意味になるように、空白部分を埋めてください", q: "I was brought _______ in Tokyo. (育てられる)", a: "up", exp: "bring up は「（子供を）育てる」。受け身形（was brought up）で「〜で育った」という意味でよく使います。" },
-            { inst: "【課題】日本語の意味になるように、空白部分を埋めてください", q: "We need to carry _______ the plan. (実行する)", a: "out", exp: "carry out は「（計画や指示などを）実行に移す、遂行する」というビジネスでも必須の句動詞です。" },
-            { inst: "【課題】日本語の意味になるように、空白部分を埋めてください", q: "Go ahead, I'll catch _______ with you later. (追いつく)", a: "up", exp: "catch up with ~ で「（遅れを取り戻して）〜に追いつく」という意味になります。" },
-            { inst: "【課題】日本語の意味になるように、空白部分を埋めてください", q: "I came _______ an interesting book. (偶然見つける)", a: "across", exp: "come across は「（物や情報などを）偶然見つける、ふと出くわす」という意味です。" },
-            { inst: "【課題】日本語の意味になるように、空白部分を埋めてください", q: "She hasn't got _______ the shock yet. (乗り越える/立ち直る)", a: "over", exp: "get over は「（病気やショック、困難を）乗り越える、立ち直る」という意味です。" },
-            { inst: "【課題】日本語の意味になるように、空白部分を埋めてください", q: "Please go _______ with your story. (続ける)", a: "on", exp: "go on は「（行動や話を）続ける」。continue と同じ意味でカジュアルに使われます。" },
-            { inst: "【課題】日本語の意味になるように、空白部分を埋めてください", q: "If you don't know the word, look it _______. (調べる)", a: "up", exp: "look up は「（辞書やネットで情報を）調べる」という意味の定番フレーズです。" },
-            { inst: "【課題】日本語の意味になるように、空白部分を埋めてください", q: "I couldn't make _______ what he was saying. (理解する/見分ける)", a: "out", exp: "make out は「（見えにくい・聞こえにくいものを）何とか理解する、見分ける」という意味です。" },
-            { inst: "【課題】日本語の意味になるように、空白部分を埋めてください", q: "My grandfather passed _______ last year. (亡くなる)", a: "away", exp: "pass away は die（死ぬ）の丁寧な表現で、「亡くなる、息を引き取る」という意味です。" },
-            { inst: "【課題】日本語の意味になるように、空白部分を埋めてください", q: "I can't put _______ with this noise anymore. (我慢する)", a: "up", exp: "put up with は「（不快なことや騒音などを）我慢する、耐える」という意味の重要表現です。" },
-            { inst: "【課題】日本語の意味になるように、空白部分を埋めてください", q: "He didn't show _______ at the meeting. (現れる/姿を見せる)", a: "up", exp: "show up は「（約束の場所などに）現れる、顔を出す」という意味です。" },
-            { inst: "【課題】日本語の意味になるように、空白部分を埋めてください", q: "Her red dress made her stand _______ in the crowd. (目立つ)", a: "out", exp: "stand out は「（周囲より）目立つ、際立つ」という意味です。" },
-            { inst: "【課題】日本語の意味になるように、空白部分を埋めてください", q: "He takes _______ his father. (似ている)", a: "after", exp: "take after は「（容姿や性格が血縁者に）似ている」。resemble と同じ意味です。" },
-            { inst: "【課題】日本語の意味になるように、空白部分を埋めてください", q: "She turned _______ the job offer. (断る)", a: "down", exp: "turn down は「（申し出や招待を）断る、却下する」という意味。音量を下げる時にも使います。" },
-            { inst: "【課題】日本語の意味になるように、空白部分を埋めてください", q: "Don't worry, everything will work _______. (うまくいく)", a: "out", exp: "work out は「運動する」の他に、「（問題が）解決する、最終的にうまくいく」という意味で多用されます。" }
-        ],
-        grammar:[
-            { inst: "【課題】以下の日本語を英語にし、全文タイピングしなさい", q: "私は学生です。", a: "I am a student.", exp: "be動詞は「〜です」や「〜にいる」を表します。主語が I の時は am を使います。" },
-            { inst: "【課題】以下の日本語を英語にし、全文タイピングしなさい", q: "あなたは犬が好きですか？", a: "Do you like dogs?", exp: "一般動詞（likeなど）の疑問文は、文頭に Do を置きます。" },
-            { inst: "【課題】以下の日本語を英語にし、全文タイピングしなさい", q: "彼はテニスをしません。", a: "He does not play tennis.", exp: "主語が三人称単数（He, Sheなど）で現在の時、否定文には does not (doesn't) を使います。" },
-            { inst: "【課題】以下の日本語を英語にし、全文タイピングしなさい", q: "あなたはそこに行きましたか？", a: "Did you go there?", exp: "過去の一般動詞の疑問文は Did を文頭に置きます。動詞は原形（go）に戻ります。" },
-            { inst: "【課題】以下の日本語を英語にし、全文タイピングしなさい", q: "私はあなたに電話するつもりです。", a: "I will call you.", exp: "will は「〜するつもりだ」という未来への意志や、その場で決めたことを表します。" },
-            { inst: "【課題】以下の日本語を英語にし、全文タイピングしなさい", q: "私は今テニスをしているところです。", a: "I am playing tennis now.", exp: "現在進行形（be動詞 + ~ing）。「今まさに〜している最中だ」という状態を表します。" },
-            { inst: "【課題】以下の文を『現在完了形』に変換して全文タイピングしなさい", q: "I lose my keys. (今も鍵がない)", a: "I have lost my keys.", exp: "現在完了形（have + 過去分詞）。過去に鍵をなくし、今現在もまだ見つかっていないという状況を含みます。" },
-            { inst: "【課題】以下の文を『過去進行形』に変換して全文タイピングしなさい", q: "I sleep when you called. (その時〜していた)", a: "I was sleeping when you called.", exp: "過去進行形（was/were + ~ing）。過去のある時点で「ちょうど〜していた」という進行中の動作を表します。" },
-            { inst: "【課題】以下の文を『未来形 (going to)』に変換して全文タイピングしなさい", q: "I decide to buy a car. (すでに決まっている予定)", a: "I am going to buy a car.", exp: "be going to は、前から「すでに心に決めている予定や計画」を表します。" },
-            { inst: "【課題】以下の文を『過去完了形』に変換して全文タイピングしなさい", q: "The train leaves before I arrive. (着いた時には既に出発していた)", a: "The train had left before I arrived.", exp: "過去完了形（had + 過去分詞）。過去のある時点（到着した時）より、さらに前に起こったこと（出発した）を表します。" },
-            { inst: "【課題】以下の文を『現在完了進行形』に変換して全文タイピングしなさい", q: "I wait for you for two hours. (過去から今までずっと〜している)", a: "I have been waiting for you for two hours.", exp: "現在完了進行形（have been + ~ing）。過去から今まで途切れることなく継続している動作を強調します。" },
-            { inst: "【課題】以下の文を『受動態』に変換して全文タイピングしなさい", q: "They built this house in 1990. (この家は〜建てられた)", a: "This house was built in 1990.", exp: "受動態（be動詞 + 過去分詞）。「〜される、〜された」と、動作を受ける側を主語にする表現です。" },
-            { inst: "【課題】以下の文を『仮定法過去』に変換して全文タイピングしなさい", q: "I don't have money, so I can't buy it. (もしお金があれば、買えるのに)", a: "If I had money, I could buy it.", exp: "仮定法過去。現在の事実に反する仮定（本当はお金がない）を、あえて過去形を使って表します。" },
-            { inst: "【課題】以下の文を『未来完了形』に変換して全文タイピングしなさい", q: "I finish the work by tomorrow. (明日までには終わっているだろう)", a: "I will have finished the work by tomorrow.", exp: "未来完了形（will have + 過去分詞）。未来のある時点までに、確実に完了しているであろうことを表します。" },
-            { inst: "【課題】以下の文を『過去の習慣 (used to)』に変換して全文タイピングしなさい", q: "He plays tennis. (以前はよくテニスをしたものだ)", a: "He used to play tennis.", exp: "used to + 原形 は「（今はしていないが）過去にはよく〜したものだ」という過去の習慣を表します。" },
-            { inst: "【課題】以下の日本語を英語にし、全文タイピングしなさい", q: "彼は私より背が高い。", a: "He is taller than me.", exp: "比較級。形容詞に -er をつけ、than を続けることで「〜よりも」を表します。" },
-            { inst: "【課題】以下の日本語を英語にし、全文タイピングしなさい", q: "彼女はクラスで一番賢い。", a: "She is the smartest in the class.", exp: "最上級。the + 形容詞の -est 形で「一番〜だ」を表します。" },
-            { inst: "【課題】以下の日本語を英語にし、全文タイピングしなさい", q: "私は本を読むためにここに来た。", a: "I came here to read a book.", exp: "to + 動詞の原形（不定詞）で「〜するために」という目的を表します。" },
-            { inst: "【課題】以下の日本語を英語にし、全文タイピングしなさい", q: "私は本を読むのが好きだ。", a: "I enjoy reading books.", exp: "enjoy の後は動名詞（~ing）が来ます。to不定詞は使えません。" },
-            { inst: "【課題】以下の日本語を英語にし、全文タイピングしなさい", q: "これは私が買った本です。", a: "This is the book which I bought.", exp: "関係代名詞 which。前の名詞（先行詞: the book）を後ろから修飾します。" },
-            { inst: "【課題】以下の日本語を英語にし、全文タイピングしなさい", q: "これが私が生まれた場所です。", a: "This is the place where I was born.", exp: "関係副詞 where。場所を表す先行詞（the place）を修飾します。" },
-            { inst: "【課題】以下の日本語を英語にし、全文タイピングしなさい", q: "今日は暑いですね。", a: "It is hot today, isn't it?", exp: "付加疑問文。「〜ですよね？」と確認を求める時、肯定文には否定の疑問形を付けます。" },
-            { inst: "【課題】以下の日本語を英語にし、全文タイピングしなさい", q: "彼がどこに住んでいるか知っていますか？", a: "Do you know where he lives?", exp: "間接疑問文。疑問詞の後が「主語＋動詞」の肯定文の語順になります。" },
-            { inst: "【課題】以下の日本語を英語にし、全文タイピングしなさい", q: "彼は私に部屋を掃除させた。", a: "He made me clean the room.", exp: "使役動詞 make。make + 人 + 動詞の原形 で「（無理に）〜させる」という意味です。" },
-            { inst: "【課題】以下の日本語を英語にし、全文タイピングしなさい", q: "私は彼が走るのを見た。", a: "I saw him run.", exp: "知覚動詞 see。see + 人 + 動詞の原形（または~ing）で「人が〜するのを見る」となります。" },
-            { inst: "【課題】以下の日本語を英語にし、全文タイピングしなさい", q: "あなたは早く寝るべきだ。", a: "You should go to bed early.", exp: "助動詞 should は「〜すべきだ、〜したほうがいい」というアドバイスを表します。" },
-            { inst: "【課題】以下の日本語を英語にし、全文タイピングしなさい", q: "彼はそれをやったに違いない。", a: "He must have done it.", exp: "must have + 過去分詞 で「（過去に）〜したに違いない」という強い推量を表します。" },
-            { inst: "【課題】以下の日本語を英語にし、全文タイピングしなさい", q: "私は３年間東京に住んでいる。", a: "I have lived in Tokyo for three years.", exp: "現在完了形の「継続」。have + 過去分詞 と for（〜の間）を組み合わせて使います。" },
-            { inst: "【課題】以下の日本語を英語にし、全文タイピングしなさい", q: "疲れていたけれど、私は勉強した。", a: "Although I was tired, I studied.", exp: "接続詞 Although は「〜だけれども」という逆接を表します。" },
-            { inst: "【課題】以下の日本語を英語にし、全文タイピングしなさい", q: "これらは私の本です。", a: "These are my books.", exp: "This の複数形は These です。be動詞も is から are に変わります。" }
-        ],
-        natural:[
-            { inst: "【課題】より自然な表現（gotta使用）に書き換えてタイピングしなさい", q: "I must go now. (もう行かなきゃ)", a: "I gotta go now.", exp: "gotta は have got to の省略形で、must や have to と同じく「〜しなきゃ」という意味のカジュアルな日常表現です。" },
-            { inst: "【課題】より自然な表現（make sense使用）に書き換えてタイピングしなさい", q: "I understand. (なるほど、筋が通っているね)", a: "That makes sense.", exp: "make sense は「筋が通っている、理にかなっている、なるほど」という意味でネイティブが相槌として頻繁に使います。" },
-            { inst: "【課題】より自然な表現（What's up使用）に書き換えてタイピングしなさい", q: "How are you? (最近どう？)", a: "What's up?", exp: "How are you? よりも圧倒的にカジュアルな挨拶。「最近どう？」「何かあった？」というニュアンスです。" },
-            { inst: "【課題】より自然な表現（exhausted使用）に書き換えてタイピングしなさい", q: "I am very tired. (ヘトヘトに疲れた)", a: "I'm exhausted.", exp: "very tired の代わりに exhausted を使うと、より自然で「限界まで疲れ切った」という表現力豊かな英語になります。" },
-            { inst: "【課題】より自然な表現（catch up使用）に書き換えてタイピングしなさい", q: "Let's meet today. (今日会って近況報告しよう)", a: "Let's catch up today.", exp: "catch up は「（久しぶりに会って）互いの近況を報告し合う」という意味でよく使われます。" },
-            { inst: "【課題】より自然な表現（chill out使用）に書き換えてタイピングしなさい", q: "Calm down. (まあ落ち着いて)", a: "Chill out.", exp: "Calm down や Relax のカジュアルな表現で、「落ち着いて」「リラックスして」という意味です。" },
-            { inst: "【課題】より自然な表現（piece of cake使用）に書き換えてタイピングしなさい", q: "It is very easy. (そんなの楽勝だよ)", a: "It's a piece of cake.", exp: "piece of cake で「ケーキ一切れ（ペロリと食べられる）」＝「とても簡単、楽勝」という意味の有名なイディオムです。" },
-            { inst: "【課題】ビジネス略語（ASAP）に書き換えてタイピングしなさい", q: "As soon as possible. (なるべく早く)", a: "ASAP.", exp: "ASAP（エイサップ）は As soon as possible の略で、ビジネスメールや日常会話で「なる早で」という意味で多用されます。" },
-            { inst: "【課題】より自然な表現（up to you使用）に書き換えてタイピングしなさい", q: "You can decide. (あなた次第だよ / 任せるよ)", a: "It's up to you.", exp: "be up to you で「あなた次第、あなたの決定に任せる」という意味の定番フレーズです。" },
-            { inst: "【課題】より自然な表現（bad使用）に書き換えてタイピングしなさい", q: "I am sorry, it is my fault. (ごめん、私のミス)", a: "My bad.", exp: "I'm sorry のとても軽い表現。「ごめんごめん、私のミス」という感じで、友人同士やカジュアルな職場で使われます。" },
-            { inst: "【課題】より自然な表現（no-brainer使用）に書き換えてタイピングしなさい", q: "It is an easy choice. (考えるまでもないよ)", a: "It's a no-brainer.", exp: "no-brainer は「頭（brain）を使うまでもないこと」＝「考えるまでもなく明らかなこと、簡単な決定」という意味です。" },
-            { inst: "【課題】より自然な表現（long time使用）に書き換えてタイピングしなさい", q: "It has been a long time. (久しぶり！)", a: "Long time no see.", exp: "文法的には崩れていますが、ネイティブが「久しぶり」と言う時に最もよく使うお決まりのカジュアルフレーズです。" },
-            { inst: "【課題】より自然な表現（hit me up使用）に書き換えてタイピングしなさい", q: "Contact me later. (後で連絡してね)", a: "Hit me up later.", exp: "Contact me や Call me のカジュアル版。「連絡してね」「声かけて」という意味でSNSやテキストでよく使われます。" },
-            { inst: "【課題】より自然な表現（sounds good使用）に書き換えてタイピングしなさい", q: "That is a good idea. (いいね、賛成)", a: "Sounds good.", exp: "相手の提案に対して「私にとっては良く聞こえる」＝「いいね」「賛成」という意味の相槌として非常に便利です。" },
-            { inst: "【課題】より自然な表現（never mind使用）に書き換えてタイピングしなさい", q: "Please forget it. (やっぱり気にしないで/忘れて)", a: "Never mind.", exp: "何か言おうとしてやめた時や、相手が聞き取れなかった時に「やっぱりいいや、気にしないで」という意味で使います。" },
-            { inst: "【課題】より自然なネイティブ表現（イディオム）をタイピングしなさい", q: "I feel sick. (体調が悪い)", a: "I'm feeling a bit under the weather.", exp: "under the weather は「体調が悪い、風邪気味だ」という意味のネイティブ定番イディオムです。" },
-            { inst: "【課題】より自然なネイティブ表現（イディオム）をタイピングしなさい", q: "I know that name. (その名前に心当たりがある)", a: "Does that name ring a bell?", exp: "ring a bell は「鐘を鳴らす」から転じて、「ピンとくる、心当たりがある」という意味になります。" },
-            { inst: "【課題】より自然なネイティブ表現（ビジネス）をタイピングしなさい", q: "Let's finish this meeting. (ミーティングを終わらせよう)", a: "Let's wrap up this meeting.", exp: "wrap up は「包む」から「（会議や仕事を）締めくくる、終わらせる」という意味でビジネスで頻出します。" },
-            { inst: "【課題】より自然なネイティブ表現（ビジネス）をタイピングしなさい", q: "Let's contact each other next week. (来週連絡を取り合おう)", a: "Let's touch base next week.", exp: "touch base は野球のベースに触れることが語源で、「連絡を取る、情報交換する」というビジネスイディオムです。" },
-            { inst: "【課題】より自然なネイティブ表現（ビジネス）をタイピングしなさい", q: "Do we have the same understanding? (認識は一致してる？)", a: "Are we on the same page?", exp: "on the same page は「同じページを読んでいる」＝「認識が一致している、理解を共有している」という意味です。" },
-            { inst: "【課題】より自然なネイティブ表現（イディオム）をタイピングしなさい", q: "We need to think creatively. (枠にとらわれずに考えよう)", a: "We need to think outside the box.", exp: "think outside the box は「箱（常識や既存の枠組み）の外で考える」＝「柔軟に、独創的に考える」という意味です。" },
-            { inst: "【課題】より自然なネイティブ表現（イディオム）をタイピングしなさい", q: "Let's stop working for today. (今日はここまでにしよう)", a: "Let's call it a day.", exp: "call it a day で「今日はこれで終わりにしよう、切り上げよう」という意味の決まり文句です。" },
-            { inst: "【課題】より自然なネイティブ表現（イディオム）をタイピングしなさい", q: "Let's get straight to the point. (単刀直入に言おう)", a: "Let's cut to the chase.", exp: "cut to the chase は「無駄話を省いて本題に入る、単刀直入に言う」という意味です。" },
-            { inst: "【課題】より自然なネイティブ表現（イディオム）をタイピングしなさい", q: "I'm learning how to do it. (コツを掴んできたよ)", a: "I'm getting the hang of it.", exp: "get the hang of ~ は「〜のコツを掴む、要領を得る」という意味のカジュアルな表現です。" },
-            { inst: "【課題】より自然なネイティブ表現（定番フレーズ）をタイピングしなさい", q: "Let's stay in contact. (連絡を取り合おう)", a: "Let's keep in touch.", exp: "keep in touch は別れ際に「これからも連絡を取り合おうね」と伝える定番フレーズです。" },
-            { inst: "【課題】より自然なネイティブ表現（定番フレーズ）をタイピングしなさい", q: "Everything is going well. (今のところ順調だよ)", a: "So far so good.", exp: "「これまでのところは（So far）良い（so good）」＝「今のところ順調」という便利な表現です。" },
-            { inst: "【課題】より自然なネイティブ表現（イディオム）をタイピングしなさい", q: "He called me suddenly. (彼から突然電話があった)", a: "He called me out of the blue.", exp: "out of the blue は「青空から（突然の雷）」＝「予期せずに、突然に」という意味のイディオムです。" },
-            { inst: "【課題】より自然なネイティブ表現（定番フレーズ）をタイピングしなさい", q: "For example, you can do this. (例えば、こんなことができるよ)", a: "For instance, you can do this.", exp: "for instance は for example と全く同じ「例えば」という意味ですが、少しフォーマルで知的な響きがあります。" },
-            { inst: "【課題】より自然なネイティブ表現（定番フレーズ）をタイピングしなさい", q: "To tell the truth, I don't know. (正直に言うと、分からない)", a: "To be honest, I don't know.", exp: "To be honest は「正直なところ、ぶっちゃけ」という意味で、会話の切り出しに非常によく使われます。" },
-            { inst: "【課題】より自然なネイティブ表現（定番フレーズ）をタイピングしなさい", q: "Changing the subject, how is your family? (ところで、家族は元気？)", a: "By the way, how is your family?", exp: "By the way は話題を変える時の「ところで」として超定番のフレーズです。チャットでは BTW と略されます。" }
-        ],
-        conversation:[
-            { inst: "【課題】相手の発言に対する自然な返答をタイピングしなさい", q: "A: Thank you so much for your help!\n(手伝ってくれて本当にありがとう！)\nB: (気にしないで / どういたしまして)", a: "Don't mention it.", exp: "You're welcome. よりも「お礼を言うほどのことじゃないよ」という謙遜を含むクールな返答です。" },
-            { inst: "【課題】相手の発言に対する自然な返答をタイピングしなさい", q: "A: I passed the final exam!\n(期末試験に受かったよ！)\nB: (やったね！ / でかした！)", a: "Way to go!", exp: "Good job! や Congratulations! のカジュアルな表現で、相手の成功を褒め称える時によく使います。" },
-            { inst: "【課題】相手の発言に対する自然な返答をタイピングしなさい", q: "A: I'm really sorry I'm late.\n(遅れて本当にごめんなさい。)\nB: (気にしないで / 大丈夫だよ)", a: "Never mind.", exp: "「気にしないで」「どんまい」という意味。謝罪に対して Don't worry about it. と同じように使えます。" },
-            { inst: "【課題】相手の発言に対する自然な返答をタイピングしなさい", q: "A: Do you want some more coffee?\n(コーヒーもう少しいかがですか？)\nB: (いえ、結構です。足りました)", a: "I'm good, thanks.", exp: "No, thank you. よりも自然な断り方。「もう十分に満たされています（だから大丈夫です）」というニュアンスです。" },
-            { inst: "【課題】相手の発言に対する自然な返答をタイピングしなさい", q: "A: Are you absolutely sure about this?\n(これ、本当に間違いない？)\nB: (絶対に間違いないよ)", a: "Absolutely.", exp: "Yes. を極端に強調した表現。「もちろん」「絶対にそうだ」という強い同意や確信を表します。" },
-            { inst: "【課題】相手の発言に対する自然な返答をタイピングしなさい", q: "A: How's it going?\n(調子はどう？)\nB: (悪くないよ / まあまあだね)", a: "Not too bad.", exp: "「すごく良いわけじゃないけど、悪くもない」という、ネイティブが最もよく使う無難な返答の一つです。" },
-            { inst: "【課題】相手の発言に対する自然な返答をタイピングしなさい", q: "A: Do you mind if I use your pen?\n(ペンを借りてもいいですか？)\nB: (もちろん、どうぞ)", a: "Be my guest.", exp: "「私のお客さんになって」から転じて、「遠慮しないでどうぞ、使っていいよ」という意味の粋な返しです。" },
-            { inst: "【課題】相手の発言に対する自然な返答をタイピングしなさい", q: "A: Let's grab a bite after work.\n(仕事の後、軽くご飯行こうよ。)\nB: (賛成！ / いいね)", a: "Sounds good to me.", exp: "提案に対して「私にとっては良く聞こえる」＝「大賛成、いいね」という意味の定番フレーズです。" },
-            { inst: "【課題】相手の発言に対する自然な返答をタイピングしなさい", q: "A: I'm so nervous about the presentation.\n(プレゼン、すごく緊張してるんだ。)\nB: (君ならできるよ / 頑張って)", a: "You got this.", exp: "直訳は「君はこれを得た」。そこから「君なら余裕でできるよ」「頑張れ」と相手を励ます際によく使われます。" },
-            { inst: "【課題】相手の発言に対する自然な返答をタイピングしなさい", q: "A: It's a secret, okay?\n(これ秘密だからね、いい？)\nB: (誰にも言わないよ / 口は堅いから)", a: "My lips are sealed.", exp: "直訳は「私の唇は封印されている」。つまり「絶対に誰にも喋らないよ」というユーモアのある表現です。" },
-            { inst: "【課題】相手の発言に対する自然な返答をタイピングしなさい", q: "A: What do you want for dinner?\n(夕食何がいい？)\nB: (何でもいいよ / 君に任せるよ)", a: "Whatever you want.", exp: "「あなたが欲しいものなら何でも」という意味。Anything is fine. よりも少し相手に決定権を委ねるニュアンスです。" },
-            { inst: "【課題】相手の発言に対する自然な返答をタイピングしなさい", q: "A: I have to work overtime today.\n(今日は残業しなきゃいけないんだ。)\nB: (それは気の毒に / 残念だね)", a: "That's a bummer.", exp: "bummer は「がっかりなこと、嫌なこと」。That's too bad. よりも少しカジュアルな同情の表現です。" },
-            { inst: "【課題】相手の発言に対する自然な返答をタイピングしなさい", q: "A: Can you give me a hand?\n(ちょっと手を貸してくれる？)\nB: (もちろん / お安い御用だよ)", a: "Sure thing.", exp: "Of course. や Sure. を少し強調したフレンドリーな快諾の表現です。「いいとも！」という感じです。" },
-            { inst: "【課題】相手の発言に対する自然な返答をタイピングしなさい", q: "A: I got a new job!\n(新しい仕事が決まったんだ！)\nB: (おめでとう！)", a: "Congratulations!", exp: "嬉しい報告に対する定番の返し。短縮して Congrats! ともよく言います。" },
-            { inst: "【課題】相手の発言に対する自然な返答をタイピングしなさい", q: "A: I have a bad headache.\n(ひどい頭痛がするんだ。)\nB: (お大事に)", a: "Take care.", exp: "Take care. は別れ際の「気をつけて」以外に、体調が悪い人への「お大事に」としても使えます。" },
-            { inst: "【課題】相手の発言に対する自然な返答をタイピングしなさい", q: "A: Have a nice weekend!\n(良い週末を！)\nB: (あなたもね)", a: "You too.", exp: "相手の祝辞や挨拶をそのまま返す時に便利な「あなたもね」です。You as well. よりカジュアルです。" },
-            { inst: "【課題】相手の発言に対する自然な返答をタイピングしなさい", q: "A: Guess what?\n(何だと思う？ / あのさ！)\nB: (何何？ / どうしたの？)", a: "What is it?", exp: "Guess what? は会話を切り出す時のお決まりのフレーズ。それに対する返事として使います。" },
-            { inst: "【課題】相手の発言に対する自然な返答をタイピングしなさい", q: "A: Can I ask you a favor?\n(お願いがあるんだけど？)\nB: (もちろん、何？)", a: "Sure, what's up?", exp: "お願いを聞く快諾の言葉。「どうしたの？」と気軽に促すナチュラルな返しです。" },
-            { inst: "【課題】相手の発言に対する自然な返答をタイピングしなさい", q: "A: I didn't sleep well last night.\n(昨日の夜、よく眠れなくて。)\nB: (それは大変だね / 残念だね)", a: "That's too bad.", exp: "軽い同情を示す定番の表現。「残念だね」「気の毒に」というニュアンスです。" },
-            { inst: "【課題】相手の発言に対する自然な返答をタイピングしなさい", q: "A: Are you ready?\n(準備できた？)\nB: (もうすぐだよ / あともう少し)", a: "Almost.", exp: "「ほとんどできている」から「あともう少し、もうすぐ」という意味で便利に使えます。" },
-            { inst: "【課題】相手の発言に対する自然な返答をタイピングしなさい", q: "A: What are you up to?\n(何してるの？ / 予定は？)\nB: (特に何も)", a: "Nothing much.", exp: "What are you up to? に対する定番の返答。「大したことはしてないよ」「特に予定はないよ」という意味です。" },
-            { inst: "【課題】相手の発言に対する自然な返答をタイピングしなさい", q: "A: Take your time.\n(ゆっくりでいいよ / 急がないで)\nB: (ありがとう)", a: "Thanks.", exp: "相手の気遣いに対して素直にお礼を言うシンプルな返しです。" },
-            { inst: "【課題】相手の発言に対する自然な返答をタイピングしなさい", q: "A: I'm leaving now.\n(もう出発するね。)\nB: (気をつけてね / 安全運転で)", a: "Drive safe.", exp: "車で帰る人や出かける人に対する「気をつけて帰ってね」の定番フレーズです。" },
-            { inst: "【課題】相手の発言に対する自然な返答をタイピングしなさい", q: "A: After you.\n(お先にどうぞ。)\nB: (ありがとう)", a: "Thank you.", exp: "ドアを開けて待ってくれている時などの「お先にどうぞ」に対する自然なお礼です。" },
-            { inst: "【課題】相手の発言に対する自然な返答をタイピングしなさい", q: "A: Make yourself at home.\n(自分の家だと思ってくつろいでね。)\nB: (ありがとう)", a: "Thanks.", exp: "来客時の定番のおもてなしフレーズに対し、感謝を伝える返しです。" },
-            { inst: "【課題】相手の発言に対する自然な返答をタイピングしなさい", q: "A: Long time no see.\n(久しぶり！)\nB: (本当にね！ / だよね！)", a: "I know, right?", exp: "相手の言ったことに「本当にそうだよね！」と強く同意する時のカジュアルな若者言葉です。" },
-            { inst: "【課題】相手の発言に対する自然な返答をタイピングしなさい", q: "A: It's on me.\n(ここは私のおごりだよ。)\nB: (本当に？ありがとう)", a: "Are you sure? Thanks.", exp: "おごってもらう時の「本当にいいの？」という謙虚さを交えた自然なお礼です。" },
-            { inst: "【課題】相手の発言に対する自然な返答をタイピングしなさい", q: "A: Did I get it right?\n(合ってる？ / 正しい？)\nB: (その通り！ / 完璧！)", a: "Spot on.", exp: "「的を射ている」「完璧に正解」という意味のイギリスやオーストラリアでもよく使われる表現です。" },
-            { inst: "【課題】相手の発言に対する自然な返答をタイピングしなさい", q: "A: I'm so full.\n(お腹いっぱいだよ。)\nB: (私も)", a: "Me too.", exp: "相手の肯定文に同意する一番簡単な表現です。" },
-            { inst: "【課題】相手の発言に対する自然な返答をタイピングしなさい", q: "A: Would you like some dessert?\n(デザートはいかがですか？)\nB: (お腹いっぱいです / 結構です)", a: "I'm full.", exp: "食事を勧められた時に、満腹であることを伝えて丁寧に断る表現です。" }
-        ]
-    };
+* * *
 
-    // --- 自動スキップ対象の記号定義 ---
-    const skipChars = /[.,!?'"\-:]/;
-    let previousInputLength = 0;
 
-    let currentQuestions =[];
-    let currentIndex = 0;
-    let currentAnswer = "";
-    let isWaitingForNext = false; // 正解後、解説を読んでいる状態かのフラグ
-    
-    // DOM Elements
-    const homeScreen = document.getElementById('home-screen');
-    const typingScreen = document.getElementById('typing-screen');
-    const resultScreen = document.getElementById('result-screen');
-    const instructionEl = document.getElementById('instruction');
-    const questionEl = document.getElementById('question');
-    const typingAreaEl = document.getElementById('typing-area');
-    const typingAreaContainer = document.getElementById('typing-area-container');
-    const hiddenInput = document.getElementById('hidden-input');
-    const progressText = document.getElementById('progress-text');
-    const resultStats = document.getElementById('result-stats');
-    const answerDisplay = document.getElementById('answer-display');
-    const answerText = document.getElementById('answer-text');
-    const explanationText = document.getElementById('explanation-text');
-    const nextPrompt = document.getElementById('next-prompt');
-    const supportActions = document.getElementById('support-actions');
 
-    function switchScreen(screen) {
-        document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
-        screen.classList.add('active');
-    }
 
-    function showHome() {
-        switchScreen(homeScreen);
-    }
 
-    function quitGame() {
-        isWaitingForNext = false;
-        hiddenInput.value = "";
-        answerDisplay.style.display = "none";
-        nextPrompt.style.display = "none";
-        supportActions.style.display = "flex";
-        showHome();
-    }
+谷川　流
 
-    function shuffleArray(array) {
-        let curId = array.length;
-        while (0 !== curId) {
-            let randId = Math.floor(Math.random() * curId);
-            curId -= 1;
-            let tmp = array[curId];
-            array[curId] = array[randId];
-            array[randId] = tmp;
+
+
+
+
+角川スニーカー文庫
+
+
+
+
+
+本作品の全部または一部を無断で複製、転載、配信、送信したり、ホームページ上に転載することを禁止します。また、本作品の内容を無断で改変、改ざん等を行うことも禁止します。
+
+本作品購入時にご承諾いただいた規約により、有償・無償にかかわらず本作品を第三者に譲渡することはできません。
+
+本作品を示すサムネイルなどのイメージ画像は、再ダウンロード時に予告なく変更される場合があります。
+
+
+
+
+
+本作品は縦書きでレイアウトされています。
+
+また、ご覧になるリーディングシステムにより、表示の差が認められることがあります。
+
+
+
+
+
+　CONTENTS
+
+
+
+
+
+プロローグ
+
+第一章
+
+第二章
+
+第三章
+
+第四章
+
+第五章
+
+第六章
+
+第七章
+
+エピローグ
+
+あとがき
+
+解説　スニーカー文庫編集部
+
+
+
+
+
+口絵・本文イラスト／いとうのいぢ
+
+
+
+
+
+　　プロローグ
+
+
+
+
+
+　サンタクロースをいつまで信じていたかなんてことはたわいもない世間話にもならないくらいのどうでもいいような話だが、それでも俺がいつまでサンタなどという想像上の赤服じーさんを信じていたかと言うとこれは確信を持って言えるが最初から信じてなどいなかった。
+
+　幼よう稚ち園えんのクリスマスイベントに現れたサンタは偽にせサンタだと理解していたし、記き憶おくをたどると周囲にいた園児たちもあれが本物だとは思っていないような目つきでサンタのコスプレをした園長先生を眺ながめていたように思う。
+
+　そんなこんなでオフクロがサンタにキスしているところを目もく撃げきしたわけでもないのにクリスマスにしか仕事をしないジジイの存在を疑っていた賢さかしい俺なのだが、宇宙人や未来人や幽ゆう霊れいや妖よう怪かいや超ちよう能のう力りよくや悪の組織やそれらと戦うアニメ的特とく撮さつ的マンガ的ヒーローたちがこの世に存在しないのだということに気付いたのは相当後になってからだった。
+
+　いや、本当は気付いていたのだろう。ただ気付きたくなかっただけなのだ。俺は心の底から宇宙人や未来人や幽霊や妖怪や超能力や悪の組織が目の前にふらりと出てきてくれることを望んでいたのだ。
+
+　俺が朝目覚めて夜眠ねむるまでのこのフツーな世界に比べて、アニメ的特撮的マンガ的物語の中に描えがかれる世界の、なんと魅み力りよく的なことだろう。
+
+　俺もこんな世界に生まれたかった！
+
+　宇宙人にさらわれてでっかい透とう明めいなエンドウ豆のサヤに入れられている少女を救い出したり、レーザー銃じゆう片手に歴史の改変を計る未来人を知ち恵えと勇気で撃げき退たいしたり、悪あく霊りようや妖怪を呪じゆ文もん一発で片づけたり、秘密組織の超能力者とサイキックバトルを繰くり広げたり、つまりそんなことをしたかった！
+
+　いや待て冷静になれ、仮に宇宙人や（以下略）が襲しゆう撃げきしてきたとしても俺自身には何の特とく殊しゆ能力もなく太刀たち打うちできるはずがない。ってことで俺は考えたね。
+
+　ある日突とつ然ぜん謎なぞの転校生が俺のクラスにやって来て、そいつが実は宇宙人とか未来人とかまあそんな感じで得体の知れない力なんかを持ってたりして、でもって悪い奴やつらなんかと戦っていたりして、俺もその闘たたかいに巻き込まれたりすることになればいいじゃん。メインで戦うのはそいつ。俺はフォロー役。おお素晴らしい、頭いーな俺。
+
+　か、あるいはこうだ。やっぱりある日突然俺は不思議な能力に目覚めるのだ。テレポーテーションとかサイコキネシスとかそんなんだ。実は他ほかにも超能力を持っている人間はけっこういて、そういう連中ばかりが集められているような組織も当然あって、善玉の方の組織から仲間が迎むかえに来て俺もその一員となり世界征せい服ふくを狙ねらう悪い超能力者と戦うとかな。
+
+　しかし現実ってのは意外と厳しい。
+
+　実際のところ、俺のいたクラスに転校生が来たことなんて皆かい無むだし、ＵＦＯだって見たこともないし、幽霊や妖怪を探しに地元の心しん霊れいスポットに行ってもなんも出ないし、机の上の鉛えん筆ぴつを二時間も必死こいて凝ぎよう視ししていても一ミクロンも動かないし、前の席の同級生の頭を授業中いっぱい睨にらんでいても思考を読めるはずもない。
+
+　世界の物理法則がよく出来ていることに感心しつつ自じ嘲ちようしつつ、いつしか俺はテレビのＵＦＯ特番や心霊特集をそう熱心に観みなくなっていた。いるワケねー……でもちょっとはいて欲しい、みたいな最大公約数的なことを考えるくらいにまで俺も成長したのさ。
+
+　中学校を卒業する頃ころには、俺はもうそんなガキな夢を見ることからも卒業して、この世の普ふ通つうさにも慣れていた。一いち縷るの期待をかけていた一九九九年に何が起こるわけでもなかったしな。二十一世紀になっても人類はまだ月から向こうに到とう達たつしてねーし、俺が生きてる間にアルファケンタウリまで日帰りで往復出来ることもこのぶんじゃなさそうだ。
+
+　そんなことを頭の片かた隅すみでぼんやり考えながら俺はたいした感かん慨がいもなく高校生になり──、
+
+
+
+
+
+　涼すず宮みやハルヒと出会った。
+
+
+
+
+
+　　第一章
+
+
+
+
+
+　うすらぼんやりとしているうちに学区内の県立高校へと無難に進学した俺が最初に後こう悔かいしたのはこの学校がえらい山の上にあることで、春だってのに大おお汗あせをかきながら延々と続く坂道を登りつつ手軽なハイキング気分をいやいや満まん喫きつしている最さ中なかであった。これから三年間も毎日こんな山登りを朝っぱらからせにゃならんのかと思うと暗あん澹たんたる気分になるのだが、ひょっとしたらギリギリまで寝ねていたおかげで自然と早足を強しいられているのかもしれず、ならばあと十分でも早起きすればゆっくり歩けるわけだしそうキツイことでもないかと考えたりするものの、起きる間ま際ぎわの十分の睡すい眠みんがどれほど貴重かを思えば、そんなことは不可能で、つまり結局俺は朝の運動を継けい続ぞくしなければならないだろうと確信し暗澹たる気分が倍加した。
+
+　そんなわけで、無む駄だに広い体育館で入学式がおこなわれている間、俺は新しい学まなび舎やでの希望と不安に満ちた学園生活に思いをはせている新入生特有の顔つきとは関係なく、ただ暗い顔をしていた。同じ中学から来ている奴がかなりの量にのぼっていたし、うち何人かはけっこう仲のよかった連中なので友人のあてに困ることはなかったが。
+
+　男はブレザーなのに女はセーラー服ってのは変な組み合わせだな、もしかして今壇だん上じようで眠ねむ気けを誘さそう音波を長々と発しているヅラ校長がセーラー服マニアなのか、とか考えているあいだにテンプレートでダルダルな入学式がつつがなく終しゆう了りようし、俺は配属された一年五組の教室へ嫌いやでも一年間は面つらを突つき合せねばならないクラスメイトたちとぞろぞろ入った。
+
+　担任の岡おか部べなる若い青年教師は教壇に上がるや鏡の前で小一時間練習したような明朗快活な笑え顔がおを俺たちに向け、自分が体育教師であること、ハンドボール部の顧こ問もんをしていること、大学時代にハンドボール部で活かつ躍やくしリーグ戦ではそこそこいいところまで勝ちあがったこと、現在この高校のハンドボール部は部員数が少ないので入部即そくレギュラーは保障されたも同然であること、ハンドボール以上に面おも白しろい球技はこの世に存在しないであろうことをひとしきり喋しやべり終えるともう話すことがなくなったらしく、
+
+「みんなに自己紹しよう介かいをしてもらおう」
+
+　と言い出した。
+
+　まあありがちな展開だし、心積もりもしてあったから驚おどろくことでもない。
+
+　出席番号順に男女交こう互ごで並んでいる左端はしから一人一人立ち上がり、氏名、出身中学プラスα（趣しゆ味みとか好きな食べ物とか）をあるいはぼそぼそと、あるいは調子よく、あるいはダダ滑すべりするギャグを交えて教室の温度を下げながら、だんだんと俺の番が近づいてきた。緊きん張ちようの一いつ瞬しゆんである。解わかるだろ？
+
+　頭でひねっていた最低限のセリフを何とか噛かまずに言い終え、やるべきことをやったという解放感に包まれながら俺は着席した。替かわりに後ろの奴やつが立ち上がり──ああ、俺は生しよう涯がいこのことを忘れないだろうな──後々語り草となる言葉をのたまった。
+
+「東ひがし中学出身、涼宮ハルヒ」
+
+　ここまでは普ふ通つうだった。真後ろの席を身体からだをよじって見るのもおっくうなので俺は前を向いたまま、その涼やかな声を聞いた。
+
+「ただの人間には興味ありません。この中に宇宙人、未来人、異世界人、超ちよう能のう力りよく者がいたら、あたしのところに来なさい。以上」
+
+　さすがに振ふり向いたね。
+
+　長くて真まっ直すぐな黒い髪かみにカチューシャつけて、クラス全員の視線を傲ごう然ぜんと受け止める顔はこの上なく整った目鼻立ち、意志の強そうな大きくて黒い目を異常に長いまつげが縁ふち取どり、淡うす桃もも色いろの唇くちびるを固く引き結んだ女。
+
+　ハルヒの白い喉のどがやけにまばゆかったのを覚えている。えらい美人がそこにいた。
+
+　ハルヒは喧けん嘩かでも売るような目つきでゆっくりと教室中を見み渡わたし、最後に大口開けて見上げている俺をじろりと睨にらむと、にこりともせずに着席した。
+
+　これってギャグなの？
+
+　おそらく全員の頭にどういうリアクションをとればいいのか、疑ぎ問もん符ふが浮うかんでいたことだろう。「ここ、笑うとこ？」
+
+　結果から言うと、それはギャグでも笑いどころでもなかった。涼宮ハルヒは、いつだろうがどこだろうが冗じよう談だんなどは言わない。
+
+　常に大マジなのだ。
+
+　のちに身をもってそのことを知った俺が言うんだから間ま違ちがいはない。
+
+　沈ちん黙もくの妖よう精せいが三十秒ほど教室を飛び回り、やがて体育教師岡部がためらいがちに次の生徒を指名して、白くなっていた空気はようやく正常化した。
+
+
+
+
+
+　こうして俺たちは出会っちまった。
+
+　しみじみと思う。偶ぐう然ぜんだと信じたい、と。
+
+
+
+
+
+　このように一瞬にしてクラス全員のハートをいろんな意味でキャッチした涼宮ハルヒだが、翌日以降しばらくは割とおとなしく一見無害な女子高生を演じていた。
+
+　嵐あらしの前の静けさ、という言葉の意味が今の俺にはよく解る。
+
+　いや、この高校に来るのは、もともと市内の四つの中学校出身の生徒たち（成績が普通レベルの奴ら）ばかりだし、東中もその中に入っていたから、涼宮ハルヒと同じ中学から進学した奴らもいるわけで、そんな彼らにしてみればこいつの雌し伏ふく状態が何かの前兆であることに気付いていたんだろうが、あいにく俺は東中に知り合いがいなかったしクラスの誰だれも教えてくれなかったから、スットンキョーな自己紹介から数日後、忘れもしない、朝のホームルームが始まる前だ。涼宮ハルヒに話しかけるという愚ぐの骨頂なことを俺はしでかしてしまった。
+
+　ケチのつき始めのドミノ倒たおし、その一枚目を俺は自分で倒しちまったというわけだ。
+
+　だってよ、涼宮ハルヒは黙だまってじっと座っている限りでは一美少女高校生にしか見えないんだぜ。たまたま席が真ん前だったという地の利を生かしてお近づきになっとくのもいいかなと一瞬血迷った俺を誰が責められよう。
+
+　もちろん話題はあのことしかあるまい。
+
+「なあ」
+
+　と、俺はさりげなく振り返りながらさりげない笑みを満面に浮かべて言った。
+
+「しょっぱなの自己紹介のアレ、どのへんまで本気だったんだ？」
+
+　腕うで組みをして口をへの字に結んでいた涼宮ハルヒはそのままの姿勢でまともに俺の目を凝ぎよう視しした。
+
+「自己紹介のアレって何」
+
+「いや、だから宇宙人がどうとか」
+
+「あんた、宇宙人なの？」
+
+　大まじめな顔で訊ききやがる。
+
+「……違うけどさ」
+
+「違うけど、何なの」
+
+「……いや、何もない」
+
+「だったら話しかけないで。時間の無む駄だだから」
+
+　思わず「すみません」と謝ってしまいそうになるくらい冷れい徹てつな口調と視線だったね。涼宮ハルヒは、まるで芽キャベツを見るように俺に向けていた目をフンとばかりに逸そらすと、黒板の辺りを睨にらみつけ始めた。
+
+　何かを言い返そうとして結局何も思いつけないでいた俺は担任の岡部が入ってきたおかげで救われた。
+
+　負け犬の心でしおしおと前を向くと、クラスの何人かがこっちの方を興味深げに眺ながめていやがった。目が合うと実に意味深な半笑いで「やっぱりな」とでも言いたげな、そして同情するかのごときうなずきを俺によこす。
+
+　なんか、シャクに障さわる。後で解ったことだがそいつらは全員東中だった。
+
+
+
+
+
+　とまあ、おそらくファースト・コンタクトとしては最悪の部類に入る会話のおかげで、さすがに俺も涼宮ハルヒには関かかわらないほうがいいのではないかと思い始めてその思いが覆くつがえらないまま一週間が経過した。
+
+　だが理解していない観察眼のない奴もまだまだいないわけではなく、いつも不ふ機き嫌げんそうに眉み間けんにしわを寄せ唇くちびるをへの字にしている涼宮ハルヒに何やかやと話しかけるクラスメイトも中にはいた。
+
+　だいたいそれはおせっかいな女子であり、新学期早々クラスから孤こ立りつしつつある女子生徒を気き遣づかって調和の輪の中に入れようとする、本人にとっては好意から出た行動なのだろうが、いかんせん相手が相手だった。
+
+「ねえ、昨日のドラマ見た？　九時からのやつ」
+
+「見てない」
+
+「えー？　なんでー？」
+
+「知らない」
+
+「いっぺん見てみなよ、あーでも途と中ちゆうからじゃ解わかんないか。そうそう、だったら教えてあげようか、今までのあらすじ」
+
+「うるさい」
+
+　こんな感じ。
+
+　無表情に応答するならまだしも、あからさまにイライラした顔と発音で応こたえるものだから話しかけた人間の方が何か悪いことをしているような気分になり、結局「うん……まあ、その……」と肩かたを落としてすごすご引き下がることになる。「あたし、何かおかしな事言った？」
+
+　安心したまえ、言ってない。おかしいのは涼宮ハルヒの頭のほうさ。
+
+
+
+
+
+　別段一人で飯喰くうのは苦にならないものの、やはり皆みながわやわや言いながらテーブルをくっつけているところにポツンと取り残されるように弁当をつついているというのも何なので、というわけでもないのだが、昼休みになると俺は中学が同じで比ひ較かく的てき仲のよかった国くに木き田だと、たまたま席が近かった東中出身の谷たに口ぐちという奴やつと机を同じくすることにしていた。
+
+　涼宮ハルヒの話題が出たのはその時である。
+
+「お前、この前涼宮に話しかけてたな」
+
+　何なに気げにそんな事を言い出す谷口。まあ、うなずいとこう。
+
+「わけの解らんこと言われて追い返されただろ」
+
+　その通りだ。
+
+　谷口はゆで卵の輪切りを口に放り込み、もぐもぐしながら、
+
+「もしあいつに気があるんなら、悪いことは言わん、やめとけ。涼宮が変人だってのは充じゆう分ぶん解ったろ」
+
+　中学で涼宮と三年間同じクラスだったからよく知ってるんだがな、と前置きし、
+
+「あいつの奇き人じんぶりは常じよう軌きを逸いつしている。高校生にもなったら少しは落ち着くかと思ったんだが全然変わってないな。聞いたろ、あの自己紹しよう介かい」
+
+「あの宇宙人がどうとか言うやつ？」
+
+　焼き魚の切り身から小骨を細心の注意で取り除いていた国木田が口を挟はさんだ。
+
+「そ。中学時代にもわけの解らんことを言いながらわけの解らんことを散々やり倒たおしていたな。有名なのが校庭落書き事件」
+
+「何だそりゃ？」
+
+「石せつ灰かいで白線引く道具があるだろ。あれ何つうんだっけ？　まあいいや、とにかくそれで校庭にデカデカとけったいな絵文字を書きやがったことがある。しかも夜中の学校に忍しのび込んで」
+
+　そん時のことを思い出したのか谷口はニヤニヤ笑いを浮うかべた。
+
+「驚おどろくよな。朝学校来たらグラウンドに巨きよ大だいな丸とか三角とかが一面に書きなぐってあるんだぜ。近くで見ても何が書いてあるのか解らんから試しに校舎の四階から見てみたんだが、やっぱり何が書いてあるのか解らんかったな」
+
+「あ、それ見た覚えあるな。確か新聞の地方欄らんに載のってなかった？　航空写真でさ。出来そこないのナスカの地上絵みたいなの」
+
+　と国木田が言う。俺には覚えがない。
+
+「載ってた載ってた。中学校の校庭に描えがかれた謎なぞのイタズラ書き、ってな。で、こんなアホなことをした犯人は誰だれだってことになったんだが……」
+
+「その犯人があいつだったってわけか」
+
+「本人がそう言ったんだから間ま違ちがいない。当然、何でそんなことしたんだってなるわな。校長室にまで呼ばれてたぜ。教師総掛がかりで問いつめられたらしい」
+
+「何でそんなことしたんだ？」
+
+「知らん」
+
+　あっさり答えて谷口は白飯をもしゃもしゃと頬ほお張ばった。
+
+「とうとう白状しなかったそうだ。だんまりを決め込んだ涼宮のキッツい目で睨にらまれてみろ、もうどうしようもないぜ。一説によるとＵＦＯを呼ぶための地上絵だとか、あるいは悪あく魔ま召しよう喚かんの魔ま法ほう陣じんだとか、または異世界への扉とびらを開こうとしてたとか、噂うわさはいろいろあったんだが、とにかく本人が理由を言わんのだから仕方がない。今もって謎のままだ」
+
+　俺の脳のう裏りには、真っ暗の校庭に真しん剣けんな表情で白線を引いている涼宮ハルヒの姿が浮かんでいた。ガラゴロ引きずっているラインカーと山積みにしている石灰の袋ふくろはあらかじめ体育倉庫からガメていたんだろう。懐かい中ちゆう電灯くらいは持っていたかもしれない。頼たよりない明かりに照らされた涼宮ハルヒの顔はどこか思い詰つめた悲ひ壮そう感に溢あふれていた。俺の想像だけどな。
+
+　たぶん涼宮ハルヒは本気でＵＦＯあるいは悪魔または異世界への扉を呼び出そうとしたのだろう。ひょっとしたら一晩中、中学の運動場でがんばっていたのかもしれない。そしてとうとう何も現れなかったことにたいそう落らく胆たんしたに違いない、と根こん拠きよもなく思った。
+
+「他ほかにもいっぱいやってたぞ」
+
+　谷口は弁当の中身を次々と片づけつつ、
+
+「朝教室に行ったら机が全部廊ろう下かに出されてたこともあったな。校舎の屋上に星マークをペンキで描いたり、学校中に変なお札、キョンシーが顔にはっ付けているようなやつな、あれがベタベタ貼はりまくられたこともあった。意味わかんねーよ」
+
+　ところで今教室に涼宮ハルヒはいない。いたらこんな話も出来ないだろうが、たとえいたとしてもまったく気にしないような気もする。その涼宮ハルヒだが、四時間目が終わるとすぐ教室を出て行って五時間目が始まる直前にならないと戻もどってこないのが常だ。弁当を持ってきた様子はないから食堂を利用しているんだろう。しかし昼飯に一時間もかけないだろうし、そういや授業の合間の休み時間にも必ずと言っていいほど教室にはいない奴やつで、いったいどこをうろついているんだか。
+
+「でもなぁ、あいつモテるんだよな」
+
+　谷口はまだ話している。
+
+「なんせツラがいいしさ。おまけにスポーツ万能で成績もどちらかと言えば優ゆう秀しゆうなんだ。ちょっとばかし変人でも黙だまって立ってたら、んなこと解わかんねーし」
+
+「それにも何かエピソードがあんの？」
+
+　問う国木田は谷口の半分も箸はしが進んでいない。
+
+「一時期は取っ替かえ引っ替えってやつだったな。俺の知る限り、一番長く続いて一週間、最短では告白されてオーケーした五分後に破局してたなんてのもあったらしい。例外なく涼宮が振ふって終わりになるんだが、その際に言い放つ言葉がいつも同じ、『普ふ通つうの人間の相手してるヒマはないの』。だったらオーケーするなってーの」
+
+　こいつもそう言われたクチかもな。そんな俺の視線に気付いたか、谷口は慌あわてたふうに、
+
+「聞いた話だって、マジで。何でか知らねえけどコクられて断るってことをしないんだよ、あいつは。三年になった頃ころにはみんな解ってるもんだから涼宮と付き合おうなんて考える奴はいなかったけどな。でも高校でまた同じことを繰くり返す気がするぜ。だからな、お前が変な気を起こす前に言っておいてやる。やめとけ。こいつは同じクラスになったよしみで言う俺の忠告だ」
+
+　やめとくも何も、そんな気ないんだがな。
+
+　食い終わった弁当箱を鞄かばんにしまい込んで谷口はニヤリと笑った。
+
+「俺だったらそうだな、このクラスでのイチオシはあいつだな、朝あさ倉くら涼りよう子こ」
+
+　谷口がアゴをしゃくって示した先に、女どもの一団が仲むつまじく机をひっつけて談だん笑しようしている。その中心で明るい笑え顔がおを振りまいているのが朝倉涼子だった。
+
+「俺の見立てでは一年の女の中でもベスト３には確実に入るね」
+
+　一年の女子全員をチェックでもしたのか。
+
+「おうよ。ＡからＤにまでランク付けしてそのうちＡランクの女子はフルネームで覚えたぜ。一度しかない高校生活、どうせなら楽しく過ごしたいからよ」
+
+「朝倉さんがそのＡなわけ？」と国木田。
+
+「ＡＡランクプラス、だな。俺くらいになると顔見るだけで解る。アレはきっと性格までいいに違いない」
+
+　勝手に決めつける谷口の言葉はまあ話半分で聞くとしても、実のところ朝倉涼子もまた涼宮ハルヒとは別の意味で目立つ女だった。
+
+　まず第一に美人である。いつも微笑ほほえんでいるような雰ふん囲い気きがまことによい。第二に性格がいいという谷口の見立てはおそらく正しい。この頃になると涼宮ハルヒに話しかけようなどという酔すい狂きような人間は皆かい無むに等しかったが、いくらぞんざいにあしらわれてもそれでもめげずに話しかける唯ゆい一いつの人間が朝倉である。どことなく委員長っぽい気質がある。第三に授業での受け答えを見てると頭もなかなかいいらしい。当てられた問題を確実に正答している。教師にとってもありがたい生徒だろう。第四に同性にも人気がある。まだ新学期が始まって一週間そこそこだが、あっという間にクラスの女子の中心的人物になりおおせてしまった。人を惹ひきつけるカリスマみたいなものが確かにある。
+
+　いつも眉み間けんにシワ寄せている頭の内部がミステリアスな涼宮ハルヒと比べると、そりゃ彼女にするんならこっちかな、俺だって。つーか、どっちにしろ谷口には高た嶺かねの花だと思うが。
+
+
+
+
+
+　まだ四月だ。この時期、涼宮ハルヒもまだ大人しい頃合いで、つまり俺にとっても心安まる月だった。ハルヒが暴走を開始するにはまだ一ヶ月弱ほどある。
+
+　しかしながら、ハルヒの奇き矯きような振ふる舞まいはこの頃から徐じよ々じよに片へん鱗りんを見せていたと言うべきだろう。
+
+　と言うわけで、片鱗その一。
+
+　髪かみ型がたが毎日変わる。何となく眺ながめているうちにある法則性があることに気付いたのだが、それはつまり、月曜日のハルヒはストレートのロングヘアを普通に背中に垂らして登場する。次の日、どこから見ても非のうちどころのないポニーテールでやって来て、それがまたいやになるくらい似合っていたのだが、その次の日、今度は頭の両りよう脇わきで髪をくくるツインテールで登校し、さらに次の日になると三つ編みになり、そして金曜日の髪型は頭の四ヶ所を適当にまとめてリボンで結ぶというすこぶる奇き妙みようなものになる。
+
+　月曜＝〇、火曜＝一、水曜＝二……。
+
+　ようするに曜日が進むごとに髪を結ぶ箇か所しよが増えているのである。月曜日にリセットされ後は金曜日まで一つずつ増やしていく。何の意味があるのかさっぱり解らないし、この法則に従うなら最終的には六ヶ所になっているはずで、果たして日曜日にハルヒがどんな頭になっているのか見てみたい気もする。
+
+　片鱗その二。
+
+　体育の授業は男女別に行われるので五組と六組の合同でおこなわれる。着き替がえは女が奇き数すうクラス、男が偶ぐう数すうクラスに移動してすることになっており、当然前の授業が終わると五組の男子は体操着入れを手にぞろぞろと六組に移動するわけだ。
+
+　そんな中、涼宮ハルヒはまだ男どもが教室に残っているにもかかわらず、やおらセーラー服を脱ぬぎ出したのだった。
+
+　まるでそこらの男などカボチャかジャガイモでしかないと思っているような平然たる面おも持もちで脱いだセーラー服を机に投げ出し、体操着に手をかける。
+
+　あっけにとられていた俺を含ふくめた男たちは、この時点で朝倉涼子によって教室から叩たたき出された。
+
+　その後朝倉涼子をはじめとしてクラスの女子はこぞってハルヒに説教をしたらしいが、まあ何の効果もなかったね。ハルヒは相変わらず男の目などまったく気にせず平気で着替えをやり始めるし、おかげで俺たち男連中は体育前の休み時間になるとチャイムと同時にダッシュで教室から撤てつ退たいすることを──主に朝倉涼子に──義務づけられてしまった。
+
+　それにしてもやけにグラマーだったな……いや、それはさておき。
+
+　片鱗その三。
+
+　基本的に休み時間に教室から姿を消すハルヒはまた放課後になるとさっさと鞄かばんを持って出て行ってしまう。最初はそのまま帰宅してるのかと思っていたらさにあらず、呆あきれることにハルヒはこの学校に存在するあらゆるクラブに仮入部していたのだった。昨日バスケ部でボールを転がしていたかと思ったら、今日は手芸部で枕まくらカバーをちくちく縫ぬい、明日はラクロス部で棒振り回しているといった具合。野球部にも入ってみたというから徹底している。運動部からは例外なく熱心に入部を薦すすめられ、そのすべてを断ってハルヒは毎日参加する部活動を気まぐれに変えたあげく、結局どこにも入部することもなかった。
+
+　何がしたいんだろうな、こいつはよ。
+
+　この件により「今年の一年におかしな女がいる」という噂うわさは瞬またたく間に全校に伝でん播ぱし、涼宮ハルヒを知らない学校関係者などいないという状態になるまでにかかった日数はおよそ一ヶ月。五月の始まる頃ころには、校長の名前を覚えていない奴やつがいても涼宮ハルヒの名を知らない奴は存在しないまでになっていた。
+
+
+
+
+
+　そんなこんなをしながら──もっとも、そんなこんなをしていたのはハルヒだけだったが──五月がやってくる。
+
+　運命なんてものを俺は琵び琶わ湖こで生きたプレシオサウルスが発見される可能性よりも信じない。だが、もし運命が人間の知らないところで人生に影えい響きようを行使しているのだとしたら、俺の運命の輪はこのあたりで回り出したんだろうと思う。きっと、どこか遥はるか高みにいる誰だれかが俺の運命係数を勝手に書き換かえやがったに違ちがいない。
+
+　ゴールデンウィークが明けた一日目。失われた曜日感覚と共に、まだ五月だってのに異様な陽気にさらされながら俺は学校へと続く果てしない坂道を汗あせ水みず垂らして歩いていた。地球はいったい何がやりたいんだろう。黄熱病にでもかかってるんじゃないか。
+
+「よ、キョン」
+
+　後ろから肩かたを叩かれた。谷口だった。
+
+　ブレザーをだらしなく肩に引っかけ、ネクタイをよれよれに結んだニヤケ面づらで、
+
+「ゴールデンウィークはどっか行ったか？」
+
+「小学の妹を連れて田舎いなかのバーさん家ちに」
+
+「しけてやんなあ」
+
+「お前はどうなんだよ」
+
+「ずっとこバイト」
+
+「似たようなもんじゃないか」
+
+「キョン、高校生にもなって妹のお守りでジジババのご機き嫌げんうかがいに行っててどうすんだ。高校生なら高校生らしいことをだな、」
+
+　ちなみにキョンというのは俺のことだ。最初に言い出したのは叔母おばの一人だったように記き憶おくしている。何年か前に久しぶりに会った時、「まあキョンくん大きくなって」と勝手に俺の名をもじって呼び、それ聞いた妹がすっかり面おも白しろがって「キョンくん」と言うようになり、家に遊びに来た友達がそれを聞きつけ、その日からめでたく俺のあだ名はキョンになった。くそ、それまで俺を「お兄ちゃん」と呼んでいてくれてたのに。妹よ。
+
+「ゴールデンウィークに従兄弟いとこ連中で集まるのが家の年中行事なんだよ」
+
+　投げやりに答えて俺は坂道を登り続ける。髪かみの中から滲しみ出す汗がひたすら不快だ。
+
+　谷口はバイトで出会った可愛かわいい女の子がどうしたとか小金が貯たまったからデート資金に不足はないとか、やたら元気に喋しやべりまくっていた。他人の見た夢の話とペットの自じ慢まん話と並んで、この世で最もどうでもいい情報の一つだろう。
+
+　谷口の計画する相手不在の仮想デートコースを三パターンほど聞き流しているうちに、ようやく俺は校門に到とう達たつした。
+
+
+
+
+
+　教室に入ると涼宮ハルヒはとっくに俺の後ろの席で涼すずしい顔を窓の外に向けていて、今日は頭に二つドアノブを付けているようなダンゴ頭で、それで俺は、ああ今日は二ヶ所だから水曜日かと認識して椅い子すに座り、そして何か魔まが差してしまったんだろう。それ以外の理由に思い当たるフシがない。気が付いたら涼宮ハルヒに話しかけていた。
+
+「曜日で髪型変えるのは宇宙人対策か？」
+
+　ハルヒはロボットのような動きで首をこちらに向けると、いつもの笑わない顔で俺を見つめた。ちと怖こわい。
+
+「いつ気付いたの」
+
+　路ろ傍ぼうの石に話しかけるような口調でハルヒは言った。
+
+　そう言われればいつだっただろう。
+
+「んー……ちょっと前」
+
+「あっそう」
+
+　ハルヒは面めん倒どうくさそうに頬ほお杖づえをついて、
+
+「あたし、思うんだけど、曜日によって感じるイメージってそれぞれ異なる気がするのよね」
+
+　初めて会話が成立した。
+
+「色で言うと月曜は黄色。火曜が赤で水曜が青で木曜が緑、金曜は金色で土曜は茶色、日曜は白よね」
+
+　それは解わかるような気もするが。
+
+「つうことは、数字にしたら月曜がゼロで日曜が六なのか？」
+
+「そう」
+
+「俺は月曜は一って感じがするけどな」
+
+「あんたの意見なんか誰も聞いてない」
+
+「……そうかい」
+
+　投げやりに呟つぶやく俺の顔のどこがどうなのか、ハルヒは気に入らなさそうなしかめ面づらでこちらを見つめ、俺が少しばかり精神に不安定なものを感じるまでの時間を経過させておいて、
+
+「あたし、あんたとどこかで会ったことがある？　ずっと前に」
+
+　と、訊きいた。
+
+「いいや」
+
+　と、俺は答え、岡部担任教師が軽快に入ってきて、会話は終わった。
+
+
+
+
+
+　きっかけ、なんてのは大たい抵ていどうってことないものなんだろうけど、まさしくこれがきっかけになったんだろうな。
+
+　だいたいハルヒは授業中以外に教室にいたためしがないから何か話そうと思うとそれは朝のホームルーム前くらいしか時間がないわけで、たまたま俺がハルヒの前の席にいただけってこともあって何気なく話しかけるには絶好のポジションにいたことは否定出来ない。
+
+　しかしハルヒがまともな返答をよこしたことは驚おどろきだ。てっきり「うるさいバカ黙だまれどうでもいいでしょ、んなこと」と言われるものだとばかり思っていたからな。思っていながら話しかけた俺もどうかしてるが。
+
+　だから、ハルヒが翌日、法則通りなら三つ編みで登校するところを、長かった麗うるわしい黒髪をばっさり切って登場したときには、けっこう俺は動どう揺ようした。
+
+　腰こしにまで届こうかと伸のばしていた髪が肩かたの辺りで切りそろえられていて、それはそれでめちゃくちゃ似合っていたんだが、それにしたって俺が指し摘てきした次の日に短くするってのも短たん絡らく的にすぎないか、おい。
+
+　そのことを尋たずねるとハルヒは、
+
+「別に」
+
+　相変わらず不機嫌そうに言うのみで格別な感想を漏もらすわけもなく、髪を切った理由を教えてくれるわけもなかった。
+
+　だろうと思ったけどさ。
+
+
+
+
+
+「全部のクラブに入ってみたってのは本当なのか」
+
+　あれ以来、ホームルーム前のわずかな時間にハルヒと話すのは日課になりつつあった。話しかけない限りハルヒは何のアクションも起こさない上、昨日のテレビドラマとか今日の天気とかいったハルヒ的「死ぬほどどうでもいい話」にはノーリアクションなので、話題には毎回気をつかう。
+
+「どこか面おも白しろそうな部があったら教えてくれよ。参考にするからさ」
+
+「ない」
+
+　ハルヒは即そく答とうした。
+
+「全然ない」
+
+　駄だ目め押ししてハルヒは蝶ちようの羽ばたきのような吐と息いきを漏らした。ため息のつもりだろうか。
+
+「高校に入れば少しはマシかと思ったけど、これじゃ義務教育時代と何も変わんないわね。入る学校間ま違ちがえたかしら」
+
+　何を基準に学校選びをしているのだろう。
+
+「運動系も文化系も本当にもうまったく普ふ通つう。これだけあれば少しは変なクラブがあってもよさそうなのに」
+
+　何をもって変だとか普通だとかを決定するんだ？
+
+「あたしが気に入るようなクラブが変、そうでないのは全然普通、決まってるでしょ」
+
+　そうかい、決まってるのかい。初めて知ったよ。
+
+「ふん」
+
+　そっぽを向き、この日の会話、終しゆう了りよう。
+
+
+
+
+
+　また別の日は、
+
+「ちょいと小耳に挟はさんだんだけどな」
+
+「どうせロクでもないことをでしょ」
+
+「付き合う男全部振ふったって本当か？」
+
+「何であんたにそんなこと言わなくちゃいけないのよ」
+
+　肩にかかる黒髪をハラリと払はらい、ハルヒは真っ黒な瞳ひとみで俺を睨にらみつけた。まったく、無表情でいないときは怒おこった顔ばっかりだな。
+
+「出どころは谷口？　高校に来てまであのアホと同じクラスなんて、ひょっとしたらストーカーかしら、あいつ」
+
+
+
+
+
+「それはない」と思う。
+
+「何を聞いたか知らないけど、まあいいわ、多分全部本当だから」
+
+「一人くらいまともに付き合おうとか思う奴やつがいなかったのか」
+
+「全然ダメ」
+
+　どうやらこいつの口くち癖ぐせは「全然」のようだ。
+
+「どいつもこいつもアホらしいほどまともな奴だったわ。日曜日に駅前に待ち合わせ、行く場所は判で押したみたいに映画館か遊園地かスポーツ観戦、ファストフードで昼ご飯食べて、うろうろしてお茶飲んで、じゃあまた明日ね、ってそれしかないの？」
+
+　それのどこが悪いのだと思ったが、口に出すのはやめておいた。ハルヒがダメだと言うからにはそれはすべからくダメなのだろうな。
+
+「あと告白がほとんど電話だったのは何なの、あれ。そういう大事なことは面と向かって言いなさいよ！」
+
+　虫でも見るような目つきを前にして重大な──少なくとも本人にとっては──打ち明けごとをする気になれなかっただろう男の気分をトレースしながら一応俺は同意しておいた。
+
+「まあ、そうかな、俺ならどっかに呼び出して言うかな」
+
+「そんなことはどうでもいいのよ！」
+
+　どっちなんだよ。
+
+「問題はね、くだらない男しかこの世に存在しないのかどうなのってことよ。ほんと中学時代はずうっとイライラしっぱなしだった」
+
+　今もだろうが。
+
+「じゃ、どんな男ならよかったんだ？　やっぱりアレか、宇宙人か？」
+
+「宇宙人、もしくはそれに準じる何かね。とにかく普通の人間でなければ男だろうが女だろうが」
+
+　どうしてそんなに人間以外の存在にこだわるのだろう。俺がそう言うと、ハルヒはあからさまにバカを見る目をして言い放った。
+
+「そっちのほうが面白いじゃないの！」
+
+　それは……そうかもしれない。
+
+　俺だってハルヒの意見に否いなやはない。転校生の美少女が実は宇宙人と地球人のハーフであったりして欲しい。今、近くの席から俺とハルヒをチラチラうかがっているアホの谷口の正体が未来から来た調査員かなにかであったりしたらとても面おも白しろいと思うし、やはりこっちを向いてなぜか微笑ほほえんでいる朝倉涼子が超ちよう能のう力りよく者だったら学園生活はもうちょっと楽しくなると思う。
+
+　だが。そんなことはまずあり得ない。宇宙人や未来人や超能力者がいるなんてことがあり得ないし、たとえいたとしてもホイホイ俺たちの前に登場することも、だいたい何の関係もない俺の前にやってきて「いやあワタクシ、その正体は宇宙人とかでして」と自己紹しよう介かいしてくれるわけねーだろ。
+
+「だからよ！」
+
+　ハルヒは椅い子すを蹴け倒たおして叫さけんだ。教室に揃そろっていた全員が振り返る。
+
+「だからあたしはこうして一いつ生しよう懸けん命めい、」
+
+「遅おくれてすまない！」
+
+　息せき切って明朗快活岡部体育教師が駆かけ込んできて、拳こぶしを握にぎりしめて立ち上がった姿勢で天てん井じようを睨にらんでいるハルヒとそのハルヒを一いつ斉せいに振り返って見ている一同を目にして、ギョッと立ちすくんだ。
+
+「あー……ホームルーム、始めるぞ」
+
+　すとんとハルヒは腰こしを下ろし、机の角を熱心に眺ながめ始める。ふう。
+
+　俺も前を向き、他の連中も前を向き、岡部教きよう諭ゆはよたよたと壇だん上じように登り、咳せき払ばらいを一つ。
+
+「遅れてすまない。あー……ホームルーム、始めるぞ」
+
+　最初から言い直し、いつもの日常が復活した。おそらくこんな日常こそがハルヒの最も忌いむべきものなんだろうな。
+
+　でも人生ってそんなもんだろ？
+
+
+
+
+
+　しかしな。ハルヒの生き様をうらやましいと思う理り屈くつでは割り切れない感情が心の片かた隅すみでひっそり躍おどっていることも無視出来ない。
+
+　俺がとうにあきらめてしまった非日常との邂かい逅こうをいまだに待ち望んでいるわけだし、何と言ってもやり方がアクティブだよな。
+
+　ただ待っていても都合よくそんなもんは現れやしない。だったらこちらから呼んじまおう。で、校庭に白線引いたり屋上にペンキ塗ぬったりフダを貼はり回ったり。
+
+　いやはや（これって死語か？）。
+
+　いつからハルヒが傍はた目めから見るとトチ狂くるっているとしか思えないことをやっていたのか知らんけど、待てど暮らせど何も現れず、業ごうを煮にやして奇き怪かいな儀ぎ式しきを行なってもナシのツブテ、そりゃいつも全世界を呪のろっているような顔にもなる……わけないか。
+
+「おい、キョン」
+
+　休み時間、谷口が難しい表情を顔に貼り付けてやって来た。そんな顔してると本当にアホみたいだぞ、谷口。
+
+「ほっとけ。んなこたぁいい。それよりお前、どんな魔ま法ほうを使ったんだ？」
+
+「魔法って何だ？」
+
+　高度に発達した科学は魔法と見分けがつかないという警句を思い出しながら俺は聞き返した。授業が終わると例によって教室から消えてしまったハルヒの席を親指で差して谷口は言った。
+
+「俺、涼宮が人とあんなに長い間喋しやべってるの初めて見るぞ。お前、何言ったんだ？」
+
+　さて、何だろう。適当なことしか訊きいていないような気がするんだが。
+
+「驚きよう天てん動どう地ちだ」
+
+　あくまで大げさに驚おどろきを表明する谷口。その後ろからひょこりと国木田が顔を出した。
+
+「昔からキョンは変な女が好きだからねぇ」
+
+　誤解を招くようなことを言うな。
+
+「キョンが変な女を好きでもいっこうに構わん。俺が理解しがたいのは、涼宮がキョンを相手にちゃんと会話を成立させていることだ。納なつ得とくがいかん」
+
+「どちらかと言うとキョンも変な人間にカテゴライズされるからじゃないかなぁ」
+
+「そりゃ、キョンなんつーあだ名の奴やつがまともであるはずはないんだがな。それにしても」
+
+　キョンキョン言うな。俺だってこんなマヌケなニックネームで呼ばれるくらいなら本名で呼ばれたほうがいくらかマシだ。せめて妹には「お兄ちゃん」と呼んでもらいたい。
+
+「あたしも聞きたいな」
+
+　いきなり女の声が降って来た。軽かろやかなソプラノ。見上げると朝倉涼子の作り物でもこうはいかない笑え顔がおが俺に向けられていた。
+
+「あたしがいくら話しかけても、なーんも答えてくれない涼宮さんがどうしたら話すようになってくれるのか、コツでもあるの？」
+
+　俺は一応考えてみた。と言うか考えるフリをして首を振ふった。考えるまでもないからな。
+
+「解わからん」
+
+　朝倉は笑い声を一つ。
+
+「ふーん。でも安心した。涼宮さん、いつまでもクラスで孤こ立りつしたままじゃ困るもんね。一人でも友達が出来たのはいいことよね」
+
+　どうして朝倉涼子がまるで委員長みたいな心配をするのかと言うと、委員長だからである。この前のロングホームルームの時間にそう決まったのだ。
+
+「友達ね……」
+
+　俺は首をかしげる。そうなのか？　それにしては俺はハルヒの渋じゆう面めんしか見てないような気がするぞ。
+
+「その調子で涼宮さんをクラスに溶とけ込めるようにしてあげてね。せっかく一いつ緒しよのクラスになったんだから、みんな仲良くしていきたいじゃない？　よろしくね」
+
+　よろしくね、と言われてもな。
+
+「これから何か伝えることがあったら、あなたから言ってもらうようにするから」
+
+　いや、だから待てよ。俺はあいつのスポークスマンでも何でもないぞ。
+
+「お願い」
+
+　両手まで合わされた。俺は「ああ」とか「うう」とか呻うめき、それを肯こう定ていの意思表示と取ったのか、朝倉は黄色いチューリップみたいな笑顔を投げかけて、また女子の輪の中へ戻もどって行った。輪を構成する女どもが残らずこちらを注目していたことが俺の気分をさらにツーランクほどダウンさせる。
+
+「キョン、俺たち友達だよな……」
+
+　谷口が胡う乱ろんな目で俺に言う。何の話だよ。国木田までが目を閉じ腕うでを組んで意味もなく頷うなずいている。
+
+　どいつもこいつもアホだらけだ。
+
+
+
+
+
+　席せき替がえは月に一度といつの間にやら決まったようで、委員長朝倉涼子がハトサブレの缶かんに四つ折りにした紙片のクジを回して来たものを引くと俺は中庭に面した窓まど際ぎわ後方二番目というなかなかのポジションを獲かく得とくした。その後ろ、ラストグリッドについたのが誰だれかと言うと、なんてことだろうね、涼宮ハルヒが虫歯をこらえるような顔で座っていた。
+
+「生徒が続けざまに失しつ踪そうしたりとか、密室になった教室で先生が殺されてたりとかしないものかしらね」
+
+「物ぶつ騒そうな話だな」
+
+「ミステリ研究会ってのがあったのよ」
+
+「へえ。どうだった？」
+
+「笑わせるわ。今まで一回も事件らしい事件に出くわさなかったって言うんだもの。部員もただのミステリ小説オタクばっかで名探たん偵ていみたいな奴もいないし」
+
+「そりゃそうだろう」
+
+「超ちよう常じよう現象研究会にはちょっと期待してたんだけど」
+
+「そうかい」
+
+「ただのオカルトマニアの集まりでしかないのよ、どう思う？」
+
+「どうも思わん」
+
+「あー、もう、つまんない！　どうしてこの学校にはもっとマシな部活動がないの？」
+
+「ないもんはしょうがないだろう」
+
+「高校にはもっとラディカルなサークルがあると思ってたのに。まるで甲こう子し園えんを目指す気まんまんで入学したのに野球部がなかったと知らされた野球バカみたいな気分だわ」
+
+　ハルヒはお百度参りを決意した呪のろい女のようなワニ目で中空を眺ながめ、北風のようなため息をついた。
+
+　気の毒だと思うところなのか、ここは？
+
+　だいたいにおいて、ハルヒがどんな部活動なら満足するのか、その定義が不明である。本人にも解っていないんじゃないのか？　漠ばく然ぜんと「何か面おも白しろいことをしてて欲しい」と思っているだけで、その「面白いこと」が何なのか、殺人事件の解決なのか、宇宙人探しなのか、妖よう魔ま退散なのか、こいつの中でも定まってない気がする。
+
+「ないもんはしょうがないだろ」
+
+　俺は意見してやった。
+
+「結局のところ、人間はそこにあるもので満足しなければならないのさ。言うなれば、それを出来ない人間が、発明やら発見やらをして文明を発達させてきたんだ。空を飛びたいと思ったから飛行機作ったし、楽に移動したいと考えたから車や列車を産み出したんだ。でもそれは一部の人間の才覚や発想によって初めて生じたものなんだ。天才が、それを可能にしたわけだ。凡ぼん人じんたる我々は、人生を凡ぼん庸ように過ごすのが一番であってだな。身分不相応な冒ぼう険けん心しんなんか出さないほうが、」
+
+「うるさい」
+
+　ハルヒは俺が気分良く演説しているところを中断させて、あらぬ方角を向いた。実に機き嫌げんが悪そうだ。まあ、それもいつものことだ。
+
+　多分、この女は何だっていいんだろう。ツマラナイ現実から遊ゆう離りした現象ならば。でもそんな現象はそうそうこの世にはない。つーか、ない。
+
+　物理法則万歳！　おかげで俺たちは平へい穏おん無事に暮らしていられる。ハルヒには悪いがな。
+
+　そう思った。
+
+　普ふ通つうだろ？
+
+
+
+
+
+　いったい何がきっかけだったんだろうな。
+
+　前述の会話がネタフリだったのかもしれない。
+
+　それは突とつ然ぜんやって来た。
+
+
+
+
+
+　うららかな日差しに眠ねむ気けを誘さそわれ、船をこぎこぎ首をカクカクさせていた俺の襟えり首くびがわしづかみにされたかと思うと恐おそるべき勢いで引っ張られ、脱だつ力りよくの極きわみにいた俺の後頭部が机の角に猛もう然ぜんと激げき突とつ、俺は目の前に刻ときの涙なみだを見た。
+
+「何しやがる！」
+
+　もっともな怒いかりをもって憤ふん然ぜんと振ふり返った俺が見たものは、俺の襟をひっつかんで突つっ立っている涼宮ハルヒの──初めて見る──赤道直下の炎えん天てん下かじみた笑え顔がおだった。もし笑顔に温度が付帯しているなら、熱帯雨林のど真ん中くらいの気温になっているだろう。
+
+「気がついた！」
+
+　唾つばを飛ばすな。
+
+「どうしてこんな簡単なことに気付かなかったのかしら！」
+
+　ハルヒは白鳥座α星くらいの輝かがやきを見せる両眼をまっすぐ俺に向けていた。仕方なく俺は尋たずねる。
+
+「何に気付いたんだ？」
+
+「ないんだったら自分で作ればいいのよ！」
+
+「何を」
+
+「部活よ！」
+
+　頭が痛いのは机の角にぶつけただけではなさそうだ。
+
+「そうか。そりゃよかったな。ところでそろそろ手を離はなしてくれ」
+
+「なに？　その反応。もうちょっとあんたも喜びなさいよ、この発見を」
+
+「その発見とやらは後でゆっくり聞いてやる。場合によってはヨロコビを分かち合ってもいい。ただ、今は落ち着け」
+
+「なんのこと？」
+
+「授業中だ」
+
+　ようやくハルヒは俺の襟首から手を離した。じんじんする頭を押さえて前に向き直った俺は、全クラスメイトの半口あけた顔と、チョーク片手に今にも泣きそうな大学出たての女教師を視界に捕とらえた。
+
+　俺は後ろに早く座れと手で合図し、次いで哀あわれな英語教師に掌てのひらを上に向けて差し出して見せた。
+
+　どうぞ、授業の続きを。
+
+　なにか呟つぶやきつつ、ともかくハルヒは着席し、女教師は板ばん書しよの続きに戻もどり……
+
+　新しいクラブを作る？
+
+　ふむ。
+
+　まさか、俺にも一枚噛かめと言うんじゃないだろうな。
+
+　痛む後頭部がよからぬ予感を告げていた。
+
+
+
+
+
+　　第二章
+
+
+
+
+
+　結果から言おう。そのまさかだった、と。
+
+　その後の休み時間、ハルヒはいつものように一人で教室から出て行くことはなかった。その代わり、俺の手を強ごう引いんに引いて歩き出した。教室を出て廊ろう下かをずんずん進み階段を一段飛ばしで登り屋上へ出るドアの前まで来て停止する。
+
+　屋上へのドアは常時施せ錠じようされていて、四階より上の階段はほとんど倉庫代わりになっている。多分美術部だろう。でかいカンバスやら壊こわれかけのイーゼルやら鼻の欠けたマルス像やらがところ狭せましと積み上げられていて、実際狭い。しかも薄うす暗ぐらい。
+
+　こんな所に連れ込んで俺をどうしようと言うんだ。
+
+「協力しなさい」
+
+　ハルヒは言った。今、ハルヒがつかんでいるのは俺のネクタイだ。頭一つ分低い位置から鋭するどい眼光が俺に迫せまっている。カツアゲされてるような気分だよ。
+
+「何を協力するって？」
+
+　実は解わかっていたが、そう訊きいてみた。
+
+「あたしの新クラブ作りよ」
+
+「なぜ俺がお前の思いつきに協力しなければならんのか、それをまず教えてくれ」
+
+「あたしは部室と部員を確保するから、あんたは学校に提出する書類を揃そろえなさい」
+
+　聞いちゃいねえ。
+
+　俺はハルヒの手を振りほどくと、
+
+「何のクラブを作るつもりなんだ？」
+
+「どうでもいいじゃないの、そんなの。とりあえずまず作るのよ」
+
+　そんな活動内容不明なクラブを作ったとして学校側が認めてくれるか大いに疑問だがな。
+
+「いい？　今日の放課後までに調べておいて。あたしもそれまでに部室を探しておくから。いいわね」
+
+　よくない、などと言えばこの場で撲ぼく殺さつされそうな気配だった。俺が何と返答すべきか考えているうちにハルヒは身を翻ひるがえして軽けい妙みような足取りでさっさかと階段を降りていき、ホコリっぽい階段の踊おどり場で途と方ほうに暮れる一人の男が残された。
+
+「……俺はイエスともノーとも言ってないんだが……」
+
+　石せつ膏こう像に問いかけるのもむなしく、俺は好こう奇き心のかたまりになっているであろうクラスメイトどもに何と挨あい拶さつして教室に入ろうかと考えながら歩き出した。
+
+
+
+
+
+「同好会」の新設に伴ともなう規定。
+
+　人数五人以上。顧こ問もんの教師、名めい称しよう、責任者、活動内容を決定し、生徒会クラブ運営委員会で承認されることが必要。活動内容は創造的かつ活力ある学校生活を送るに相応ふさわしいものに限られる。発ほつ足そく以降の活動・実績によって「研究会」への昇しよう格かくが運営委員会において動議される。なお、同好会に留とどまる限り予算は配分されない。
+
+
+
+
+
+　わざわざ調べるまでもなかった。生徒手帳の後ろのほうにそう書いてある。
+
+　人数は適当に名前だけ借りるとかして揃えることも可能だろう。顧問はなかなか難しいが、何とかだまくらかしてなってもらうという手もある。名称も当たり障さわりのないものにする。責任者は勿もち論ろんハルヒでいい。
+
+　だが、賭かけてもいいがその活動内容が「創造的かつ活力ある学校生活を送るに相応しいもの」になることはないだろう。
+
+　そう言ったんだけどな。自分の都合の悪いことには聞く耳持たないのが涼宮ハルヒの涼宮ハルヒたるゆえんである。
+
+
+
+
+
+　終業のチャイムが鳴るや否いなや俺のブレザーの袖そでを万力のようなパワーで握にぎりしめたハルヒは拉ら致ち同然に俺を教室から引きずり出してたったかと早足で歩き出した。鞄かばんを教室に置き去りにしないようにするのが精せい一いつ杯ぱいだった。
+
+「どこ行くんだよ」
+
+　俺の当然の疑問に、
+
+「部室っ」
+
+　前方をのたりのたり歩いている生徒たちを蹴け散ちらす勢いで歩を進めつつハルヒは短く答え、後は沈ちん黙もくを守り通した。せめて手は離はなせ。
+
+　渡わたり廊下を通り、一階まで降り、いったん外に出て別校舎に入り、また階段を登り、薄暗い廊下の半ばでハルヒは止まり俺も立ち止まった。
+
+　目の前にある一枚のドア。
+
+　文芸部。
+
+　そのように書かれたプレートが斜ななめに傾かしいで貼はり付けられている。
+
+「ここ」
+
+　ノックもせずにハルヒはドアを引き、遠えん慮りよも何もなく入って行った。無論俺も。
+
+　意外に広い。長テーブルとパイプ椅い子す、それにスチール製の本ほん棚だなくらいしかないせいだろうか。天てん井じようや壁かべには年代を思わせるヒビ割れが二、三本走っており建物自体の老ろう朽きゆう化かを如によ実じつに物語っている。
+
+　そしてこの部屋のオマケのように、一人の少女がパイプ椅子に腰こし掛かけて分厚いハードカバーを読んでいた。
+
+「これからこの部屋が我々の部室よ！」
+
+　両手を広げてハルヒが重々しく宣言した。その顔は神こう々ごうしいまでの笑えみに彩いろどられていて、俺はそういう表情を教室でもずっと見せていればいいのにとか思ったが言わずにおいた。
+
+「ちょい待て。どこなんだよ、ここは」
+
+「文化系部の部室棟とうよ。美術部や吹すい奏そう楽がく部なら美術室や音楽室があるでしょ。そういう特別教室を持たないクラブや同好会の部室が集まってるのがこの部室棟。通つう称しよう、旧館。この部屋は文芸部」
+
+「じゃあ、文芸部なんだろ」
+
+「でも今年の春に三年が卒業して部員ゼロ、新たに誰だれかが入部しないと休部が決定していた唯ゆい一いつのクラブなのよ。で、このコが一年生の新入部員」
+
+「てことは休部になってないじゃないか」
+
+「似たようなもんよ。一人しかいないんだから」
+
+　呆あきれた野や郎ろうだ。こいつは部室を乗っ取る気だぞ。俺は折りたたみテーブルに本を開いて読書にふける文芸部一年生らしきその女の子に視線を振ふった。
+
+　眼鏡めがねをかけた髪かみの短い少女である。
+
+　これだけハルヒが大おお騒さわぎしているのに顔を上げようともしない。たまに動くのはページを繰くる指先だけで残りの部分は微び動どうだにせず、俺たちの存在を完かん璧ぺきに無視してのけている。これはこれで変な女だった。
+
+　俺は声をひそめてハルヒに囁ささやいた。
+
+「あの娘こはどうするんだよ」
+
+「別にいいって言ってたわよ」
+
+「本当かそりゃ？」
+
+「昼休みに会ったときに。部室貸してって言ったら、どうぞって。本さえ読めればいいらしいわ。変わってると言えば変わってるわね」
+
+　お前が言うな。
+
+　俺はあらためてその変わり者の文芸部員を観察した。
+
+　白い肌はだに感情の欠落した顔、機械のように動く指。ボブカットをさらに短くしたような髪がそれなりに整った顔を覆おおっている。出来れば眼鏡を外したところも見てみたい感じだ。どこか人形めいた雰ふん囲い気きが存在感を希き薄はくなものにしていた。身も蓋ふたもない言い方をすれば、早い話がいわゆる神秘的な無表情系ってやつ。
+
+　しげしげと眺ながめる俺の視線をどう思ったのか、その少女は予備動作なしで面おもてを上げて眼鏡のツルを指で押さえた。
+
+　レンズの奥から闇やみ色の瞳ひとみが俺を見つめる。その目にも、唇くちびるにも、まったく何の感情も浮うかんでいない。無表情レベル、マックスだ。ハルヒのものとは違ちがって、最初から何の感情も持たないようなデフォルトの無表情である。
+
+「長なが門と有ゆ希き」
+
+　と彼女は言った。それが名前らしい。聞いた三秒後には忘れてしまいそうな平へい坦たんで耳に残らない声だった。
+
+　長門有希は瞬まばたきを二回するあいだぶんくらい俺を注視すると、それきり興味を失ったようにまた読書に戻もどった。
+
+「長門さんとやら」俺は言った。「こいつはこの部屋を何だか解わからん部の部室にしようとしてんだぞ、それでもいいのか？」
+
+「いい」
+
+　長門有希はページから視線を離はなさずに答える。
+
+「いや、しかし、多分ものすごく迷めい惑わくをかけると思うぞ」
+
+「別に」
+
+「そのうち追い出されるかもしれんぞ？」
+
+「どうぞ」
+
+　即そく答とうしてくるのはいいが、まるで無感動な応答だな。心の底からどうでもいいと思っている様子である。
+
+「ま、そういうことだから」
+
+　ハルヒが割り込んできた。こっちの声はやたらに弾はずんでいる。なんとなく、あまりいい予感がしなかった。
+
+「これから放課後、この部屋に集合ね。絶対来なさいよ。来ないと死し刑けいだから」
+
+　桜満開の笑みで言われて、俺は不承不承ながらうなずいた。
+
+　死刑はいやだったからな。
+
+
+
+
+
+　こうして部室を間借りすることになったのはいいが、書類のほうはまだ手つかずである。だいたい名めい称しようも活動内容も決まっていないのだ。先にそれを決めてからにしろと言ったんだが、ハルヒにはまた別の考えがあるようだ。
+
+「そんなもんはね、後からついてくるのよ！」
+
+　ハルヒは高らかにのたまった。
+
+「まずは部員よね。最低あと二人はいるわね」
+
+　ってことはなんだ、あの文芸部員も頭数に入れてしまっているのか？　長門有希を部室に付属する備品か何かと勘かん違いしてるんじゃないか？
+
+「安心して。すぐ集めるから。適材な人間の心当たりはあるの」
+
+　何をどう安心すればいいのだろう。疑問は深まるばかりである。
+
+
+
+
+
+　次の日、一いつ緒しよに帰ろうぜと言う谷口と国木田に断りを入れて俺は、しょうがない、部室へと足を運んだ。
+
+　ハルヒは「先に行ってて！」と叫さけぶや陸上部が是ぜ非ひ我が部にと勧かん誘ゆうしたのも解るスタートダッシュで教室を飛び出した。足首にブースターでも付いているのかと思いたくなる勢いだ。おそらく新しい部員を確保しに行ったのだろう。とうとう宇宙人の知り合いでも出来たんだろうか。
+
+　通学鞄かばんを肩かたに引っかけて俺は気乗りのしない足取りで文芸部に向かった。
+
+
+
+
+
+　部室にはすでに長門有希がいて、昨日とまったく同じ姿勢で読書をしておりデジャブを感じさせた。俺が入ってもピクリともしないのも昨日と同じ。よく知らないのだが、文芸部ってのは本を読むクラブなのか？
+
+　沈ちん黙もく。
+
+「……何を読んでんだ？」
+
+　二人して黙だまりこくっているのに耐たえかねて俺はそう訊きいてみた。長門有希は返事の代わりにハードカバーをひょいと持ち上げて背表紙を俺に見せる。睡すい眠みん薬やくみたいな名前のカタカナがゴシック体で躍おどっていた。ＳＦか何かの小説らしい。
+
+「面おも白しろい？」
+
+　長門有希は無気力な仕草で眼鏡めがねのブリッジに指をやって、無気力な声を発した。
+
+「ユニーク」
+
+　どうも訊かれたからとりあえず答えているみたいな感じである。
+
+「どういうとこが？」
+
+「ぜんぶ」
+
+「本が好きなんだな」
+
+「わりと」
+
+「そうか……」
+
+「……」
+
+　沈黙。
+
+　帰っていいかな、俺。
+
+　テーブルに鞄を置いて余っていたパイプ椅い子すに腰こしを下ろそうとしたとき、蹴け飛とばされたようにドアが開いた。
+
+「やあごめんごめん！　遅おくれちゃった！　捕つかまえるのに手間取っちゃって！」
+
+　片手を頭の上でかざしてハルヒが登場した。後ろに回されたもう一方の手が別の人間の腕うでをつかんでいて、どう見ても無理矢理連れてこられたと思おぼしきその人物共々、ハルヒはズカズカ部屋に入ってなぜかドアに錠じようを施ほどこした。ガチャリ、というその音に、不安げに震ふるえた小こ柄がらな身体からだの持ち主は、またしても少女だった。
+
+　しかもまたすんげー美少女だった。
+
+　これのどこが「適材な人間」なんだろうか。
+
+「なんなんですかー？」
+
+　その美少女も言った。気の毒なことに半泣き状態だ。
+
+「ここどこですか、何であたし連れてこられたんですか、何で、かか鍵かぎを閉めるんですか？　いったい何を、」
+
+「黙りなさい」
+
+　ハルヒの押し殺した声に少女はビクッとして固まった。
+
+「紹しよう介かいするわ。朝あさ比ひ奈なみくるちゃんよ」
+
+　それだけ言ったきり、ハルヒは黙り込んだ。もう紹介終わりかよ。
+
+　名状しがたき気き詰づまりな沈黙が部屋を支配した。ハルヒはすでに自分の役割を果たしたみたいな顔で立ってるし、長門有希は何一つ反応することなく読書を続けてるし、朝比奈みくるとかいうらしい謎なぞの美少女は今にも泣きそうな顔でおどおどしてるし、誰だれか何か言えよと思いながら俺はやむを得ず口を開いた。
+
+「どこから拉ら致ちして来たんだ？」
+
+
+
+
+
+「拉致じゃなくて任意同行よ」
+
+　似たようなもんだ。
+
+「二年の教室でぼんやりしているところを捕まえたの。あたし、休み時間には校舎をすみずみまで歩くようにしてるから、何回か見かけてて覚えていたわけ」
+
+　休み時間に絶対教室にいないと思ったらそんなことをしていたのか。いや、そんなことより、
+
+「じゃ、この人は上級生じゃないか！」
+
+「それがどうかしたの？」
+
+　不思議そうな顔をしやがる。本当に何とも思っていないらしい。
+
+「まあいい……。それはそれとして、ええと、朝比奈さんか。なんでまたこの人なんだ？」
+
+「まあ見てごらんなさいよ」
+
+　ハルヒは指を朝比奈みくるさんの鼻先に突つきつけ彼女の小さい肩をすくませて、
+
+「めちゃめちゃ可愛かわいいでしょう」
+
+　アブナイ誘ゆう拐かい犯のようなことを言い出した。と思ったら、
+
+「あたしね、萌もえってけっこう重要なことだと思うのよね」
+
+「……すまん、何だって？」
+
+「萌えよ萌え、いわゆる一つの萌え要素。基本的にね、何かおかしな事件が起こるような物語にはこういう萌えでロリっぽいキャラが一人はいるものなのよ！」
+
+　思わず俺は朝比奈みくるさんを見た。小柄である。ついでに童顔である。なるほど、下手をすれば小学生と間ま違ちがってしまいそうでもあった。微び妙みようにウェーブした栗くり色いろの髪かみが柔やわらかく襟えり元もとを隠かくし、子犬のようにこちらを見上げる潤うるんだ瞳ひとみが守ってください光線を発しつつ半開きの唇くちびるから覗のぞく白磁の歯が小ぶりの顔に絶ぜつ妙みようなハーモニーを醸かもし出し、光る玉の付いたステッキでも持たせたらたちどころに魔ま女じよっ娘こにでも変身しそうな、って俺は何を言ってるんだろうね？
+
+「それだけじゃないのよ！」
+
+　ハルヒは自じ慢まんげに微笑ほほえみながら朝比奈みくるさんなる上級生の背後に回り、後ろからいきなり抱だきついた。
+
+「わひゃああ！」
+
+　叫さけぶ朝比奈さん。お構いなしにハルヒはセーラー服の上から獲え物ものの胸をわしづかみ。
+
+「どひぇええ！」
+
+「ちっこいくせに、ほら、あたしより胸でかいのよ。ロリ顔で巨きよ乳にゆう、これも萌えの重要要素の一つなのよ！」
+
+　知らん。
+
+「あー、本当におっきいなー」
+
+　終しまいにハルヒはセーラー服の下から手を突っ込んでじかに揉もみ始めた。おーい。
+
+「なんか腹立ってきたわ。こんな可愛らしい顔して、あたしより大きいなんて！」
+
+「たたたす助けてえ！」
+
+　顔を真っ赤にして手足をバタつかせる朝比奈さんだが、いかんせん体格の差はいかんともしがたく、調子に乗ったハルヒが彼女のスカートを捲まくり上げかけたあたりで俺は朝比奈さんの背中にへばりついている痴ち漢かん女を引きはがした。
+
+「アホかお前は」
+
+「でも、めちゃデカイのよ。マジよ。あんたも触さわってみる？」
+
+　朝比奈さんは小さく、ひいっ、と悲鳴を漏もらした。
+
+「遠えん慮りよしとく」
+
+　そう言うしかあるまい。
+
+　驚おどろくべきことに、この間、長門有希は一度も顔を上げることなく読書にふけり続けていた。こいつもどうかしている。
+
+　それからふと気が付いて、
+
+「すると何か、お前はこの……朝比奈さんが可愛くて小こ柄がらで胸が大きかったからという理由なだけでここに連れてきたのか？」
+
+「そうよ」
+
+　真性のアホだ、こいつ。
+
+「こういうマスコット的キャラも必要だと思って」
+
+　思うな、そんなこと。
+
+　朝比奈さんは乱れた制服をパタパタ叩たたいて直し、上うわ目め遣づかいに俺をじっと見た。そんな目で見られても困る。
+
+「みくるちゃん、あなた他ほかに何かクラブ活動してる？」
+
+「あの……書道部に……」
+
+「じゃあ、そこ辞やめて。我が部の活動の邪じや魔まだから」
+
+　どこまでも自分本位なハルヒだった。
+
+　朝比奈さんは、飲む毒の種類は青酸カリがいいかストリキニーネがいいかと訊きかれた殺人事件の被ひ害がい者しやのような顔でうつむき、救いを求めるようにもう一度俺を見上げ、次に長門有希の存在に初めて気付いて驚きよう愕がくに目を見開き、しばらく視線を彷徨さまよわせてからトンボのため息ような声で「そっかー……」と呟つぶやいて、
+
+「解わかりました」と言った。
+
+　何が解ったんだろう。
+
+「書道部は辞めてこっちに入部します……」
+
+　可哀かわい想そうなくらいに悲ひ愴そうな声である。
+
+「でも文芸部って何するところなのかよく知らなくて、」
+
+「我が部は文芸部じゃないわよ」
+
+　当たり前のように言うハルヒ。
+
+　目を丸くする朝比奈さんに、俺はハルヒに代わって言ってあげた。
+
+「ここの部室は一時的に借りてるだけです。あなたが入らされようとしてるのは、そこの涼宮がこれから作る活動内容未定で名めい称しよう不明の同好会ですよ」
+
+「……えっ……」
+
+「ちなみにあっちで座って本読んでるのが本当の文芸部員です」
+
+「はあ……」
+
+　愛くるしい唇をポカンと開ける朝比奈さんはそれきり言葉を失った。無理もあるまい。
+
+「だいじょうぶ！」
+
+　無責任なまでの明るい笑え顔がおでハルヒは朝比奈さんの小さい肩かたをどやしつけた。
+
+「名前なら、たった今、考えたから」
+
+「……言ってみろ」
+
+　期待値ゼロの俺の声が部室に響ひびく。出来ればあまり聞きたくない。そんな俺の思いなど頓とん着ちやくするはずもない涼宮ハルヒは声高らかに命名の雄お叫たけびを上げたのだった。
+
+
+
+
+
+　お知らせしよう。何の紆う余よ曲きよく折せつもなく単なるハルヒの思いつきにより、新しく発ほつ足そくするクラブの名は今ここに決定した。
+
+　ＳＯＳ団。
+
+　世界を大いに盛り上げるための涼宮ハルヒの団。
+
+　略してＳＯＳ団である。
+
+　そこ、笑っていいぞ。
+
+　俺は笑う前に呆あきれたけどな。
+
+　なぜに団かと言うと、本来なら「世界を大いに盛り上げるための涼宮ハルヒの同好会」とすべきなんだろうが、なにしろまだ同好会の体ていすらたっていない上に、何をする集団なのかも解らないのである。「それだったら、団でいいじゃない」という意味不明なハルヒのヒトコトによりめでたくそのように決まった。
+
+　朝比奈さんはあきらめきったように口を閉とざし、長門有希は部外者であり、俺は何を言う気にもなれなかったため、賛成一、棄き権けん三で「ＳＯＳ団」はめでたく発足の運びとなった。
+
+
+
+
+
+　好きにしろよ、もう。
+
+
+
+
+
+　毎日放課後ここに集合ね、とハルヒが全員に言い渡わたして、この日は解散となった。肩を落としてトボトボ廊ろう下かを歩いている朝比奈さんの後ろ姿があまりに哀あわれを催もよおしたので、
+
+「朝比奈さん」
+
+「何ですか」
+
+　年上にまったく見えない朝比奈さんは純真そのものの無む垢くな顔を傾かたむけた。
+
+「別に入んなくていいですよ、あんな変な団に。あいつのことなら気にしないで下さい。俺が後から言っときますから」
+
+「いえ」
+
+　立ち止まって、彼女はわずかに目を細めた。笑みの形の唇くちびるから綿毛のような声が、
+
+「いいんです。入ります、あたし」
+
+「でも多分、ろくなことになりませんよ」
+
+「大丈夫です。あなたもいるんでしょう？」
+
+　そういや俺は何でいるんだろうな。
+
+「おそらく、これがこの時間平面上の必然なのでしょうね……」
+
+　つぶらと表現するしかない彼女の目が遠くのほうを見た。
+
+「へ？」
+
+「それに長門さんがいるのも気になるし……」
+
+「気になる？」
+
+「え、や、何でもないです」
+
+　朝比奈さんは慌あわてた感じで首をぶんぶん振ふった。ふわふわの髪かみの毛がふわふわと揺ゆれる。
+
+　そして朝比奈さんは照れ笑いをしながら深々と腰こしを折った。
+
+「ふつつか者ですが、よろしくお願いします」
+
+「まあ、そう言われるんでしたら……」
+
+「それからあたしのことでしたら、どうぞ、みくるちゃんとお呼び下さい」
+
+　にっこりと微笑ほほえむ。
+
+　うーん、眩暈めまいを覚えるほど可愛かわいい。
+
+
+
+
+
+　ある日のハルヒと俺の会話。
+
+「あと必要なのは何だと思う？」
+
+「さあな」
+
+「やっぱり謎なぞの転校生は押さえておきたいと思うわよね」
+
+「謎の定義を教えて欲しいもんだ」
+
+「新年度が始まって二ヶ月も経たってないのに、そんな時期に転校してくる奴やつは充じゆう分ぶん謎の資格があると思うでしょ、あんたも」
+
+「親父おやじが急な転勤になったとかじゃねえのか」
+
+「いいえ、不自然だわ。そんなの」
+
+「お前にとって自然とはなんなのか、俺はそれが知りたい」
+
+「来ないもんかしらね、謎の転校生」
+
+「ようするに俺の意見なんかどうでもいいんだな、お前は」
+
+
+
+
+
+　どうもハルヒと俺が何かを企くわだてているという噂うわさが流れているらしい。
+
+「お前さあ、涼宮と何やってんの？」
+
+　こんなこと訊きいてくるのは谷口に決まっている。
+
+「まさか付き合いだしたんじゃねえよな？」
+
+　断じて違ちがう。俺が一体全体何をやっているのか、それはこの俺自身が一番知りたい。
+
+「ほどほどにしとけよ。中学じゃないんだ。グラウンドを使い物に出来なくなるようなことしたら悪けりゃ停学くらいにはなるぜ」
+
+　ハルヒが一人でやるんであれば俺はそこまで面めん倒どう見きれないがな。少なくとも、長門有希や朝比奈みくるさんに害が及およばないように注意はしておこう。こんな配はい慮りよの出来る自分がちょっと誇ほこらしい。
+
+　暴走特急と化したハルヒを止める自信はあまりないけども。
+
+
+
+
+
+「コンピュータも欲しいところね」
+
+　ＳＯＳ団の設立を宣言して以来、長テーブルとパイプ椅い子すそれに本ほん棚だなくらいしかなかった文芸部の部室にはやたらと物が増え始めた。
+
+　どこから持ってきたのか、移動式のハンガーラックが部屋の片かた隅すみに設置され、給湯ポットと急きゆう須す、人数分の湯飲みも常備、今どきＭＤも付いていないＣＤラジカセに一層しかない冷蔵庫、カセットコンロ、土ど鍋なべ、ヤカン、数々の食器は何だろうか、ここで暮らすつもりなのだろうか。
+
+　今、ハルヒはどっかの教室からガメてきた勉強机の上であぐらをかいて腕うでを組んでいた。その机にはあろうことか「団長」とマジックで書かれた三さん角かく錐すいまで立っている。
+
+「この情報化時代にパソコンの一つもないなんて、許し難がたいことだわ」
+
+　誰だれを許さないつもりなのか。
+
+　一応メンバーは揃そろっていた。相も変わらず長門有希は定位置で土星のマイナー衛星が落ちたとかどうしたとかいうタイトルのハードカバーを読みふけり、来なくてもいいのに生き真ま面じ目めにもちゃんとやって来た朝比奈みくるさんは所在なげにパイプ椅子に腰掛かけている。
+
+　ハルヒは机から飛び降りると、俺に向かって実にいやぁな感じのする笑いを投げかけた。
+
+「と言うわけで、調達に行くわよ」
+
+　狩しゆ猟りよう区くへ鹿しか撃うちに行くハンターの目でハルヒは言った。
+
+「調達って、パソコンを？　どこでだよ。電気屋でも襲おそうつもりか」
+
+「まさか。もっと手近なところよ」
+
+　ついてきなさい、と命令された俺と朝比奈さんを引き連れてハルヒが向かった先は、二軒けん隣となりのコンピュータ研究部だった。
+
+　なるほど。
+
+「これ持ってて」
+
+　そう言って俺にインスタントカメラを渡わたす。
+
+「いいこと？　作戦を言うから、その通りにしてよ。タイミングを逃のがさないように」
+
+　俺に身を屈かがめさせてハルヒは耳元でその「作戦」とやらをごにょごにょと呟つぶやいた。
+
+「ああん？　そんな無茶苦茶な」
+
+「いいのよ」
+
+　お前はいいかもしれんが。俺は不思議そうにこっちを見ている朝比奈さんを一いち瞥べつし、アイコンタクトを図はかった。
+
+　とっとと帰ったほうがいいですよ。
+
+　目をパチパチさせている俺を朝比奈さんは怪け訝げんな顔で見上げ、いかなる理り屈くつか、頬ほおを赤らめた。だめだ、通じてない。
+
+　そんなことをしているうちにハルヒは平気な顔でコンピュータ研究部のドアをノックもなしに開いた。
+
+「こんちわー！　パソコン一式、いただきに来ましたー！」
+
+　間取りは同じだが、こちらの部室はなかなかに手て狭ぜまだった。等とう間かん隔かくで並んだテーブルには何台ものディスプレイとタワー型の本体が載のっていて、冷れい却きやくファンの回る低い音が室内の空気を振しん動どうさせている。
+
+　席についてキーボードをカチャカチャと叩たたいていた四人の男子生徒、何事かと身を乗り出して入り口に立ちふさがるハルヒを凝ぎよう視ししていた。
+
+「部長は誰？」
+
+　笑いつつも横おう柄へいにハルヒが言い、一人が立ち上がって答えた。
+
+「僕だけど、何の用？」
+
+「用ならさっき言ったでしょ。一台でいいから、パソコンちょうだい」
+
+　コンピュータ研究部部長、名も知れぬ上級生は「何言ってんだ、こいつ」という表情で首を振ふった。
+
+「ダメダメ。ここのパソコンはね、予算だけじゃ足りないから部員の私費を積み立ててようやく買ったものばかりなんだ。くれと言われてあげるほどウチは機材に恵めぐまれてない」
+
+「いいじゃないの一個くらい。こんなにあるんだし」
+
+「あのねえ……ところでキミたち誰？」
+
+「ＳＯＳ団団長、涼宮ハルヒ。この二人はあたしの部下その一と二」
+
+　言うにことかいて部下はないだろう。
+
+「ＳＯＳ団の名において命じます。四の五の言わずに一台よこせ」
+
+「キミたちが何者かは解わからないけど、ダメなもんはダメ。自分たちで買えばいいだろ」
+
+「そこまで言うのならこっちにも考えがあるわよ」
+
+　ハルヒの瞳ひとみが不敵な光を放つ。よくない兆候である。
+
+　ぼんやり立っていた朝比奈さんの背を押してハルヒは部長へと歩み寄り、いきなりそいつの手首を握にぎりしめたかと思うと、電光石火の早業で部長の掌てのひらを朝比奈さんの胸に押しつけた。
+
+「ふぎゃあ！」
+
+「うわっ！」
+
+　パシャリ。
+
+　二種類の悲鳴をＢＧＭに聞きながら俺はインスタントカメラのシャッターを切った。
+
+　逃にげようとする朝比奈さんを押さえつけ、ハルヒは右手につかんだ部長氏の手でぐりぐりと小こ柄がらな彼女の胸をまさぐった。
+
+「キョン、もう一枚撮とって」
+
+　不本意ながら俺はシャッターボタンを押すのだった。すまない、朝比奈さん。と、名も知らぬ部長。朝比奈さんのスカートの中に突つっ込まれる寸前に部長はやっと手を振りほどいて跳とびすさった。
+
+「何をするんだぁ！」
+
+　紅潮したその顔面の前で、ハルヒは優ゆう雅がに指を振った。
+
+「ちちち。あんたのセクハラ現場はバッチリ撮らせてもらったわ。この写真を学校中にばらまかれたくなかったら、とっととパソコンをよこしなさい」
+
+「そんなバカな！」
+
+　口こう角かく泡あわを飛ばして抗こう議ぎする部長。その気持ちはよく解る。
+
+「キミが無理矢理やらせたんじゃないか！　僕は無実だ！」
+
+「いったい何人があんたの言葉に耳を貸すかしらねえ」
+
+　見ると朝比奈さんは床ゆかにへたり込んでいた。驚おどろきを通り越こしてもはや虚きよ脱だつの境地である。
+
+　なおも部長は抗弁する。
+
+「ここにいる部員たちが証人になってくれる！　それは僕の意思じゃない！」
+
+　唖あ然ぜんと大口を開けて石化していた三人のコンピュータ研部員たちが、我に返ったようにうなずいた。
+
+「そうだぁ」
+
+「部長は悪くないぞぉ」
+
+　しかしそんな気の抜ぬけたシュプレヒコールが通用するハルヒではなかった。
+
+「部員全員がグルになってこのコを輪りん姦かんしたんだって言いふらしてやるっ！」
+
+　俺と朝比奈さんを含ふくむ全員の顔が青ざめた。いくらなんでもそれはないだろう。
+
+「すすす涼宮さんっ……！」
+
+　足にすがりつく朝比奈さんの手を軽く蹴け飛とばして、ハルヒは傲ごう然ぜんと胸を反そらした。
+
+「どうなの、よこすの、よこさないの！」
+
+　赤から青へ目まぐるしく変色していた部長の顔はとうとう土気色になった。
+
+　ついに彼は陥かん落らくした。
+
+「好きなものを持って行ってくれ……」
+
+　倒たおれ込むように椅い子すに背を投げ出した部長に他の部員たちが駆かけ寄った。
+
+「部長！」
+
+「しっかりしてください！」
+
+「気を確かに！」
+
+　糸の切れたマリオネットの動きで部長は首をうなだれた。ハルヒの片棒をかついでいる俺ではあるのだが、同情を禁じ得ない。
+
+「最新機種はどれ？」
+
+　どこまでも冷れい徹てつな女である。
+
+「なんでそんなことを教えなくちゃいけないんだよ」
+
+　怒おこる部員の言葉もなんのその、ハルヒは無言で俺が持つカメラを指さした。
+
+「くそ！　それだよ！」
+
+　そいつが指したタワー型のメーカー名と型番を覗のぞき込みつつハルヒはスカートのポケットから紙切れを取り出した。
+
+「昨日、パソコンショップに寄って店員にここ最近出た機種を一覧にしてもらったのよねえ。これは載のってないみたいだけど？」
+
+　あまりの周しゆう到とうさに慄りつ然ぜんとするね。
+
+　ハルヒはテーブルをぬって確認して回り、その中の一台を指名した。
+
+「これちょうだい」
+
+「待ってくれ！　それは先月購こう入にゆうしたばかりの……！」
+
+「カメラカメラ」
+
+「……持ってけ！　泥どろ棒ぼう！」
+
+　まさしく泥棒だ。返す言葉もない。
+
+　ハルヒの要求はとどまるところを知らない。各ケーブルを引っこ抜かせたハルヒはディスプレイから何からいっさいがっさいを文芸部室に運ばせたあげく配線し直すように求め、さらにインターネットを使用出来るようにＬＡＮケーブルを二つの部屋の間に引かせ、ついで学校のドメインからネットに接続出来るようにすることを申しつけ、そのすべてをコンピュータ研部員にやらせた。盗ぬすつ人と猛たけ々だけしいとはこのことだろう。
+
+「朝比奈さん」
+
+　すっかり手持ちぶさたになってしまった俺は両手で顔を覆おおってうずくまる小さな身体からだに、
+
+「とりあえず帰りましょう」
+
+「ぅぅぅぅ……」
+
+　しくしく泣いている朝比奈さんを介かい添ぞえして立たせた。自分の胸を握にぎらせたらよかったのにな、ハルヒも。男の目の前でも平気で着き替がえをするあいつなら、んなこと屁へとも思わないだろうに。泣きやまない朝比奈さんを宥なだめながら、パソコンを使って何をするつもりなのかと俺は考えた。
+
+　まあ、ほどなく明らかになったのだが。
+
+
+
+
+
+　ＳＯＳ団のウェブサイト立ち上げ。
+
+　ハルヒはそれがしたかったようだ。で、誰だれが作るんだ？　そのウェブサイトとやらを。
+
+「あんた」
+
+　と、ハルヒは言った。
+
+「どうせヒマでしょ。やりなさいよ。あたしは残りの部員を探さなきゃいけないし」
+
+　パソコンは「団長」と銘めい打たれた三さん角かく錐すい付きの机に置かれていた。ハルヒはマウスを操ってネットサーフィンしながら、
+
+「一両日中によろしくね。まずサイトが出来ないことには活動しようがないし」
+
+　我関せずとばかりに本を読む長門有希の横で朝比奈さんはテーブルに突つっ伏ぷして肩かたを震ふるわせていた。ハルヒの言葉を聞いているのは、どうやら俺だけであり、ハルヒの託たく宣せんを聞いた以上は俺がそれをしないといけないようなのである。少なくともハルヒがそう思っているのは間ま違ちがいない。
+
+「そんなこと言われてもなあ」
+
+　言いながらも俺はけっこう乗り気だった。いやいや、ハルヒの命令口調に慣れてきたからじゃないぜ。サイト作りさ。やったことないけど、なんか面おも白しろそうじゃないか。
+
+　つまりそういうわけで、次の日から俺のサイト作成奮戦記が始まった。
+
+
+
+
+
+　とは言え、奮戦することもそうそうなかった。さすがコンピュータ研究部、あらかたのアプリケーションはすでにハードディスク内に収まっており、サイトの作成もテンプレートに従ってちょこっと切ったり貼はったりすればよかったからだ。
+
+　問題はそこに何を書くかである。
+
+　なんせ俺はＳＯＳ団が何を活動理念とした団体なのか未いまだに知らないのだ。知らない活動理念について書けるはずもなく、トップページに「ＳＯＳ団のサイトにようこそ！」と書いた画像データを貼り付けた段階で俺の指はハタと止まった。いいから作れ早く作れとハルヒが呪じゆ文もんのように耳元で言い続けるのがやかましいので、こうして昼休みに弁当食いながらマウスを握りしめている俺だった。
+
+「長門、何か書きたいことあるか？」
+
+　昼休みにまで部室に来て本を読んでいる長門有希に訊きいてみた。
+
+「何も」
+
+　顔も上げやしない。どうでもいいがこいつはちゃんと授業に出てるんだろうな。
+
+　長門有希の眼鏡めがね顔から十七インチモニタに目を戻もどし、俺は再び考え込んだ。
+
+　もう一つ問題がある。正式に認可を受けていない同好会以下の怪あやしげな団のサイトを、学校のアドレスで作ってしまっていいものなのだろうか。
+
+　バレなきゃいいのよ、とはハルヒの弁。バレたらバレたで放ほっときゃいいのよ、こんなもんはね、やったもん勝ちなのよ！
+
+　この楽観的で、ある意味前向きな性格はちょっとだけだがうらやましい。
+
+　適当に拾ってきたフリーＣＧＩのアクセスカウンタを取り付け、メールアドレスを記き載さいして、──掲けい示じ板ばんは時じ期き尚しよう早そうだろう──タイトルページのみでコンテンツ皆かい無むという手て抜ぬき以前のホームページをアップロードした。
+
+　こんなんでいいだろ。
+
+　ネット上でちゃんと表示されていることを確認して俺はアプリを次々消してパソコンを終しゆう了りようさせ、大きく伸のびをしようとして、長門有希が背後にいることに気付いて飛び上がった。
+
+　気配ってもんがないのか。いつの間にか俺の後ろを取っていた長門の能面のような白い顔。わざとやっても出来そうにない見事な無表情で長門は俺を視力検査表でも見るような目で見つめていた。
+
+「これ」
+
+　分厚い本を差し出した。反射的に受け取る。ずしりと重い。表紙は何日か前に長門が読んでいた海外ＳＦのものだった。
+
+「貸すから」
+
+　長門は短く言い残すと俺に反はん駁ばくするヒマを与あたえることなく部屋を出て行った。こんな厚い本を貸されても。一人取り残されていた俺の耳に、昼休みがもうすぐ終わることを告げる予よ鈴れいが届いた。どうも俺の周りには俺の意見を聞こうとする奴やつが少ないみたいだな。
+
+　ハードカバー本を手みやげに教室へ戻った俺の背中をシャーペンの先がつついた。
+
+「どう、サイト出来た？」
+
+　ハルヒが難しい顔をして机にかじりついていた。破ったノートに何やらせっせとペン先を走らせている。俺は出来るだけクラスの注目を浴びないようなさりげなさを装よそおって、
+
+「出来たには出来たが、見に来た奴が怒おこりそうな何もないサイトだぞ」
+
+「今はまだそれでもいいのよ。メールアドレスさえあればオッケー」
+
+　じゃあ携けい帯たいメールでも充じゆう分ぶんじゃないか。
+
+「それはダメ。メールが殺さつ到とうすると困る」
+
+　何をどうすれば登録したばかりのアドレスにメールが殺到するんだ？
+
+「内ない緒しよ」
+
+　そしてまたいやぁな感じの笑い。不気味だ。
+
+「放課後になったら解わかるわよ。それまで極ごく秘ひ」
+
+　永遠に極秘にしておいて欲しい。
+
+
+
+
+
+　次の六時間目、ハルヒの姿は教室になかった。おとなしく帰っていてくれればいいのだが、まずあり得まい。悪事の前段階。
+
+
+
+
+
+　その放課後である。自分のやってることに疑念を覚えつつ、つい部室へと足を向けてしまうのは何故なぜだろうと形けい而じ上じよう学的な考察を働かせながら俺は文芸部室へとやって来た。
+
+「ちわー」
+
+　やっぱりいる長門有希と、両手を揃そろえて椅い子すに座っている朝比奈みくるさん。
+
+　人のことは言えないが、よっぽどヒマなのか、この二人は。
+
+　俺が入っていくと朝比奈さんはあからさまにホッとした表情になって会え釈しやくした。長門と二人で密室にいたら、そりゃ疲つかれるわな。
+
+　つーか、あなた、あんな目にあいながらよく今日も来ましたね。
+
+「涼宮さんは？」
+
+「さあ、六限にはすでにいませんでしたけどね。またどこかで機材を強ごう奪だつしてるんじゃないですか」
+
+「あたし、また昨日みたいなことしないといけないんでしょうか……」
+
+　額に縦線を浮うかべてうつむく朝比奈さんに、俺は精せい一いつ杯ぱいの愛あい想その良さで、
+
+「大だい丈じよう夫ぶです。今度あいつが無理矢理朝比奈さんにあんなことしようとしたら、俺が全力で阻そ止しします。自分の身体からだでやりゃいいんですよ。涼宮なら楽勝です」
+
+「ありがとう」
+
+　ペコリと頭を下げるはにかんだ微笑ほほえみのあまりの可愛かわいさに思わず朝比奈さんを抱だきしめたくなった。しないけどね。
+
+「お願いします」
+
+「お願いされましょう」
+
+　太たい鼓こ判ばんを押したのはいいが、俺のそんな約束が机き上じようの空論、砂上の楼ろう閣かく、太陽内部の水素原子のように崩ほう壊かいするまでに五分とかからなかった。ダメ人間だ、俺。
+
+「やっほー」
+
+　とか言いながらハルヒ登場。両手に提さげているでかい紙かみ袋ぶくろが俺の目を引いた。
+
+「ちょっと手間取っちゃって、ごめんごめん」
+
+　上じよう機き嫌げん時のハルヒは必ず他人の迷めい惑わくになりそうなことを考えていると見て間ま違ちがいない。
+
+　ハルヒは紙袋を床ゆかに置くと後ろ手でドアの鍵かぎをかけた。その音に反射的にビクンとなる朝比奈さん。
+
+「今度は何をする気なんだ、涼宮。言っとくが押し込み強ごう盗とうのマネだけは勘かん弁べんな。あと脅きよう迫はくも」
+
+「何言ってんの？　そんなことするわけないじゃないの」
+
+　では机に載のっているパソコンは何だ。
+
+「平へい和わ裏りに寄付してくれたものよ。そんなことより、ほら、これご覧なさい」
+
+　紙袋の一つからハルヒの取り出したのは、何やら手書き文字が印刷されたＡ４の藁わら半ばん紙しである。
+
+「わがＳＯＳ団の名を知らしめようと思って作ったチラシ。印刷室に忍しのび込んで二百枚ほど刷ってきたわ」
+
+　ハルヒは俺たちにチラシを配った。授業をサボってそんなことをしてたのか。よく見つからなかったもんだ。別段見たくもなかったが俺はとりあえず受け取ったそれに目を通す。
+
+
+
+
+
+『ＳＯＳ団結団に伴ともなう所信表明。
+
+　わがＳＯＳ団はこの世の不思議を広く募ぼ集しゆうしています。過去に不思議な経験をしたことのある人、今現在とても不思議な現象や謎なぞに直面している人、遠からず不思議な体験をする予定の人、そうゆう人がいたら我々に相談するとよいです。たちどころに解決に導きます。確実です。ただし普ふ通つうの不思議さではダメです。我々が驚おどろくまでに不思議なコトじゃないといけません。注意して下さい。メールアドレスは……』
+
+
+
+
+
+　この団の存在意義がだんだん解わかってきた。どうあってもハルヒはＳＦだかファンタジーだかホラーだかの物語世界に浸ひたってみたいらしい。
+
+「では配りに行きましょう」
+
+「どこでだよ」
+
+「校門。今ならまだ下校していない生徒もいっぱいいるし」
+
+　はいはいそうですか、と紙袋を持とうとした俺を、しかしハルヒは制した。
+
+「あんたは来なくていいわよ。来るのはみくるちゃん」
+
+「はい？」
+
+　両手で藁半紙を握にぎりしめて駄だ文ぶんを読んでいた朝比奈さんが小首を傾かしげる。ハルヒはもう一つの紙袋をごそごそかき回し、そして勢いよくブツを取り出した。
+
+「じゃあああん！」
+
+　猫ねこ型ロボットのように得意満面にハルヒが手にしているのは最初黒い布切れに見えた。が、オーノー！　ハルヒが四次元ポケットよろしく次々出してきたアイテムが揃うにつれ、俺はなぜハルヒが朝比奈さんを指名したのか悟さとり、そして朝比奈さんのために祈いのった。あなたの魂たましいに安らぎあれ。
+
+　黒いワンウェイストレッチ、網あみタイツ、付け耳、蝶ちようネクタイに、白いカラー、カフス及およびシッポ。
+
+　それはどこからどう見てもバニーガールの衣装なのだった。
+
+「あのあのあの、それはいったい……」
+
+　怯おびえる朝比奈さん。
+
+「知ってるでしょ？　バニーガール」
+
+　こともなげに言うハルヒ。
+
+「まままさかあたしがそれ着るんじゃ……」
+
+「もちろん、みくるちゃんのぶんもあるわよ」
+
+「そ、そんなの着れませんっ！」
+
+「だいじょぶ。サイズは合ってるはずだから」
+
+「そうじゃなくて、あの、ひょっとしてそれ着て校門でビラ配りを、」
+
+「決まってるじゃない」
+
+「い、いやですっ！」
+
+「うるさい」
+
+　いかん、目が据すわっている。群れからはぐれたガゼルに襲おそいかかるライオンのメスのような俊しゆん敏びんな動きで朝比奈さんに飛びついたハルヒは、ジタバタする彼女のセーラー服を手際よく脱ぬがせ始めた。
+
+「いやあああぁぁぁ！」
+
+「おとなしくしなさい！」
+
+　無茶なことを言いながらハルヒは朝比奈さんを取り押さえ、あっさりセーラーを脱がせてしまうとスカートのホックに指をかけ、これは止めたほうがいいだろうと足を上げかけた俺は朝比奈さんと目があってしまい、
+
+「見ないでぇ！」
+
+　泣き声で叫さけばれて大急ぎで回れ右、ドアに走って──くそ、鍵かぎがかかってやがる──無む駄だにガチャガチャとノブを回してからやっと鍵を開けて転がるように廊ろう下かへ脱だつ出しゆつした。
+
+　その時横目で見たのだが、長門有希はまるで何事もないかのように本読みをしていた。
+
+　何か言うことはないのか。
+
+　閉めたドアにもたれかかった俺に、
+
+「ああっ！」「だめえ！」「せめて……じ、自分で外すから……ひぇっ！」
+
+　などと、あられもない朝比奈さんの悲痛そのものの悲鳴と、
+
+「うりゃっ！」「ほら脱いだ脱いだ！」「最初から素す直なおにしときゃよかったのさ！」
+
+　というハルヒの勝ち誇ほこった雄お叫たけびが交こう互ごに聞こえてきた。むむむ。気にならんと言えば嘘うそになるなあ、さすがに。
+
+　それからしばらくして合図があり、
+
+「入っていいわよー」
+
+　少々ためらいがちに部室に戻もどった俺の目が映し出したもの、それはどうしようもないまでに完かん璧ぺきな二人のバニーガールだった。ハルヒも朝比奈さんも呆あきれるほど似合っていた。
+
+　大きく開いた胸むな元もとと背中、ハイレグカットから伸のびる網タイツに包まれた脚あし、ひょこひょこ揺ゆれる頭のウサミミと白いカラーとカフスがポイントを高めている。何のポイントかは俺にだって解りはしない。
+
+　スレンダーなくせして出ているところが出ているハルヒとチビっこいのに出るべきところが出ている朝比奈さんの組み合わせは、はっきり言って目に毒だ。
+
+　うっうっうっと、しゃくりあげている朝比奈さんに「似合ってますよ」と声をかけるべきか悩なやんでいるとハルヒが、
+
+「どう？」
+
+　どうと言われても、俺はお前の頭を疑うくらいしか出来ねえよ。
+
+「これで注目度もバッチリだわ！　この格好なら大たい抵ていの人間はビラを受け取るわ。そうよね！」
+
+「そりゃそんなコスプレした奴やつが学校で二人もうろついていたら嫌いやでも目立つからな……。長門はいいのか？」
+
+「二着しか買えなかったのよ。フルセットだから高かったんだから」
+
+「そんなもんどこで売ってるんだ？」
+
+「ネット通つう販はん」
+
+「……なるほど」
+
+　目線がいつもより高いと思ったら、ご丁てい寧ねいに黒いハイヒールまであつらえてやがる。
+
+　ハルヒはチラシの詰つまった紙かみ袋ぶくろをつかむと、
+
+「行くわよ、みくるちゃん」
+
+　身体からだの前で腕うでを組み合わせている朝比奈さんは、助けを求めるように俺を見た。俺は朝比奈さんのバニースタイルにひたすら見とれるのみだった。
+
+　ごめん。正直、たまりません。
+
+　朝比奈さんは子供のようにぐずりながらテーブルにしがみついていたが、そこはハルヒのバカ力にかなうはずもなく、間もなく小さな悲鳴とともに引きずるように連れ去られ、二人のバニーは部室から姿を消した。罪悪感にさいなまれつつ俺は力無く座ろうとして、
+
+「それ」
+
+　長門有希が床ゆかを差していた。目をやるとそこには乱雑に脱ぎ散らかされた二組のセーラー服と……あれはブラジャーか？
+
+　ショートカットの眼鏡めがね女は黙だまりこくったまま指先をハンガーラックへと向け、そうしてもう用はすんだと言わんばかりに読書に戻る。
+
+　お前がやってくれよ。
+
+　ため息混じりで俺は女どもの制服を拾い上げてハンガーに、げっ、まだ体温が残ってるよ。生々しー。
+
+
+
+
+
+　三十分後、よれよれになった朝比奈さんが戻ってきた。うわぁ、本物のウサギみたいに目が赤いやあ、なんて言ってる場合じゃないな。慌あわてて俺は椅い子すを譲ゆずり、朝比奈さんはいつかみたいにテーブルに突つっ伏ぷして形のいい肩けん胛こう骨こつを揺らし始めた。着き替がえる気力もないらしい。背中が半ば以上も開いてるから目のやり場に困る。俺はブレザーを脱いで震ふるえる白い背にかけてやった。めそめそ泣く少女とノーリアクションの読書好き、困こん惑わくする腰こし抜ぬけ野や郎ろう（俺のこった）が雰ふん囲い気き最悪の一室で無言のまますごす時間……。遠くで鳴ってるブラバンの下手くそなラッパと野球部の不ふ明めい瞭りような怒ど鳴なり声がやけによく聞こえた。
+
+　俺が今日の晩飯は何だろうなとかどうでもいいようなことを考え出した頃ころになって、ようやくハルヒが勇ましく帰き還かんした。第一声、
+
+「腹立つーっ！　なんなの、あのバカ教師ども、邪じや魔まなのよ、邪魔っ！」
+
+　バニー姿で怒おこっていた。だいたい何が起こったのか解わかる気もするが、一応訊きいてみよう。
+
+「何か問題でもあったのか」
+
+「問題外よ！　まだ半分しかビラまいてないのに教師が走ってきて、やめろとか言うのよ！　何様よ！」
+
+　お前がな。バニーガールが二人して学校の門でチラシ配ってたら教師じゃなくとも飛んでくるってーの。
+
+「みくるちゃんはワンワン泣き出すし、あたしは生活指導室に連行されるし、ハンドボールバカの岡部も来るし」
+
+　生活指導担当の教師も岡部担任もさぞかし目が泳いでいたことだろう。
+
+「とにかく腹が立つ！　今日はこれで終わり、終しゆう了りよう！」
+
+　やおらウサミミをむしり取ったハルヒはそれを床に叩たたきつけると、バニーの制服を脱ぬごうとし、俺は走って部室を後にした。
+
+「いつまで泣いてんの！　ほら、ちゃっちゃと立って着替える！」
+
+　廊ろう下かの壁かべにもたれて二人の着替えが終わるのを待つ。露ろ出しゆつ狂きようというわけではなく、ハルヒは自分たちの半はん裸ら姿が男にどういう影えい響きようを与あたえるかがまったく理解出来ていないのだろう。バニーガールのコスプレも扇せん情じよう的なところに着目したからではなくて、単に目立つからに違ちがいない。
+
+　まともな恋れん愛あいが出来ないはずである。
+
+　少しは男の、少なくとも俺の目くらいは気にかけて欲しいものだ。気き疲づかれすることこの上ない。朝比奈さんのためにも、そう願わずにはいられない。それにしても……長門も少しは何か言ってくれよ。
+
+　やがて部室から出てきた朝比奈さんは滑すべり止めにすら引っかからずすべての受験に失敗した直後の三浪ろう生のような顔になっていた。かける言葉が見つからないので黙っていたら、
+
+「キョンくん……」
+
+　深海に沈しずんだ豪ごう華か客船から発せられる亡ぼう霊れいのような声が、
+
+「……わたしがお嫁よめに行けなくなるようなことになったら、もらってくれますか……？」
+
+　何と言うべきか。て言うか、あなたも俺をその名で呼ぶのですか。
+
+　朝比奈さんは油の切れたロボットの動きで俺にブレザーを返した。胸に飛び込んで泣いてくれたりするのかなと不ふ埒らちなことを一いつ瞬しゆん考えたのだが、彼女は古くなった青菜のようにひしゃげきった面おも持もちで歩き去った。
+
+　ちょっと残念。
+
+
+
+
+
+　次の日、朝比奈さんは学校を休んだ。
+
+
+
+
+
+　すでに校内に轟とどろいてた涼宮ハルヒの名は、バニー騒さわぎのおかげで有名を超ちよう越えつして全校生徒の常識にまでなっていた。それは構わない。ハルヒの奇き行こうが全校に知れ渡わたろうがどうしようが俺の知ったことではない。
+
+　問題は涼宮ハルヒのオプションとして朝比奈みくるという名前が囁ささやかれることになったことと、周囲の奇異を見る目が俺にまで向いているような気がすることである。
+
+「キョンよぉ……いよいよもって、お前は涼宮と愉ゆ快かいな仲間たちの一員になっちまったんだな……」
+
+　休み時間、谷口が憐あわれみすら感じさせる口調で言った。
+
+「涼宮にまさか仲間が出来るとはな……。やっぱ世間は広いや」
+
+　うるさいな。
+
+「ほんと、昨日はビックリしたよ。帰り際ぎわにバニーガールに会うなんて、夢でも見てるのかと思う前に自分の正気を疑ったもんね」
+
+　こちらは国木田。見覚えのある藁わら半ばん紙しをヒラヒラさせて、
+
+「このＳＯＳ団って何なの？　何するとこ、それ」
+
+　ハルヒに訊いてくれ。俺は知らん。知りたくもない。仮に知ってたとしても言いたくない。
+
+「不思議なことを教えろって書いてあるけど、具体的に何を指すの？　そんで普ふ通つうじゃダメって、よく解らないんだけど」
+
+　朝倉涼子までがやって来た。
+
+「面おも白しろいことしてるみたいね、あなたたち。でも、公こう序じよ良りよう俗ぞくに反することはやめておいたほうがいいよ。あれはちょっとやりすぎだと思うな」
+
+　俺も休めばよかった。
+
+
+
+
+
+　ハルヒはまだ怒っていた。ビラ配りを途と中ちゆうで邪魔された怒りもさることながら、今日の放課後になってもまるっきりＳＯＳ団宛あてのメールが届かなかったからである。一つ二つは悪戯いたずらメールが来るんじゃないかと思っていたのだが世間は思いのほか常識的であった。おおかた皆みな、ハルヒに関かかわると面めん倒どうくさいことになりそうだと考えたに違いない。
+
+　空っぽのメールボックスを眉まゆ根ねを寄せて睨にらみながらハルヒは光学マウスを振ふり回した。
+
+「なんで一つも来ないのよ！」
+
+「まあ昨日の今日だし。人に話すのもためらうほどのすげえ謎なぞ体験なのかもしれんし、こんな胡う散さん臭くさい団を信用する気になれないだけかもしれん」
+
+　俺は気休めを言ってやる。本当はだな、
+
+　何か不思議な謎ありませんか。はい、あります。おお素晴らしい、私に教えてください。解わかりました、実は……
+
+　なんてことになるわけないだろう。いいか、ハルヒ。そんなもんはマンガか小説の物語の中にしかないんだ。現実はもっとシビアでシリアスなんだよ。県立高校の一角で世界が終わってしまうような陰いん謀ぼうが進行中とか、人間外の生命体が閑かん静せいな住宅地を徘はい徊かいしてるとか、裏山に宇宙船が埋うまってるとか、ないないない、絶対ないって。解るよな？　お前も本当は理解してるんだろう？　ただもやもやしたやり場のない若さゆえのイラダチがお前を突つき抜ぬけた行動に導いているだけだよな。いい加減に目を覚まして、誰だれか格好のいい男でも捕つかまえて一いつ緒しよに下校したり日曜に映画行ったりしてろよ。それか運動部にでも入って思い切り暴れてろよ。お前なら即そくレギュラーで活かつ躍やく出来るさ。
+
+　……と、もっともらしく説いてやりたいのだが多分五行くらい話したあたりで鉄てつ拳けんが飛んでくるような予感がしたのでやめておいた。
+
+「みくるちゃんは今日休み？」
+
+「もう二度と来ないかもな。可哀かわい想そうに、トラウマにならなければいいのだが」
+
+「せっかく新しい衣装を用意したのに」
+
+「自分で着ろよ」
+
+「もちろんあたしも着るわよ。でも、みくるちゃんがいないとつまんない」
+
+　長門有希は例によって希き薄はくな存在感とともにテーブルと一体化していた。別に朝比奈さんにこだわらず長門を着きせ替かえ人形にすればいいのに。ってのもあまりよくないが、それでも泣き虫の朝比奈さんと違ちがって長門は言われたとおりに淡たん々たんとバニーガールの衣装を身につけるような気がするし、それはそれで見てみたいような気もする。
+
+
+
+
+
+　待望の転校生がやって来た。
+
+　朝のホームルーム前のわずかな時間に俺はそれをハルヒから聞かされた。
+
+「すごいと思わない？　本当に来たわよ！」
+
+　欲しがっていたオモチャを念願かなって買ってもらえた幼よう稚ち園えん児じのような飛びっきりの笑え顔がおでハルヒは机から身を乗り出していた。
+
+　いったいどこで聞きつけたのか知らないが、その転校生は今日から一年九組に転入するのだと言う。
+
+「またとないチャンスね。同じクラスじゃないのは残念だけど謎の転校生よ。間違いない」
+
+　会ってもないのにどうして謎だと解る。
+
+「前にも言ったじゃないの。こんな中ちゆう途と半はん端ぱな時期に転校してくる生徒は、もう高確率で謎の転校生なのよ！」
+
+　その統計はいつ誰がどうやって取ったんだ？　そっちのほうが謎だ。
+
+　五月の中ちゆう旬じゆんに転校することになった学生がすべからく謎的存在なのだとしたら、日本全国には謎の転校生がたくさんいるんじゃないかと思うぞ。
+
+　しかし独自の涼宮ハルヒ理論はそんな普ふ遍へん的な常識論の追つい随ずいを許可したりはしないのである。一限が終しゆう了りようすると同時にハルヒはすっ飛んで行った。謎の転校生にお目通りしに九組へと向かったのだろう。
+
+　果たしてチャイムギリギリ、ハルヒは何やら複雑な顔つきで戻もどってきた。
+
+「謎っぽかったか？」
+
+「うーん……あんまり謎な感じはしなかったなあ」
+
+　当たり前だ。
+
+「ちょっと話してみたけど、でもまだ情報不足ね。普通人の仮面をかぶっているだけかもしれないし、どっちかって言うとその可能性のほうが高いわ。転校初日から正体を現す転校生もいないだろうし。次の休み時間にも尋じん問もんしてみる」
+
+　尋問ねえ。九組の奴やつらも驚おどろいただろう。俺は想像する。自分から誰だれかに話しかけるなどほぼ皆かい無むのハルヒが、いきなり自分たちの教室に踏ふみ込んで手近な奴を捕まえ「転校生はどいつ？」とか訊きいて答えを聞くや否やそっちへと突とつ進しんし、おそらく親交を深めるべく団だん欒らん中の会話の輪へと突進し、その輪を突き崩くずして中心部へ侵しん入にゆう、驚く転校生に詰つめ寄って「どこから来たの？　あんた何者？」などと詰きつ問もんする様を。
+
+　ふと思いつく。
+
+「男？　女？」
+
+「変装してる可能性もあるけど、一応、男に見えたわね」
+
+　じゃあ男なんだろ。
+
+　てことは、ＳＯＳ団にやっと俺以外の男子生徒が増えるということでもある。その男子は、ただ転校してきたというだけの理由で、有う無むを言わせず入団させられるのだ。しかしそいつが俺や朝比奈さんのようなお人好しとは限らない。そう上手くことが運ぶものだろうか。いくらハルヒが強ごう引いん極きわまろうとも、もっと意思の強い人間ならば拒きよ否ひしおおせるのではないだろうか。
+
+　員数が揃そろってしまえば本当に「世界を大いに盛り上げるための涼宮ハルヒの団」なるバカげた同好会を作らんといかんようになるではないか。学校サイドが認めるかどうかはさておいて、そのために走り回ることになるのは十中八九、俺であろう。そして俺は「涼宮ハルヒの手下」という称しよう号ごうを手に入れてこの三年間を後ろ指差されて過ごすことになるのである。
+
+　卒業後のことを具体的に考えているわけではないが漠ばく然ぜんと大学には行きたいので、あまり内ない申しんに響ひびくような行動は慎つつしみたいのだが、ハルヒといる限りその望みは叶かないそうもない。
+
+　どうしたものだろう。
+
+
+
+
+
+　どうもこうもない。
+
+　俺は羽は交がい締じめにしてでもハルヒを制止してＳＯＳ団を解散させるべきだったのだ。
+
+　それからハルヒをこんこんと説得し、まともな高校生活を送らせるべきだったのだ。
+
+　宇宙人や未来人や超ちよう能のう力りよく者なんざ、まるっと無視して適当な男を見つけて恋れん愛あいに精を出したり運動部で身体からだを動かしたり、そういうふうな凡ぼん庸ようたる一生徒として三年間を過ごさせるべきだったのだ。
+
+　そう出来たらどんなに良かっただろう。
+
+　俺にもっと絶対的な意思力と行動力があれば、涼宮ハルヒという急流に流されるまま奇き妙みような海へ泳ぎ着くこともなかっただろう。なべて世はこともなく、俺たちは普通に三年間を過ごして普通に卒業したに違ちがいない。
+
+　……多分な。
+
+　今、俺がこんなことを言うのも、つまり全然普通でないことが実際に俺の身の上に降りかかったからであるのは、この話の流れからして、もうお解わかりだろう。
+
+　どこから話そうか。
+
+　まずその転校生が部室に来たあたりからかな。
+
+
+
+
+
+　　第三章
+
+
+
+
+
+　謎なぞのバニーガールズとしてすっかり認知を受けてしまった二人組の片割れである朝比奈みくるさんは、けなげにも一日休んだだけで復活し、部活にも顔を出すようになった。
+
+　部活と言ってもすることもないので、俺は自宅の押入に埋うずまっていたオセロを持ってきてポツポツと語り合いながら朝比奈さんとひたすら対戦していた。
+
+　ホームページを作ったはいいがカウンタも回らずメールも届かず、すっかり無用の長物となっている。もっぱらパソコンはネットサーフィン専用機になっており、これではコンピュータ研の連中が泣く。
+
+　長門有希が黙もく々もくと読書する横で、俺と朝比奈さんはオセロの第三戦目に入った。
+
+「涼宮さん、遅おそいね」
+
+　盤ばん面めんをじっと見つめながら朝比奈さんがポツリと漏もらした。
+
+　表情はすぐれないが深く沈しずんだ様子もない。俺は安心する。なんだかんだと言っても一学年上とは言え可愛かわいい女の子と空間を同じくするのは心が躍おどる。
+
+「今日、転校生が来ましたからね。多分そいつの勧かん誘ゆうに行ってるんでしょう」
+
+「転校生……？」
+
+　小鳥のように首を傾かしげる朝比奈さん。
+
+「九組に転入してきた奴がいまして。ハルヒ大喜びですよ。よっぽど転校生が好きなんでしょう」
+
+　黒を置いて白を一枚裏返す。
+
+「ふうん……？」
+
+「それより朝比奈さん、よくまた部室に来る気になりましたね」
+
+「うん……ちょっと悩なやんだけど、でもやっぱり気になるから」
+
+　前にも似たようなことを言ってなかったか？
+
+「何が気になるんです？」
+
+　パチリ、パタパタ。たおやかな指が石をひっくり返していく。
+
+「ん……なんでもない」
+
+　ふと気配を感じて横を見ると、長門が盤上を覗のぞき込んでいた。瀬せ戸と物もの人形のような顔立ちはいつものこと、ただし眼鏡めがねの奥の目には初めて見る光が宿っていた。
+
+「……」
+
+　生まれて初めて犬を見た子こ猫ねこのような目だった。石を置いては石をめくる俺の指先を錐きりのような視線で追っている。
+
+「……代わろうか、長門」
+
+　声をかけると長門有希は機械的に瞬まばたきし、注意して見ていないと解らないほどの微び妙みような角度でうなずいた。俺は長門と場所を交代して朝比奈さんの隣となりに座る。
+
+　オセロの石をつまみ上げ、しげしげと見つめる長門。全然見当違いのマスに持っていき、磁力でパチリとくっつくのに驚おどろいたように指を引っ込める。
+
+「……長門、オセロしたことある？」
+
+　ゆっくりと左右に首が振ふられる。
+
+「ルールは解るか？」
+
+　否定。
+
+「えーとな、お前は黒だから白を挟はさむように黒を置く。挟まれた白は黒になる。そうやって最後に自分の色の数が多かったら勝ち」
+
+　肯こう定てい。優ゆう雅がな動作で長門は石を置いて、ぎこちなく相手の色を自分の色に変える。
+
+　対戦相手が代わって、朝比奈さんの様子もどこかおかしくなった。なんとなく指が震ふるえているように見えるし、決して顔を上げようとしない。そのくせ上目で長門のほうを見ては急いで視線を戻もどすという仕草を何度も繰くり返し、まるでゲームに集中していない。盤ばん面めんはあっというまに黒の優勢へと変化した。
+
+　なんだ？　朝比奈さんは長門が妙みように気になっているらしい。理由が解わからん。
+
+　この勝負はあっさりと黒が大勝、次の試合を始めようかとなったとき、すべての元げん凶きようの元が新たな生いけ贄にえを連れて現れた。
+
+「へい、お待ち！」
+
+　一人の男子生徒の袖そでをガッチリとキープした涼宮ハルヒが的はずれな挨あい拶さつをよこした。
+
+「一年九組に本日やってきた即そく戦力の転校生、その名も、」
+
+　言葉を句切り、顔で後は自分で言えとうながす。虜りよ囚しゆうとなっていたその少年は、薄うすく微笑ほほえんで俺たち三人のほうを向き、
+
+「古こ泉いずみ一いつ樹きです。……よろしく」
+
+　さわやかなスポーツ少年のような雰ふん囲い気きを持つ細身の男だった。如じよ才さいのない笑えみ、柔にゆう和わな目。適当なポーズをとらせてスーパーのチラシにモデルとして採用したらコアなファンが付きそうなルックスである。これで性格がいいならけっこうな人気者になれるだろう。
+
+「ここ、ＳＯＳ団。あたしが団長の涼宮ハルヒ。そこの三人は団員その一と二と三。ちなみにあなたは四番目。みんっな、仲良くやりましょう！」
+
+　そんな紹しよう介かいならされないほうが遥はるかにマシだ。解ったのはお前と転校生の名前だけじゃないか。
+
+「入るのは別にいいんですが」
+
+　転校生の古泉一樹は落ち着いた笑みを絶やさずに言った。
+
+「何をするクラブなんですか？」
+
+　百人いれば百人ともが頭に思い浮うかべる疑問だ。俺が誰だれ彼かれともなく何度も問われ、ついぞ答えることの出来なかったクエスチョン。フェルマーの最終定理を説明出来たとしてもこればっかりは無理だ。知りもしないものを説明出来る奴やつがいたとしたらそいつは詐さ欺ぎ師しの才能がある。が、ハルヒはまったく動じずに、それどころか不敵な笑みすら浮かべて俺たちを順々に眺ながめて言った。
+
+「教えるわ。ＳＯＳ団の活動内容、それは、」
+
+　大きく息を吸い、演出効果のつもりかセリフを溜ために溜めて、そしてハルヒは驚くべき真相を吐はいた。
+
+「宇宙人や未来人や超ちよう能のう力りよく者を探し出して一いつ緒しよに遊ぶことよ！」
+
+
+
+
+
+　全世界が停止したかと思われた。
+
+　というのは嘘うそで、俺は単に「やっぱりか」と思っただけだった。しかし残りの三人はそうもいかなかったようだ。
+
+　朝比奈さんは完全に硬こう化かしていた。目と口で三つの丸を作ってハルヒのハイビスカスのような笑顔を見つめたまま動かない。動かないのは長門有希も同様で、首をハルヒへと向けた状態で電池切れを起こしたみたいに止まっている。ほんのわずかだけ、目が見開かれているのに気付いて俺は意外に思う。さすがの無感動女もこれには意表をつかれたか。
+
+　最後に古泉一樹だが、微び笑しようなのか苦笑なのか驚きなのか判別しにくい表情で突つっ立っていた。古泉は誰よりも先に我に返り、
+
+「はあ、なるほど」
+
+　と何かを悟さとったような口ぶりで呟つぶやいて、朝比奈さんと長門有希を交こう互ごに眺め、訳知り顔でうなずいた。
+
+「さすがは涼宮さんですね」
+
+　意味不明な感想を言って、
+
+「いいでしょう。入ります。今後とも、どうぞよろしく」
+
+　白い歯を見せて微笑んだ。
+
+　おおい、あんな説明でいいのかよ。本当に聞いていたのか？
+
+　首を捻ひねる俺の目の前に、ぬっと手が差し出された。
+
+「古泉です。転校してきたばかりで教えていただくことばかりとは思いますが、なにとぞ御ご教示願います」
+
+　バカ丁てい寧ねいな定型句を口にする古泉の手を握にぎりかえす。
+
+「ああ、俺は……」
+
+「そいつはキョン」
+
+　ハルヒが勝手に俺を紹介し、次いで「あっちの可愛かわいいのがみくるちゃんで、そっちの眼鏡めがねっ娘こが有希」と二人を指さして、すべてを終えた顔をした。
+
+　ごん。
+
+　鈍にぶい音がした。慌あわてて立ち上がろうとした朝比奈さんがパイプ椅い子すに足を取られて前のめりに蹴けつまずき、オセロ盤に額を打ち付けた音である。
+
+「だいじょうぶですか？」
+
+　声をかけた古泉に朝比奈さんは首振ふり人形のような反応を見せて、その転校生をまぶしげな目で見上げた。む。なんか気に入らない目つきだぞ、それは。
+
+「……はい」
+
+　蚊かが喋しやべってるみたいな小さな声で応こたえつつ朝比奈さんは古泉を恥はずかしそうに見ている。
+
+「そういうわけで五人揃そろったことだし、これで学校としても文句はないわよねえ」
+
+　ハルヒが何か言ってる。
+
+「いえー、ＳＯＳ団、いよいよベールを脱ぬぐ時が来たわよ。みんな、一丸となってがんばっていきまっしょー！」
+
+　何がベールだ。
+
+　ふと気付くと長門はまた定位置に戻もどってハードカバーの続きに挑ちよう戦せんしている。勝手にメンバーに入れられちまってるけど、いいのか、お前。
+
+
+
+
+
+　学校を案内してあげると言ってハルヒが古泉を連れ出し、朝比奈さんが用事があるからと帰ってしまったので、部室には俺と長門有希だけが残された。
+
+　今いま更さらオセロをする気にもなれず、長門の読書シーンを観察していても面おも白しろくも何ともなく、だから俺もさっさと帰ることにした。鞄かばんを提さげる。長門に一声、
+
+「じゃあな」
+
+「本読んだ？」
+
+　足が止まる。長門有希の暗くら闇やみ色をした目が俺を射い抜ぬいていた。
+
+　本。というと、いつぞや俺に貸した異様に厚いハードカバーのことか？
+
+「そう」
+
+「いや、まだだけど……返した方がいいか？」
+
+「返さなくていい」
+
+　長門のセリフはいつも端たん的てきだ。一文節内で収まる。
+
+「今日読んで」
+
+　長門はどうでもよさそうに言った。
+
+「帰ったらすぐ」
+
+　どうでもよさそうなのに命令調である。
+
+　ここんとこ国語の教科書に載のってる以外の小説なんて読んでもいないけど、そこまで言うからには他人に推すい薦せんしたくなるほどの面白さなのだろう。
+
+「……解わかったよ」
+
+　俺が応えると長門はまた自分の読書に戻った。
+
+
+
+
+
+　そして俺は今、夕ゆう闇やみの中を必死で自転車をこいでいた。
+
+
+
+
+
+　長門と別れて自宅に戻った俺は、晩飯食ったりしてダラダラしたのち、自室で借りたと言うより押しつけられた洋モノのＳＦ小説を紐ひも解とくことにした。上下段にみっちり詰つまった活字の海に眩暈めまいを感じながら、こんなの読めるのかよとパラパラめくっていたら、半ばくらいに挟はさんであった栞しおりが絨じゆう毯たんに落ちた。
+
+　花のイラストがプリントしてあるファンシーな栞だ。何の気なしに裏返してみて、俺はそこに手書きの文字を発見した。
+
+
+
+
+
+『午後七時。光こう陽よう園えん駅前公園にて待つ』
+
+
+
+
+
+　まるでワープロで印字したみたいに綺き麗れいな手書き文字が書いてあった。このそっけなさ、いかにも長門が書きそうな感じではある。あるのだが、ここで疑問が募つのる。
+
+　俺がこの本を受け取ったのは何日も前の話である。午後七時というのは、その日の午後七時のことなのだろうか。それとも今日の午後七時でいいんだろうか。まさか俺がこのメッセージをいつ目にしてもいいように、毎日公園で待っていたりしてたのじゃないだろうな。今日必ず読めと言った長門の真意は、今日こそこの栞を見つけろってことだったのか？　しかしそれなら部室で直接俺に言えばいいだけだし、そもそも夜の公園に呼び出す必要性が解わからない。
+
+　時計を見ると午後六時四十五分をちょっと過ぎている。光陽園駅は高校から一番近い私鉄の駅だが俺の自宅からではチャリをどんなに飛ばしても二十分はかかる。
+
+　考えていたのは十秒くらいのはずだ。
+
+　俺は栞をジーンズのポケットに入れると三さん月がつ兎うさぎのように部屋を飛び出て階段を駆かけ降り、台所からアイスくわえて出て来た妹の「キョンくんどこ行くのー」の声に「駅前」と答え、玄げん関かん先に繋つないでいたママチャリにまたがって走り出しながらライトを足で点け、帰ったらタイヤに空気入れようと決意しつつ可能な限りのスピードでペダルを踏ふんだ。
+
+　これで長門がいなかったら笑ってやる。
+
+
+
+
+
+　笑わずに済んだようだ。
+
+　交通法規を真ま面じ目めに遵じゆん守しゆしたおかげで、俺が駅前公園に到とう着ちやくしたのは七時十分頃ころ。大通りから外れているため、この時間になるとあまり人通りもない。
+
+　電車や車の立てる喧けん噪そうを背中で聞きながら俺は自転車を押して公園に入っていく。等とう間かん隔かくで立っている街灯、その下にいくつかかたまって設置されている木製ベンチの一つに、長門有希の細っこいシルエットがぼんやり浮うかんでいた。
+
+　どうにも存在感の希き薄はくな女である。知らずに通りかかったら幽ゆう霊れいかと思うかもしれない。
+
+　長門は俺に気付いて糸に引かれた操あやつり人形のようにすうっと立ち上がった。
+
+　制服姿である。
+
+「今日でよかったのか？」
+
+　うなずく。
+
+「ひょっとして毎日待っていたとか」
+
+　うなずく。
+
+「……学校で言えないことでも？」
+
+　うなずいて、長門は俺の前に立った。
+
+「こっち」
+
+　歩き出す。足音のしない、まるで忍にん者じやみたいな歩き方である。闇やみに溶とけるように遠ざかる長門の後を、俺は仕方なくついて行く。
+
+　微び風ふうに揺ゆれるショートカットを眺ながめるともなく眺めながら歩いて数分後、俺たちは駅からほど近い分ぶん譲じようマンションへたどり着いた。
+
+「ここ」
+
+　玄げん関かん口のロックをテンキーのパスワードで解除してガラス戸を開ける。俺は自転車をその辺に止めてエレベータに向かう長門の後を追った。エレベータの中で長門は何を考えているのか解らない顔で一言も発せず、ただ数字盤ばんを凝ぎよう視ししている。七階着。
+
+「あのさ、どこに行こうとしてるんだ？」
+
+　まことに遅おくればせながら俺は質問する。マンションのドアが立ち並ぶ通路をすたすた歩きながら長門は、
+
+「わたしの家」
+
+　俺の足が止まる。ちょっと待て、何で俺が長門の家に招待されなければならないんだ。
+
+「誰だれもいないから」
+
+　ますますちょっと待て。それはいったいどういう意味であるのか。
+
+　７０８号室のドアを開けて、長門は俺をじいいっと見た。
+
+「入って」
+
+　マジかよ。
+
+　うろたえつつも狼ろう狽ばいを顔に出さないようにして、恐おそる恐る上がらせていただく。靴くつを脱ぬぎ一歩進んだところでドアが閉められる。
+
+　何か取り返しのつかない所に来てしまったような気がした。その音に不ふ吉きつな予感を感じて振ふり返る俺に、長門は、
+
+「中へ」
+
+　とだけ言って自分の靴を足の一ひと振ふりで脱ぎ捨てた。これで室内が真っ暗だったら何を置いても逃にげ出すつもりだったが、煌こう々こうたる明かりが広々とした部屋を寒々と照らしている。
+
+　３ＬＤＫくらい？　駅前という立地を考えると、けっこうな値段なんじゃないだろうか。
+
+　しかしまあ、生活臭しゆうのない部屋だな。
+
+　通されたリビングにはコタツ机が一つ置いてあるだけで他ほかには何もない。なんと、カーテンすらかかっていない。十畳じようくらいのフローリングにはカーペットも敷しかれず茶色の木目をさらしていた。
+
+「座ってて」
+
+　台所へ引っ込む間ま際ぎわにそう言い残し、俺はへっぴり腰ごしでテーブルの際にあぐらをかいた。
+
+　年とし頃ごろの少女が年頃の少年を家人のいない家に連れ込む理由を頭の中に巡めぐらせていると、長門が盆ぼんに急きゆう須すと湯飲みを載のせてカラクリ人形のような動きでテーブルに置き、制服のまま俺の向かいにちょこんと座った。
+
+　沈ちん黙もく。
+
+　お茶を注つごうともしない。眼鏡めがねのレンズを通して俺に突つき刺ささる無感情な視線が俺の居い心地ごこちの悪さを加速させる。
+
+　何か言ってみよう。
+
+「あー……家の人は？」
+
+「いない」
+
+「いや、いないのは見れば解わかるんだが……。お出かけ中か？」
+
+「最初から、わたししかいない」
+
+　今までに聞いた長門のセリフで一番長い発言だった。
+
+「ひょっとして一人暮らしなのか？」
+
+「そう」
+
+　ほほう、こんな高級マンションに高校生になったばかりの女の子が一人暮らしとは。ワケありなんだろうな。でもまあ、いきなり長門の家族と顔を合わさずにすんで安あん堵どしたよ。って安堵してる場合じゃないな。
+
+「それで何の用？」
+
+　思い出したように長門は急須の中身を湯飲みに注ついで俺の前に置いた。
+
+「飲んで」
+
+　飲むけどさ。ほうじ茶をすする俺を動物園でキリンを見るような目で観察する長門。自分は湯飲みには手を付けようともしない。
+
+　しまった、毒か！　……なわけないって。
+
+「おいしい？」
+
+　初めて疑問形で訊きかれた気がする。
+
+「ああ……」
+
+　飲み干した湯飲みを置くと同時に長門は再び茶ちや褐かつ色しよくの液体で湯飲みを満たした。しょうがなしにそれを飲んで、飲み終えるとすかさず三杯ばい目が。ついに急須が空になり、長門がおかわりを用意しようと腰こしを上げかけるのを、やっとのことで俺は止めた。
+
+「お茶はいいから、俺をここまで連れてきた理由を教えてくれないか」
+
+　腰を浮うかせた姿勢で静止した長門はビデオの逆回しのように元の位置に座り直した。なかなか口を開かない。
+
+「学校では出来ないような話って何だ？」
+
+　水を向ける。ようやく長門は薄うすい唇くちびるを開いた。
+
+「涼宮ハルヒのこと」
+
+　背筋を伸のばした綺き麗れいな正座で、
+
+「それと、わたしのこと」
+
+
+
+
+
+　口をつぐんで一いつ拍ぱく置き、
+
+「あなたに教えておく」
+
+　と言ってまた黙だまった。
+
+　どうにかならないのか、この話し方。
+
+「涼宮とお前が何だって？」
+
+　ここで長門は出会って以来、初めて見る表情を浮かべた。困ったような躊ちゆう躇ちよしてるような、どちらにせよ注意深く見てないと解らない、無表情からミリ単位で変異したわずかな感情の起き伏ふく。
+
+「うまく言語化出来ない。情報の伝達に齟そ齬ごが発生するかもしれない。でも、聞いて」
+
+　そして長門は話し出した。
+
+
+
+
+
+「涼宮ハルヒとわたしは普ふ通つうの人間じゃない」
+
+　いきなり妙みようなことを言い出した。
+
+「なんとなく普通じゃないのは解るけどさ」
+
+「そうじゃない」
+
+　膝ひざの上で揃そろえた指先を見ながら長門。
+
+「性格に普ふ遍へん的な性質を持っていないという意味ではなく、文字通り純じゆん粋すいな意味で、彼女とわたしはあなたのような大多数の人間と同じとは言えない」
+
+　意味が解らん。
+
+「この銀河を統とう括かつする情報統合思念体によって造られた対有機生命体コンタクト用ヒューマノイド・インターフェース。それが、わたし」
+
+「……」
+
+「わたしの仕事は涼宮ハルヒを観察して、入手した情報を統合思念体に報告すること」
+
+「……」
+
+「生み出されてから三年間、わたしはずっとそうやって過ごしてきた。この三年間は特別な不確定要素がなく、いたって平へい穏おん。でも、最近になって無視出来ないイレギュラー因子が涼宮ハルヒの周囲に現れた」
+
+「……」
+
+「それが、あなた」
+
+
+
+
+
+　情報統合思念体。
+
+　銀河系、それどころか全宇宙にまで広がる情報系の海から発生した肉体を持たない超ちよう高度な知性を持つ情報生命体である。
+
+　それは最初から情報として生まれ、情報を寄り合わせて意識を生み出し、情報を取り込むことによって進化してきた。
+
+　実体を持たず、ただ情報としてだけ存在するそれは、いかなる光学的手段でも観測することは不可能である。
+
+　宇宙開かい闢びやくとほぼ同時に存在したそれは、宇宙の膨ぼう張ちようとともに拡大し、情報系を広げ、巨きよ大だい化しつつ発展してきた。
+
+　地球、いや太陽系が形成される遥はるか前から全宇宙を知覚していたそれにとって、銀河の辺境に位置する大して珍めずらしくもないこの星系に特別な価値などなかった。有機生命体が発生する惑わく星せいはその他ほかにも数限りなくあったからだ。
+
+　しかしその第三惑星で進化した二足歩行動物に知性と呼ぶべき思し索さく能力が芽生えたことにより、現住生命体が地球と呼こ称しようするその酸化型惑星の重要度はランクアップを果たした。
+
+
+
+
+
+「情報の集積と伝達速度に絶対的な限界のある有機生命体に知性が発現することなんてありえないと思われていたから」
+
+　長門有希は真ま面じ目めな顔で言った。
+
+「統合思念体は地球に発生した人類にカテゴライズされる生命体に興味を持った。もしかしたら自分たちが陥おちいっている自律進化の閉へい塞そく状態を打開する可能性があるかもしれなかったから」
+
+
+
+
+
+　発生段階から完全な形で存在していた情報生命体と違ちがい、人類は不完全な有機生命体として出発しながら急速な自律進化を遂とげていった。保有する情報量を増大させ、また新たな情報を創造し、加工し、蓄ちく積せきする。
+
+　宇宙に偏へん在ざいする有機生命体に意識が生ずるのはありふれた現象だったが、高次の知性を持つまでに進化した例は地球人類が唯ゆい一いつであった。情報統合思念体は注意深く、かつ綿密に観測を続けた。
+
+
+
+
+
+「そして三年前。惑星表面に他では類を見ない異常な情報フレアを観測した。弓きゆう状じよう列れつ島とうの一地域から噴ふん出しゆつした情報爆ばく発はつは瞬またたく間に惑星全土を覆おおい、惑星外空間に拡散した。その中心にいたのが涼宮ハルヒ」
+
+
+
+
+
+　原因も効果も何一つ解わからない。情報生命体である彼等にもその情報を分ぶん析せきすることは不可能だった。それは意味をなさない単なるジャンク情報にしか見えなかった。
+
+　重要なのは、有機生命としての制約上、限定された情報しか扱あつかえないはずの地球人類の、そのうちのたった一人の人間でしかない涼宮ハルヒから情報の奔ほん流りゆうが発生したことだ。
+
+　涼宮ハルヒから発せられる情報の奔流はそれからも間かん歇けつ的に継けい続ぞくし、またまったくのランダムにそれはおこなわれる。そして涼宮ハルヒ本人はそのことを意識していない。
+
+　この三年間、あらゆる角度から涼宮ハルヒという固体に対し調査がなされたが、今もってその正体は不明である。しかし情報統合思念体の一部は、彼女こそ人類の、ひいては情報生命体である自分たちに自律進化のきっかけを与あたえる存在として涼宮ハルヒの解かい析せきをおこなっている……。
+
+
+
+
+
+「情報生命体である彼等は有機生命体と直接的にコミュニケート出来ない。言語を持たないから。人間は言葉を抜ぬきにして概がい念ねんを伝達するすべを持たない。だから情報統合思念体はわたしのような人間用のインターフェースを作った。統合思念体はわたしを通して人間とコンタクト出来る」
+
+　やっと長門は自分の湯飲みに口を付けた。一年分くらいの量を喋しやべって喉のどがかれたのかもしれない。
+
+「……」
+
+　俺は二の句がつげない。
+
+「涼宮ハルヒは自律進化の可能性を秘めている。おそらく彼女には自分の都合の良いように周囲の環かん境きよう情報を操作する力がある。それが、わたしがここにいる理由。あなたがここにいる理由」
+
+「待ってくれ」
+
+　混乱したまま俺は言う。
+
+「正直言おう。お前が何を言っているのか、俺にはさっぱり解らない」
+
+「信じて」
+
+　長門は見たこともないほど真しん摯しな顔で、
+
+「言語で伝えられる情報には限りがある。わたしは単なる端たん末まつ、対人間用の有機インターフェースにすぎない。統合思念体の思考を完全に伝達するにはわたしの処理能力ではまかなえない。理解して欲しい」
+
+　んなこと言われても。
+
+「何で俺なんだ。お前がそのナントカ体のインターフェースだってのを信用したとして、それで何故なぜ俺に正体を明かすんだ？」
+
+「あなたは涼宮ハルヒに選ばれた。涼宮ハルヒは意識的にしろ無意識的にしろ、自分の意思を絶対的な情報として環境に影えい響きようを及およぼす。あなたが選ばれたのは必ず理由がある」
+
+「ねーよ」
+
+「ある。多分、あなたは涼宮ハルヒにとっての鍵かぎ。あなたと涼宮ハルヒが、すべての可能性を握にぎっている」
+
+「本気で言ってるのか？」
+
+「もちろん」
+
+　俺は今までになくマジマジと長門有希の顔を直視した。度を越こえた無口な奴やつがやっと喋るようになったかと思ったら、延々と電波なことを言いやがった。変な奴だとは思っていたが、ここまで変だとは想像外だった。
+
+　情報統合思念体？　ヒューマノイド・インターフェース？
+
+　アホか。
+
+「あのな、そんな話ならチョクでハルヒに言ったほうが喜ばれると思うぞ。はっきり言うが、俺はその手の話題にはついていけないんだ。悪いがな」
+
+「統合思念体の意識の大部分は、涼宮ハルヒが自分の存在価値と能力を自覚してしまうと予測出来ない危険を生む可能性があると認識している。今はまだ様子を見るべき」
+
+「俺が聞いたままをハルヒに伝えるかもしれないじゃないか。だからなぜ、俺にそんなことを言うんだよ」
+
+「あなたが彼女に言ったとしても彼女はあなたがもたらした情報を重視したりしない」
+
+　確かにそうかもしれない。
+
+「情報統合思念体が地球に置いているインターフェースはわたし一つではない。統合思念体の意識には積極的な動きを起こして情報の変動を観測しようという動きもある。あなたは涼宮ハルヒにとっての鍵。危機が迫せまるとしたらまずあなた」
+
+　付き合いきれん。
+
+　俺はそろそろおいとまさせていただくことにした。お茶美味うまかったよ。ごちそうさん。
+
+　長門は止めなかった。
+
+　視線を湯飲みに落としたまま、いつもの無表情に戻もどっている。ちょっとばかし寂さびしげに見えたのは俺の錯さつ覚かくだろう。
+
+
+
+
+
+　どこへ行っていたのかという母親の誰何すいかに生返事をして俺は自室に戻った。ベッドに横になって長門の長ゼリフを反はん芻すうする。
+
+　あいつの言ったことをそのまま信用すると、ようするに長門有希は人類以外の、地球外生命体ってことになる。早い話、宇宙人だ。
+
+　涼宮ハルヒがあれほど熱望し、追い求めている不思議的な存在だ。
+
+　それがこんな身近にいたとは、灯とう台だい下もと暗しとはこれを指して言うべきだ。
+
+　……はっはっは。バカらしい。
+
+　投げ出した状態で転がっていた厚手の小説本が視界のスミに映った。栞しおりとともに拾い上げて、しばらく仰ぎよう々ぎようしいイラストの表紙を眺ながめて枕まくら元もとに置いた。
+
+　一人っきりのマンションでこんなＳＦ本を読んでばっかりいるから、長門もけったいな妄もう想そうに頭を支配されるんだ。どうせ教室でも誰だれとも話さず自分の殻からに閉じこもっているに違ちがいない。本なんか捨てて、表層だけの付き合いでもいいから友達を作って、普ふ通つうに学園生活を楽しめばいいのだ。あの無表情が悪い。笑えばあいつだってかなり可愛かわいいと思うのに。
+
+　この本も明日突つき返そうか……。まあ、せっかくだし読んでみるのもいいかな。
+
+
+
+
+
+　翌日の放課後。
+
+　掃そう除じ当番だったため、俺が遅おくれて部室へ行くと、ハルヒが朝比奈さんで遊んでいた。
+
+「じっとして！　ほら暴れない！」
+
+「やっ……やめっ……助けてぇ！」
+
+　嫌いやがる朝比奈さんをハルヒがまた半はん裸らに剥むいていた。
+
+「きゃああ！」
+
+　部室に入りかけた俺を見て悲鳴を上げる朝比奈さんだった。
+
+　超ちよう完全に下着姿の朝比奈さんを一いつ瞬しゆんだけ眺めて、俺は半分以上開けかけていたドアを半歩下がって閉めた。
+
+「失礼」
+
+　待つこと十分。朝比奈さんの可愛らしい叫さけび声とハルヒの楽しそうな声の二重奏が消えた。代わりにハルヒが、
+
+「いいわよ、入っても」
+
+　そして俺は室内に入り、しかるのちに絶句した。
+
+　メイドさんがいた。
+
+　エプロンドレスに身を包み、今にも泣きそうな朝比奈さんがパイプ椅い子すにちょこんと腰こし掛かけ、悲しげに俺を見てすぐにうつむいた。
+
+　白いエプロンと、裾すその広がったフレアスカートとブラウスのツーピース。ストッキングの白さが清せい楚そな雰ふん囲い気きを抜ばつ群ぐんに演出していて非常によろしい。頭のてっぺんのレースのカチューシャと、髪かみを後ろでまとめている頭の幅はばよりも大きなリボンがこれまた愛らしい。
+
+　非のうちどころのないメイド少女である。
+
+「どう、可愛いでしょう」
+
+　ハルヒがまるで自分の手て柄がらのように誇ほこらしげに言って朝比奈さんの髪を撫なでた。
+
+　それには同意出来るな。情けなさそうな表情で悄しよう然ぜんと座っている朝比奈さんには悪いが、無茶苦茶可愛い。
+
+「まあ、それはいいとして」
+
+　よくありません、と小声で呟つぶやく朝比奈さんを無視して俺はハルヒに、
+
+「なんでメイドの格好をさせる必要があるんだ？」
+
+「やっぱり萌もえと言ったらメイドでしょ」
+
+　また意味すら解わからないことを。
+
+「これでもあたしはけっこう考えたのよ」
+
+　お前の考えることは考えないほうがいいようなことばかりだ。
+
+「学校を舞ぶ台たいにした物語にはね、こういう萌えキャラが一人は必ずいるものなのよ。言い換かえれば萌えキャラのあるところに物語は発生するの。これはもはや必然と言っていいわね。いい？　みくるちゃんというもともとロリーで気が弱くて、でもグラマーっていう萌え要素を持つ女の子をさらにメイド服で装そう飾しよくすることにより、萌えパワーは飛ひ躍やく的に増大するわ。どこから見ても萌え記号のかたまりよね。もう勝ったも同然ね」
+
+　何に勝つつもりなんだ。
+
+　俺が呆あきれてものを言えないでいると、ハルヒはいつの間にかデジタルカメラを手にして、記念に写真を撮とっておこうと言い出した。
+
+　真っ赤になって朝比奈さんは首を振ふる。
+
+「撮らないで……」
+
+　手を合わせて拝まれようがどうしようが、ハルヒがそれをすると言えばするのである。
+
+　懇こん願がんむなしく朝比奈さんは無理矢理にポーズを取らされ、何度も何度もフラッシュの光を浴びた。
+
+「ふええ……」
+
+「目線こっち。ちょい顎あごひいて手でエプロン握にぎりしめて。そうそうもっと笑って笑って！」
+
+　注文をつけながらハルヒは朝比奈さんを激写する。デジタルカメラなんかどこから持ってきたんだと訊きいたら写真部から借りてきたという。パクってきたの間違いじゃないのか？
+
+　写真撮さつ影えいのかたわらでは、長門有希がいつもの場所でいつものように読書に励はげんでいた。昨日、さんざん俺にデンパな話を語ったことなどおくびにも出さないそのいつもと変わらぬ様子に、俺はどことなくホッとした。
+
+「キョン、カメラマン代わって」
+
+　ハルヒは俺にデジタルカメラを渡わたし、朝比奈さんへと向き直った。水辺の鳥ににじり寄るワニのような動きで小さな肩かたを捕とらえる。
+
+「ひっ……」
+
+　身を縮める朝比奈さんにハルヒは優やさしく微笑ほほえみかけた。
+
+「みくるちゃん、もうちょっと色っぽくしてみようか」
+
+　言うが早いかハルヒはメイド服の胸むな元もとからリボンを引き抜ぬき、ブラウスのボタンをいきなり第三ボタンまで開けて胸元を露ろ出しゆつさせた。
+
+「ちょ、やっ……何する……！」
+
+「いいからいいから」
+
+　何がいいものか。
+
+　朝比奈さんはさらに膝ひざに手をついて前まえ屈かがみの姿勢を取らされる。小こ柄がらな身体からだと幼い顔からは予想も出来ない豊かな谷間が胸きよう襟きんから覗のぞいて、俺は目をそらした。が、そらしていては写真が撮れないので仕方なしにファインダーを覗く。ハルヒに命じられるままシャッターを切りまくる。
+
+　胸を強調するポーズを取って羞しゆう恥ちの色に頬ほおを染め、泣き出す一歩前の潤うるんだ目でぎこちない笑えみを浮うかべてカメラに目線を送る朝比奈さんは、それはもう例えようもないほど魅み力りよく的だった。
+
+　やべ。惚ほれてしまいそうだ。
+
+「有希ちゃん、眼鏡めがね貸して」
+
+　ゆっくりと本から顔を上げた長門は、ゆっくりと眼鏡を外すとハルヒに手て渡わたし、ゆっくり読書に戻もどった。読めるのか？
+
+　ハルヒは受け取った眼鏡を朝比奈さんの顔にかけて、
+
+「ちょっとずらした感じがいいのよねえ。うん、これで完かん璧ぺき！　ロリで美乳でメイドでしかも眼鏡っ娘こ！　素晴らしいわ！　キョン、じゃんじゃん撮ってあげて」
+
+　撮るのに否いなやはないが、朝比奈さんのメイドコスプレ写真をこんなに撮影して何に使うつもりなんだろう。
+
+「みくるちゃん、これから部室にいるときはこの服着るようにしなさい」
+
+「そんなあ……」
+
+　精せい一いつ杯ぱいの否定の意思表示をする朝比奈さん。しかしハルヒは、
+
+「だってこんなに可愛かわいいんだもの！　もう、女のあたしでもどうにかなりそうだわ！」
+
+　朝比奈さんに抱だきついて頬ずりする。朝比奈さんは、わあわあ叫さけびながら逃のがれようとして果たせず、終しまいにはぐったりとハルヒのされるがままになってしまった。
+
+　おいおい。うらやましいぞ、ハルヒ。つーか、止めろよな、俺も。
+
+「そのへんで終わっとけ」
+
+　朝比奈さんに露ろ骨こつなセクハラを続けるハルヒの首根っこをつかむ。なかなか離はなれない。
+
+「こら、いい加減にしろ！」
+
+「いいじゃん。あんたも一いつ緒しよにみくるちゃんにエッチぃことしようよ」
+
+　グッとくるアイデアだが、たちまち真っ青になる朝比奈さんを見ていたら首しゆ肯こうするわけにもいかないだろ。
+
+「うわ、何ですかこれ？」
+
+　もみ合っている俺たちに声をかけたのは、入り口付近で鞄かばん片手に立ちつくしている古泉一樹だった。
+
+　朝比奈さんの開いた胸元に手を突つっ込もうとしているハルヒと、その手を握って止めようとしている俺と、ぶるぶる震ふるえているメイド姿の朝比奈さんと、裸ら眼がんで平然と読書中の長門を興味深そうに眺ながめて、
+
+「何の催もよおしですか？」
+
+「古泉くん、いいところに来たね。みんなでみくるちゃんにイタズラしましょう」
+
+　何てことを言い出すんだ。
+
+　古泉は口元だけでフッと笑った。同意するようならこいつも敵に回さなければならん。
+
+「遠えん慮りよしておきましょう。後が怖こわそうだ」
+
+　鞄をテーブルに置いて壁かべに立てかけてあったパイプ椅い子すを組み立てる。
+
+「見学だけでもいいですか？」
+
+　足を組んで座りながら面おも白しろそうな顔で俺を見やがる。
+
+「お気になさらず、どうぞ続きを」
+
+　違ちがうって、俺は襲おそう方じゃなくて助けに入っている方だっつーの。
+
+　すったもんだの末、俺はどうにかハルヒと朝比奈さんの間に割って入り、ふらりと後ろ向きに倒たおれそうになる朝比奈さんを慌あわてて支え、その軽さにちょっと驚おどろきながら椅子に座らせた。メイド服を乱して、くたっとなっている朝比奈さんの姿は、正直な話、かなりそそられた。
+
+「まあいいか。写真もいっぱい撮とれたし」
+
+　ハルヒは目を閉じて背もたれに寄りかかっている朝比奈さんの綺き麗れいな顔から眼鏡を抜き取ると長門に返した。
+
+　無言で受け取って何をコメントすることもなくかけ直す長門。昨日あんだけ長ちよう広こう舌ぜつをふるったのが嘘うそのようだ。嘘だったんだろうか。それか壮そう大だいな冗じよう談だんだったとか。
+
+「ではこれより、第一回ＳＯＳ団全体ミーティングを開始します！」
+
+　団長席の椅子の上に立ってハルヒが藪やぶから棒に大だい音おん声じようを発した。いきなり何を言い出すんだ。
+
+「今まであたしたちは色々やってきました。ビラも配ったし、ホームページも作った。校内におけるＳＯＳ団の知名度は鰻うなぎの滝たき登のぼり、第一段階は大成功だったと言えるでしょう」
+
+　朝比奈さんの精神に傷を負わせておいて何が大成功だ。
+
+「しかしながら、わが団のメールアドレスには不思議な出来事を訴うつたえるメールが一通も来ず、またこの部室に奇き怪かいな悩なやみを相談しに来る生徒もいません」
+
+　そりゃあ、知名度だけは無む駄だにあっても、何をする部活動なのかいまいち解わからないところだからな。第一、まだ部活動として認められてないし。
+
+「果報は寝ねて待て、昔の人は言いました。でももうそんな時代じゃないのです。地面を掘ほり起こしてでも、果報は探し出すものなのです。だから探しに行きましょう！」
+
+「……何を？」
+
+　誰だれもツッコマないので俺が代表して訊きいた。
+
+
+
+
+
+「この世の不思議をよ！　市内をくまなく探たん索さくしたら一つくらいは謎なぞのような現象が転がっているに違いないわ！」
+
+　その発想のほうが俺にとってはよっぽど謎だがな。
+
+　俺のあきれ顔、古泉の何を考えているのか計りかねる曖あい昧まいな笑え顔がお、長門の無表情、朝比奈さんのもうどうにでもしてという気力の感じられない顔。いっさい顧かえりみることなく、ハルヒは手を振ふり回して叫さけぶ。
+
+「次の土曜日！　つまり明日！　朝九時に北きた口ぐち駅前に集合ね！　遅おくれないように。来なかった者は死し刑けいだから！」
+
+　死刑て。
+
+
+
+
+
+　ところで朝比奈さんのメイドコスプレ写真をハルヒがどうするつもりだったのかと言うと、このアマ、デジカメから吸い出した画像データを俺が適当に作ったホームページに載のせるつもりでいやがったことが判明した。
+
+　俺が気付いたときには、朝比奈さんのメイド画像が一ダースばかりトップページにずらりと並び、訪問者を出で迎むかえる準備万ばん端たん、まさにファイルが電脳空間にアップロードされる寸前だった。
+
+　まったく伸のびないアクセス数もこうすればあっという間に万単位で回るんだと言う。
+
+　アホかい。
+
+　こればっかりは死力を決して俺はハルヒを制し、すべての画像を消去した。自分がメイド服で悩のう殺さつポーズを取っているようなあられもない画像が全世界に発信されるなんてことになれば、朝比奈さんはその場で卒そつ倒とうするに相そう違いない。
+
+　珍めずらしく熱心に説教する俺をハルヒはじとっとした目でみやっていたが、ネットに個人を特定出来るような情報を流すことの危険性を解説する俺の言葉をどうにか理解したのか、
+
+「解ったわよ」
+
+　ふてくされたように言って、しぶしぶデリートに同意した。この際だから画像そのものをすべて消去すべきだったのかもしれないが、それはちょっと惜おしい。俺はハードディスクに隠かくしフォルダを作って、こっそり朝比奈みくる写真を格納し、パスワードで鍵かぎをかけた。
+
+　俺の観賞用にしておこう。
+
+
+
+
+
+　　第四章
+
+
+
+
+
+　休みの日に朝九時集合だと、ふざけんな。
+
+　とか思いながらも自転車こぎこぎ駅前に向かっている自分が我ながら情けない。
+
+　北口駅はこの市内の中心部に位置する私鉄のターミナルジャンクションということもあって、休みになると駅前はヒマな若者たちでごった返す。そのほとんどは市内からもっと大きな都市部に出て行くお出かけ組で、駅周辺には大きなデパート以外に遊ぶ所なんかない。それでもどこから湧わいたのかと思うほどの人混みには、いつもこの大量の人間一人一人にそれぞれ人生ってのがあるんだよなあと考えさせられる。
+
+　シャッターの閉まった銀行の前に不法駐ちゆう輪りん（すまん）して北側の改札出口に俺が到とう着ちやくしたのが九時五分前。すでに全員が雁がん首くびを揃そろえていた。
+
+「遅おそい。罰ばつ金きん」
+
+　顔をあわせるやハルヒは言った。
+
+「九時には間に合ってるだろ」
+
+「たとえ遅れなくとも一番最後に来た奴やつは罰金なの。それがあたしたちのルールよ」
+
+「初耳だが」
+
+「今決めたからね」
+
+　裾すそがやたらに長いロゴＴシャツとニー丈たけデニムスカートのハルヒは晴れやかな表情で、
+
+「だから全員にお茶おごること」
+
+　カジュアルな格好で両手を腰こしに当てているハルヒは、教室で仏ぶつ頂ちよう面づらしているときの百倍は取っつきやすい雰ふん囲い気きだった。うやむやのうちに俺はうなずかされてしまい、とりあえず今日の行動予定を決めましょうというハルヒの言葉に従って喫きつ茶さ店てんへと向かった。
+
+　白いノースリーブワンピースに水色のカーディガンを羽織った朝比奈さんはバレッタで後ろの髪かみをまとめていて、歩くたびに髪がぴょこぴょこ揺ゆれるのがとてつもなく可愛かわいい。いいとこの小さいお嬢じようさんが背せ伸のびして大人っぽい格好をしているような微笑ほほえましさである。手に提さげたポーチもオシャレっぽい。
+
+　古泉はピンクのワイシャツにブラウンのジャケットスーツ、えんじ色のネクタイまでしめているというカッチリしたスタイルで俺の横に並んでいる。うっとうしいことだが様になっている。俺より背が高いし。
+
+　一同の最さい後こう尾びには見慣れたセーラー服を着た長門有希が無音でついてくる。なんかもう完全にＳＯＳ団の一員になっているが、本当は文芸部員のはずじゃなかったのか。あの日、閑かん散さんとしたマンションの一室で理解不能な話を聞かされた手前、その無表情ぶりがなおのこと気にかかる。しかしなんで休みの日まで制服着てるんだ。
+
+　ロータリーに面した喫茶店の奥まった席に腰を下ろす謎なぞの五人組だった。注文を取りに来たウェイターにおのおのオーダーを言うものの、長門だけがメニューをためつすがめつしながら不可解なまでの真しん剣けんさ──でも無表情──で、なかなか決まらない。インスタントラーメンなら食べ頃ごろになってくる時間をかけて、
+
+「アプリコット」と告げる。
+
+　どうせ俺のおごりさ。
+
+
+
+
+
+　ハルヒの提案はこうだった。
+
+　これから二手に分かれて市内をうろつく。不思議な現状を発見したら携けい帯たい電話で連れん絡らくを取り合いつつ状じよう況きようを継けい続ぞくする。のちに落ち合って反省点と今後に向けての展望を語り合う。
+
+　以上。
+
+「じゃあクジ引きね」
+
+　ハルヒは卓たく上じようの容器から爪つま楊よう枝じを五本取り出し、店から借りたボールペンでそのうちの二本に印をつけて握にぎり込んだ。頭が飛び出た爪楊枝を俺たちに引かせる。俺は印入り。同じく朝比奈さんも印入り。後の三人が無印。
+
+「ふむ、この組み合わせね……」
+
+　なぜかハルヒは俺と朝比奈さんを交こう互ごに眺ながめて鼻を鳴らし、
+
+「キョン、解ってる？　これデートじゃないのよ。真ま面じ目めにやるのよ。いい？」
+
+「わあってるよ」
+
+　我ながらやに下がった顔になっていたんじゃないだろうか。ラッキー。朝比奈さんは赤い頬ほおに片手を当てて爪楊枝の先を見つめている。いいね、実にいい。
+
+「具体的に何を探せばいいんでしょうか」
+
+　能天気に言ったのは古泉である。その横で長門は定期的にカップを口に運んでいた。
+
+　ハルヒはチュゴゴゴとアイスコーヒーの最後の一いつ滴てきを飲み干して耳にかかる髪を払はらった。
+
+「とにかく不可解なもの、疑問に思えること、謎っぽい人間、そうね、時空が歪ゆがんでる場所とか、地球人のフリしたエイリアンとかを発見出来たら上出来」
+
+　思わず口の中のミントティーを吹ふきそうになった。あれ、隣となりの朝比奈さんも同じような顔になっている。長門は相変わらずだが。
+
+「なるほど」と古泉。
+
+　本当に解わかったのか、お前。
+
+「ようするに宇宙人とか未来人とか超ちよう能のう力りよく者本人や、彼らが地上に残した痕こん跡せきなどを探せばいいんですね。よく解りました」
+
+　古泉の顔は愉ゆ快かいげでありさえした。
+
+「そう！　古泉くん、あんた見所がある奴やつだわね。その通りよ。キョンも少しは彼の物わかりの良さを見習いなさい」
+
+　あまりこいつを増長させるな。恨うらめしげに見る俺に向かって古泉は笑え顔がおで会え釈しやくした。
+
+「ではそろそろ出発しましょ」
+
+　勘かん定じよう書がきを俺に握らせ、ハルヒは大またで店を出て行った。
+
+　何度言ったか解らないが、もう一度言ってみる。
+
+「やれやれ」
+
+
+
+
+
+　マジ、デートじゃないのよ、遊んでたら後で殺すわよ、と言い残してハルヒは古泉と長門を従えて立ち去った。駅を中心にしてハルヒチームは東、俺と朝比奈さんが西を探たん索さくすることになっていた。何が探索だ。
+
+「どうします？」
+
+　両手でポーチを持って三人の後ろ姿を見送っていた朝比奈さんが俺を見上げた。このまま持って帰りたい。俺は考えるフリをして、
+
+「うーん。まあここに立っててもしょうがないから、どっかブラブラしてましょうか」
+
+「はい」
+
+　素直についてくる。ためらいがちに俺と並び、なにかの拍ひよう子しに肩かたが触ふれ合ったりすると慌あわてて離はなれる仕草が初うい々ういしい。
+
+　俺たちは近くを流れている川の河か川せん敷じきを意味もなく北上しながら歩いていた。一ヶ月前ならまだ花も残っていただろう桜並木は、今はただしょぼくれた川かわ縁べりの道でしかない。
+
+　散策にうってつけの川沿いなので、家族連れやカップルとところどころですれ違ちがう。俺たち二人だって知らない人が見れば仲むつまじい恋こい人びと同士に見えるはずである。まさか自分たちでも解っていないものを探している変な二人組だとは思うまい。
+
+「わたし、こんなふうに出歩くの初めてなんです」
+
+　護岸工事された浅い川のせせらぎを眺めながら朝比奈さんが呟つぶやくように言った。
+
+「こんなふうにとは？」
+
+「……男の人と、二人で……」
+
+「はなはだしく意外ですね。今まで誰だれかと付き合ったことはないんですか？」
+
+「ないんです」
+
+　ふわふわの髪かみでそよ風が遊んでいる。鼻筋の通った横顔を俺は見つめた。
+
+「えー、でも朝比奈さんなら付き合ってくれとか、しょっちゅう言われるでしょ」
+
+「うん……」
+
+　恥はずかしそうにうつむいて、
+
+「ダメなんです。わたし、誰とも付き合うわけにはいかないの。少なくともこの……」
+
+　言いかけて黙だまる。次の言葉を待っている間に三組のカップルがこの世に何一つ悩なやみがないような足取りで俺たちの背後を通り過ぎた。
+
+「キョンくん」
+
+　水みな面もを流れる木の葉の数でも数えようかと思っていた俺は、その声で我に返った。
+
+　朝比奈さんが思い詰つめたような表情で俺を見つめている。彼女は決然と、
+
+「お話ししたいことがあります」
+
+　子こ鹿じかのような瞳ひとみに決意が露あらわに浮うかんでいた。
+
+
+
+
+
+　桜の下のベンチに俺たちは並んで座る。しかし朝比奈さんはなかなか話し出そうとはしなかった。「どこから話せばいいのか」とか「わたし話ヘタだから」とか「信じてもらえないかもしれませんけど」とか、顔を伏ふせてプツプツ呟いた後、やっと彼女は言葉を句切るようにして話し始めた。
+
+　手始めにこう言われた。
+
+「わたしはこの時代の人間ではありません。もっと、未来から来ました」
+
+
+
+
+
+「いつ、どの時間平面からここに来たのかは言えません。言いたくても言えないんです。過去人に未来のことを伝えるのは厳重に制限されていて、航時機に乗る前に精神操作を受けて強制暗示にかからなくてはなりませんから。だから必要上のことを言おうとしても自動的にブロックがかかります。そのつもりで聞いて下さい」
+
+　朝比奈さんは語った。
+
+「時間というものは連続性のある流れのようなものでなく、その時間ごとに区切られた一つの平面を積み重ねたものなんです」
+
+　最初から解わからない。
+
+「ええと、そうね。アニメーションを想像してみて。あれってまるで動いているように見えるけど、本体は一枚一枚描えがかれた静止画でしかないですよね。時間もそれと同じで、デジタルな現象なの。パラパラマンガみたいなものと言ったほうが解りやすいかな」
+
+「時間と時間との間には断絶があるの。それは限りなくゼロに近い断絶だけど。だから時間と時間には本質的に連続性がない」
+
+「時間移動は積み重なった時間平面を三次元方向に移動すること。未来から来たわたしは、この時代の時間平面上では、パラパラマンガの途と中ちゆうに描かれた余計な絵みたいなもの」
+
+「時間は連続してないから、仮にわたしがこの時代で歴史を改変しようとしても、未来にそれは反映されません。この時間平面上のことだけで終わってしまう。何百ページもあるパラパラマンガの一部に余計な落書きをしても、ストーリーは変わらないでしょう？」
+
+「時間はあの川みたいにアナログじゃないの。その一いつ瞬しゆんごとに時間平面が積み重なったデジタルな現象なの。解ってくれたかな」
+
+　俺はこめかみを押さえるべきかどうか迷ってから、やっぱり押さえることにした。
+
+　時間平面。デジタル。そんなことはわりかしどうでもいい。けど未来人って？
+
+　朝比奈さんはサンダル履ばきのつま先を眺ながめながら、
+
+「わたしがこの時間平面に来た理由はね……」
+
+　二人の子供を連れた夫婦が俺たちの前に影かげを落として歩いていく。
+
+「三年前。大きな時間震しん動どうが検出されたの。ああうん、今の時間から数えて三年前ね。キョンくんや涼宮さんが中学生になった頃ころの時代。調査するために過去に飛んだ我々は驚おどろいた。どうやってもそれ以上の過去に遡さかのぼることが出来なかったから」
+
+　また三年前か。
+
+「大きな時間の断層が時間平面と時間平面の間にあるんだろうってのが結論。でもどうしてその時代に限ってそれがあるのかは解らなかった。どうやらこれが原因らしいってことが解ったのはつい最近。……んん、これはわたしのいた未来での最近のことだけど」
+
+「……何だったんです？」
+
+　まさかアレが原因なんじゃないだろうな、という俺の願いは聞き届けられなかった。
+
+「涼宮さん」
+
+　朝比奈さんは、一番俺が聞きたくなかった言葉を言った。
+
+「時間の歪ゆがみの真ん中に彼女がいたの。どうしてそれが解ったのかは訊きかないで。禁則事じ項こうに引っかかるから説明出来ないの。でも確かよ。過去への道を閉とざしたのは涼宮さんなのよ」
+
+「……ハルヒにそんなことが出来るとは思えないんですが……」
+
+「わたしたちだって思わなかったし、本当のこと言えば、一人の人間が時間平面に干かん渉しよう出来るなんて未いまだに解明出来ていないの。謎なぞなんです。涼宮さんも自分がそんなことしてるなんて全然自覚してない。自分が時間を歪わい曲きよくさせている時間震動の源だなんて考えてもいない。わたしは涼宮さんの近くで新しい時間の変異が起きないかどうかを監かん視しするために送られた……ええと、手て頃ごろな言葉が見つからないけど、監視係みたいなもの」
+
+「…………」と俺。
+
+「信じてもらえないでしょうね。こんなこと」
+
+「いや……でも何で俺にそんなことを言うんです？」
+
+「あなたが涼宮さんに選ばれた人だから」
+
+　朝比奈さんは上半身ごと俺のほうへと向き直って、
+
+「詳くわしくは言えない。禁則にかかるから。多分だけど、あなたは涼宮さんにとって重要な人。彼女の一挙手一投足にはすべて理由がある」
+
+「長門や古泉は……」
+
+「あの人たちはわたしと極めて近い存在です。まさか涼宮さんがこれだけ的確に我々を集めてしまうとは思わなかったけど」
+
+「朝比奈さんはあいつらが何者か知ってるんですか？」
+
+「禁則事項です」
+
+「ハルヒのすることを放っておいたらどうなるんですか」
+
+「禁則事項です」
+
+「て言うか、未来から来たんだったらこれからどうなるか解りそうなもんなんですけど」
+
+「禁則事項です」
+
+「ハルヒに直接言ったらどうなんです」
+
+「禁則事項です」
+
+「…………」
+
+「ごめんなさい。言えないんです。特に今のわたしにはそんな権限がないの」
+
+　申し訳なさそうに朝比奈さんは顔を曇くもらせ、
+
+「信じなくてもいいの。ただ知っておいて欲しかったんです。あなたには」
+
+　似たようなセリフを先日も聞いたな。人の気配がしない静かなマンションの一室で。
+
+「ごめんね」
+
+　黙だまりこくる俺にどういう感想を抱いだいたのか、朝比奈さんは切なそうに目を潤うるませた。
+
+「急にこんなこと言って」
+
+「それは別にいいんですが……」
+
+　自分が宇宙人に作られた人造人間だとか言い出す奴やつがいたと思ったら今度は未来人の出現ですか。何をどうやったらそんなことが信じられるんだ？　よかったら教えて欲しい。
+
+　ベンチに手をついた拍ひよう子しに朝比奈さんと手が触ふれ合った。小指しか触さわってないのに朝比奈さんは電流でも走ったみたいに大げさに手を引っ込めて、またうつむいた。
+
+　俺たちは黙って川かわ面もを見つめ続けていた。
+
+　どれだけの時間が経過したことか。
+
+「朝比奈さん」
+
+「はい……？」
+
+「全部、保留でいいですか。信じるとか信じないとかは全部脇わきに置いておいて保留ってことで」
+
+「はい」
+
+　朝比奈さんは微笑ほほえんだ。いい笑え顔がおです。
+
+「それでいいです。今は。今後もわたしとは普ふ通つうに接して下さい。お願いします」
+
+　朝比奈さんはベンチに三つ指をついて深々と頭を下げた。大げさな。
+
+「一個だけ訊いていいですか？」
+
+「何でしょう」
+
+「あなたの本当の歳としを教えて下さい」
+
+「禁則事項です」
+
+　彼女はイタズラっぽく笑った。
+
+
+
+
+
+　その後、俺たちはひたすらに街をブラついて過ごした。ハルヒにはデートじゃないんだからと釘くぎを刺さされていたが、あんな話を聞いた後ではもうどうでもよくなっていた。俺と朝比奈さんはコジャレ系のブティックをウィンドーショッピングして回ったり、ソフトクリームを買って食いながら歩いたり、バッタモノのアクセサリーを往来に広げている露ろ天てん商しようを冷やかしたり……つまり普通のカップルのようなことをして時間を潰つぶした。
+
+　これで手でも繋つないでくれたら最高だったんだけどな。
+
+　携けい帯たい電話が鳴った。発信元はハルヒ。
+
+『十二時にいったん集合。さっきの駅前のとこ』
+
+　切れた。腕うで時計を見ると十一時五十分。間に合うわけがねえ。
+
+「涼宮さん？　何って？」
+
+「また集まれだそうです。急いで戻もどったほうがよさそうですね」
+
+　俺たちが腕でも組んで現れたらハルヒはどんな顔をするだろう。怒おこり出すだろうか。
+
+　カーディガンの前を合わせながら朝比奈さんは不思議そうに俺を見上げた。
+
+
+
+
+
+「収しゆう穫かくは？」
+
+　十分ほど遅おくれて行くと開口一番、ハルヒは不ふ機き嫌げんな面つらで、
+
+「何かあった？」
+
+「何も」
+
+「本当に探してた？　ふらふらしてたんじゃないでしょうね。みくるちゃん？」
+
+　朝比奈さんはふるふると首を振ふる。
+
+「そっちこそ何か見つけたのかよ」
+
+　ハルヒは沈ちん黙もくする。その後ろで古泉が清せい涼りよう感かん溢あふれる顔で頭をかき、長門はぼんやりと突つっ立っていた。
+
+「昼ご飯にして、それから午後の部ね」
+
+　まだやるつもりかよ。
+
+
+
+
+
+　ハンバーガーショップで昼飯を食っている最さ中なかにハルヒはまたグループ分けをしようと言い出し、喫きつ茶さ店てんで使用した五本の爪つま楊よう枝じを取り出した。用意のいい奴だ。
+
+　無造作に手を一いつ閃せんさせ、古泉が、
+
+「また無印ですね」
+
+　白すぎる歯。こいつは笑ってばかりいるような気がするな。
+
+「わたしも」
+
+　朝比奈さんがつまんだ楊よう枝じを俺に見せた。
+
+「キョンくんは？」
+
+「残念ですが、印入りです」
+
+　ますます不機嫌な顔で、ハルヒは長門にも引くようにうながした。
+
+　クジの結果、今度は俺と長門有希の二人とその他三人という組み合わせになった。
+
+「……」
+
+　印の付いていない己おのれの爪楊枝を親の仇きゆう敵てきのような目つきで眺ながめ、それから俺とチーズバーガーをちまちま食べている長門を順番に見て、ハルヒはペリカンみたいな口をした。
+
+　何が言いたい。
+
+「四時に駅前で落ち合いましょう。今度こそ何かを見つけてきてよね」
+
+　シェイクをチュゴゴゴと飲み干した。
+
+
+
+
+
+　今度は北と南に別れることになり、俺たちは南担当。去り際ぎわに朝比奈さんは小さく手を振ってくれた。心が温まるね。
+
+　そして今、俺は昼下がりの駅前で、喧けん噪そうの中に長門と並んで立ちつくしているわけだ。
+
+「どうする」
+
+「……」
+
+　長門は無言。
+
+「……行くか」
+
+　歩き出すとついてくる。だんだんとこいつの扱あつかいにも慣れてきた。
+
+「長門、この前の話だがな」
+
+「なに」
+
+「なんとなく、少しは信じてもいいような気分になってきたよ」
+
+「そう」
+
+「ああ」
+
+「…………」
+
+　空くう虚きよなオーラをまといながら俺たちは黙もく々もくと駅の周りを回り続けた。
+
+「お前、私服持ってないのか」
+
+「……」
+
+「休みの日はいつも何してんのさ」
+
+「……」
+
+「今、楽しいか」
+
+「……」
+
+　ま、こんな感じか。
+
+　いい加減に虚きよ無む的な行動を続けるのもしんどくなってきたので、俺は長門を図書館に誘さそった。本館はもっと海べりにあるのだが、駅前が行政開発によって土地整備されたときに出来た新しい図書館である。本なんかほとんど借りたりしないから俺は入ったことがない。
+
+　ソファでもあったら座って休もうと思っていたのだが、あるにはあるものの全部ふさがっていた。ヒマ人どもめ。他ほかに行くところがないのか。
+
+　俺が憮ぶ然ぜんと館内を見み渡わたしていると、長門はまるで夢遊病患かん者じやのようなステップでふらふらと本ほん棚だなに向かって歩き出した。放ほうっておこう。
+
+　本は昔よく読んだ。小学生の低学年の頃ころ、母親が図書館で子供向けのジュブナイルを借りてきて俺にあてがった本を片かた端はしから読んでいた。ジャンルも何もまちまちだったが、それでも読む本すべてが面おも白しろかったように記き憶おくしている。何読んだかは忘れたけど。
+
+　いつからかな。本を読まなくなったのは。読んでも面白いと思わなくなったのは。
+
+　俺は本棚から目に付いた本を抜ぬいて、パラパラめくっては元に戻もどすことを繰くり返しながらこれだけの量の中から事前情報なしに面白い本を探すのは一苦労だなと考えながら棚の間をさまよった。
+
+　長門の姿を探すと、壁かべ際ぎわのやたらでかくて分厚い本が立ち並んでいる棚の前でダンベルの代わりになりそうな本を立ち読みしていた。厚モノ好きだな、ほんと。
+
+　スポーツ紙を広げてふんぞり返っていたオッサンがソファを離はなれたのを見つけて、俺は適当に選んだノベルス本を抱かかえて空いたスペースに滑すべり込んだ。
+
+　読む気もない本を読むのはさすがにノレず、瞬またたく間に俺は睡すい魔まとの闘たたかいを余よ儀ぎなくされ、敵の圧あつ倒とう的な波状攻こう撃げきにあっさり陥かん落らく、俺は速すみやかに眠ねむりに落ちた。
+
+　尻しりポケットが震しん動どうした。
+
+「おわ？」
+
+　飛び起きる。周囲の客が迷めい惑わくそうに俺を見て俺はここが図書館であることを思い出した。ヨダレをぬぐいつつ俺は館外に小走りで出た。
+
+　バイブレータ機能をいかんなく発揮していた携けい帯たい電話を耳に当てる。
+
+『何やってんのこのバカ！』
+
+　金切り声が鼓こ膜まくをつんざいた。おかげで頭がはっきりする。
+
+『今何時だと思ってんのよ！』
+
+「すまん、今起きたとこなんだ」
+
+『はあ？　このアホンダラゲ！』
+
+　お前だけにはアホとは言われたくないな。
+
+　腕うで時計を見ると四時半を回っている。四時集合だったっけ。
+
+『とっとと戻りなさいよ！　三十秒以内にね！』
+
+　無茶言うな。
+
+　乱暴に切られた携帯電話をポケットに戻して図書館に戻る。長門は簡単に見つかった。最初に見かけた棚の前を動かずに百科事典みたいな本を読みふけっていたからである。
+
+　そこからが一苦労だった。床ゆかに根を生やしたように動かない長門をその場から移動させるには、カウンターに行って長門の貸し出しカードを作ってその本を借りてやるまでの時間が必要で、その間にかかりまくってくるハルヒからの電話を俺はすべて無視した。
+
+　何だか難しい名前の外国人が著者の哲てつ学がく書を大切そうに抱える長門を急せかして駅前に戻って来た俺たちを、三人は三者三様の反応で出で迎むかえてくれた。
+
+　朝比奈さんは疲つかれ切った顔でため息混じりに微笑ほほえんで、古泉の野や郎ろうはオーバーアクションで肩かたをすくめ、ハルヒはタバスコを一気飲みしたような顔で、
+
+「遅ち刻こく。罰ばつ金きん」と言った。
+
+　またおごりかよ。
+
+
+
+
+
+　結局のところ、成果もへったくれもあるはずがなく、いたずらに時間と金を無む駄だにしただけでこの日の野外活動は終わった。
+
+「疲れました。涼宮さん、ものすごい早足でどんどん歩いていくんだもの。ついて行くのがやっと」
+
+　別れ際に朝比奈さんが言って息をついた。それから背せ伸のびして俺の耳元に唇くちびるを近づけ、
+
+「今日は話を聞いてくれてありがとう」
+
+　すぐに後ろに下がって照れて笑う。未来人ってのは皆みなこんなに優ゆう雅がに笑うものなのかね。
+
+　じゃ、と可愛かわいく会え釈しやくして朝比奈さんは立ち去った。古泉が俺の肩を軽く叩たたき、
+
+「なかなか楽しかったですよ。いや、期待にたがわず面白い人ですね、涼宮さんは。あなたと一いつ緒しよに行動出来なかったのは心残りですが、またいずれ」
+
+　いやになるほど爽さわやかな笑えみを残して古泉も退去、長門はとうの昔に姿を消していた。
+
+　一人残ったハルヒが俺を睨にらみつけ、
+
+「あんた今日、いったい何をしてたの？」
+
+「さあ。いったい何をしてたんだろうな」
+
+「そんなことじゃダメじゃない！」
+
+　本気で怒おこっているようだった。
+
+「そう言うお前はどうなんだよ。何か面白いもんでも発見出来たのか？」
+
+　うぐ、と詰つまってハルヒは下唇をかんだ。放っとくとそのまま唇を噛かみやぶらんばかりである。
+
+「ま、一日やそこらで発見出来るほど、相手も無防備じゃないだろ」
+
+　フォローを入れる俺をジロリという感じで見て、ハルヒはつんと横を向いた。
+
+「明後日あさつて、学校で。反省会しなきゃね」
+
+　きびすを返し、それっきり振ふり返ることもなくあっと言う間に人混みに紛まぎれていく。
+
+　俺も帰らせてもらおうかと銀行の前まで行けば、自転車がなかった。かわりに「不法駐ちゆう輪りんの自転車は撤てつ去きよしました」と書かれたプレートが近くの電柱にかかっていた。
+
+
+
+
+
+　　第五章
+
+
+
+
+
+　週明け、そろそろ梅雨つゆを感じさせる湿しつ気けを感じながら登校すると着いた頃ころには今までにも増して汗あせみずくになった。誰だれかこの坂道にエスカレータを付けるという公約を掲かかげて選挙に出る奴やつはいないものか。将来選挙権を得たときにそいつに投票してやってもいい。
+
+　教室で下した敷じきを団扇うちわ代わりにして首元から風を送り込んでいたら、珍めずらしく始業の鐘かねギリギリにハルヒが入ってきた。
+
+　どすりと鞄かばんを机に投げ出し、
+
+「あたしも扇あおいでよ」
+
+「自分でやれ」
+
+　ハルヒは二日前に駅前で別れたときとまったく変化のない仏ぶつ頂ちよう面づらで唇を突つき出していた。最近マシな顔になったと思っていたのに、また元に戻もどっちまった。
+
+「あのさ、涼宮。お前『しあわせの青い鳥』って話知ってるか？」
+
+「それが何？」
+
+「いや、まあ何でもないんだけどな」
+
+「じゃあ訊きいてくんな」
+
+　ハルヒは斜ななめ上を睨み、俺は前を向き、岡部教師がやって来てホームルームが始まった。
+
+
+
+
+
+　この日の授業中、不ふ機き嫌げんオーラを八方に放射するハルヒのダウナーな気配がずっと俺の背中にプレッシャーを与あたえていて、いや、今日ほど終業のチャイムが福ふく音いんに聞こえた日はなかった。山火事をいち早く察知した野ネズミのように、俺は部室棟とうへと退たい避ひする。
+
+　部室で長門が読書する姿は今やデフォルトの風景であり、もはやこの部屋と切り離はなせない固定の置物のようでもあった。
+
+　だから俺は、一足先に部室に来ていた古泉一樹にこのように言った。
+
+「お前も俺に涼宮のことで何か話があるんじゃないのか？」
+
+　この場には三人しかいない。ハルヒは今週が掃そう除じ当番だし朝比奈さんはまだ来ていない。
+
+「おや、お前も、と言うからにはすでにお二方からアプローチを受けているようですね」
+
+　古泉は、昨日図書館から借り出した本に顔を埋うずめている長門を一いち瞥べつする。すべてを知ってるみたいな訳知り口調が気に入らない。
+
+「場所を変えましょう。涼宮さんに出くわすとマズイですから」
+
+　古泉が俺を伴ともなって訪れた先は食堂の屋外テーブルだった。途と中ちゆうで自じ販はん機きのコーヒーを買って俺に手て渡わたし、丸いテーブルに男二人でつくのもアレだけども、この際仕方がない。
+
+「どこまでご存じですか？」
+
+「涼宮がただ者ではないってことくらいか」
+
+「それなら話は簡単です。その通りなのでね」
+
+　これは何かの冗じよう談だんなのか？　ＳＯＳ団に揃そろった三人が三人とも涼宮を人間じゃないみたいなことを言い出すとは、地球温暖化のせいで熱気にあてられてるんじゃねえのか。
+
+「まずお前の正体から聞こうか」
+
+　宇宙人と未来人には心当たりがあるから、
+
+「実は超ちよう能のう力りよく者でして、などと言うんじゃないだろうな」
+
+「先に言わないで欲しいな」
+
+　古泉は紙コップをゆるゆると振って
+
+「ちょっと違ちがうような気もするんですが、そうですね、超能力者と呼ぶのが一番近いかな。そうです、実は僕は超能力者なんですよ」
+
+　俺は黙だまってコーヒーを飲んだ。減糖しておくべきだった。甘ったるい。
+
+「本当はこんな急に転校してくるつもりはなかったんですが、状じよう況きようが変わりましてね。よもやあの二人がこうも簡単に涼宮ハルヒと結けつ託たくするとは予定外でした。それまでは外部から観察しているだけだったんですけど」
+
+　ハルヒを珍しい昆こん虫ちゆうか何かみたいに言うな。
+
+　俺の眉まゆが寄ったのを見てとったか、
+
+「どうか気を悪くしないで下さい。我々も必死なんですよ。涼宮さんに危害を加えたりはしませんし、むしろ我々は彼女を危機から守ろうとしているんですから」
+
+「我々ってことは、お前の他ほかにもいっぱいいるのか。その超能力者とやらは」
+
+「いっぱいってことはないですが、それなりには。僕は末まつ端たんなので正確には知りませんが、地球全土で十人くらいでしょう。その全員が『機関』に所属しているはずです」
+
+『機関』と来たか。
+
+「実体は不明です。構成員が何人いるのかも。トップにいる人たちがすべてを統とう括かつしているそうですが」
+
+「……それで、その『機関』なる秘密結社は何をする団体なんだ」
+
+　古泉はぬるくなったコーヒーで唇くちびるを湿しめらせ、
+
+「あなたの想像通りですよ。『機関』は三年前の発ほつ足そく以来、涼宮ハルヒの監かん視しを最重要事じ項こうにして存在しています。きっぱり言い切ってしまえば、涼宮さんを監視するためだけに発生した組織です。ここまで言えばそろそろお解わかりでしょうが、この学校にいる『機関』の手の者は僕だけではありません。何人ものエージェントがすでに潜せん入にゆう済みです。僕は追加要員としてここに来ました」
+
+　だしぬけに俺は谷口の顔を思い出した。ハルヒとは中学からずっと同じクラスであるとか言っていた。まさか、あいつも古泉と同種類の人間なのか？
+
+「さあ、それはどうでしょう」
+
+　古泉はするりとしらばっくれ、
+
+「しかしまあ、それなりの人員が涼宮さんの周りにいることは保証してもいいですよ」
+
+　どうしてみんなそんなにハルヒが好きなんだ。エキセントリックで居い丈たけ高だかで周囲の迷めい惑わくを顧かえりみない自己中女のどこにそんな大げさな組織から狙ねらわれるような要因があると言うんだ。見てくれがいいのは認めてやっていいが。
+
+「今から三年前に何があったのかは解りません。僕に解るのは、三年前のあの日、突とつ然ぜん僕の身に超能力としか思えない力が芽生えたことですね。最初はパニックでしたよ。怖こわい思いもずいぶんしましたしね。すぐに『機関』からお迎むかえが来て救われましたが、あのままではてっきり自分の頭がおかしくなったと思って自殺してたかもしれません」
+
+　その時から今までずっとお前の頭はおかしくなり続けなんじゃないか。
+
+「ええ、その可能性もなくはない。しかし我々はもっと畏い怖ふすべき可能性を危き惧ぐしているのですよ」
+
+　自じ嘲ちよう的な笑えみと一いつ緒しよにコーヒーを飲み込んだ古泉は不意に真顔になった。
+
+「あなたは、世界がいつから存在していると思いますか？」
+
+　えらくマクロな話に飛んだな。
+
+「遥はるか昔にビッグバンとかいう爆ばく発はつが起きてからじゃないのか」
+
+「そういうことになってますね。ですが我々は一つの可能性として、世界が三年前から始まったという仮説を捨てきれないのですよ」
+
+　俺は古泉の顔を見返した。正気の沙さ汰たとは思えんな。
+
+「そんなわけがないだろ。俺は三年前より以前の記き憶おくだってちゃんとあるし、親だって健在だ。ガキの頃ころにドブに落ちて三針縫ぬった傷きず跡あとだってちゃんと残ってる。日本史で必死こいて覚えている歴史はどうなるんだよ」
+
+「もし、あなたを含ふくめる全人類が、それまでの記憶を持ったまま、ある日突然世界に生まれてきたのではないということを、どうやって否定するんですか？　三年前にこだわることもない。いまからたった五分前に全宇宙があるべき姿をあらかじめ用意されて世界が生まれ、そしてすべてがそこから始まったのではない、と否定出来る論ろん拠きよなどこの世のどこにもありません」
+
+「…………」
+
+「例えば、仮想現実空間を考えてみて下さい。あなたが脳に電極を埋うめ込まれ、見ている映像や空気の匂においやテーブルを触さわった感覚などが、全部直接脳に与あたえられている情報なのだとしたら、あなたはそれが本当の現実でないと気付くことはないでしょう。現実とは、世界とは意外に脆もろいものなんです」
+
+「……それはそれでいいことにしておこう。世界が三年前か五分前に始まったってのもまあいい。そこから何をどう捻ひねったらハルヒの名前が出てくるんだ？」
+
+「『機関』のお偉えら方は、この世界をある存在が見ている夢のようなものだと考えています。我々は、いやこの世界そのものがその存在にとっての夢にすぎないのではないかとね。なにぶん夢ですから、その存在にとって我々が現実と呼ぶ世界を創造したり改変したりすることなどは児じ戯ぎにも等しいはずです。そして我々はそんなことの出来る存在の名を知っています」
+
+　丁てい寧ねい語で落ち着いた喋しやべりのせいか古泉の顔つきは腹立たしいほど大人びて見えた。
+
+「世界を自らの意思で創ったり壊こわしたり出来る存在──人間はそのような存在のことを、神、と定義しています」
+
+　……おい、ハルヒ。お前とうとう神様にまでされちまったぞ。どうすんだ。
+
+「ですから『機関』の者は戦せん々せん恐きよう々きようとしているんですよ。万が一、この世界が神の不興を買ったら、神はあっさり世界を破は壊かいして一から創り直そうとするかもしれません。砂場に作った山の形が気に入らなかった子供のように。僕はいくら矛む盾じゆんに満ちた世の中だとは言え、この世界にそれなりの愛着を抱いだいています。ですので、『機関』に協力しているというわけなんです」
+
+「ハルヒに頼たのんでみたらどうだ、世界を壊すのはどうかやめて下さいってな。聞いてくれるかもしれないぞ」
+
+「もちろん涼宮さんは自分がそのような存在であることには無自覚です。彼女はまだ本来の能力に気付いていない。我々は出来れば生しよう涯がい気付かないまま平へい穏おん無事な人生を送ってもらいたいと考えています」
+
+　ここでやっと古泉は元の笑みを取り戻もどした。
+
+「言うならば彼女は未完成の神ですよ。自在に世界を操あやつるまでにはなっていない。ただし未発達ながら、片へん鱗りんを見せるようにはなっています」
+
+「どうして解る？」
+
+「あなたは何故なぜ我々みたいな超ちよう能のう力りよく者や、あるいは朝比奈みくるや長門有希のような存在がこの世にいると思うんですか。涼宮さんがそう願ったからですよ」
+
+　宇宙人、未来人、異世界人、超能力者がいたら、あたしのところに来なさい。
+
+　最初に出会った教室の自己紹しよう介かいでハルヒが述べたセリフが蘇よみがえる。
+
+「彼女はまだ自覚的に神のごとき力を発揮出来はしない。無意識のうちに偶ぐう然ぜんその力を行使しているにすぎません。しかしこの数ヶ月ほど、明らかに人知を越こえた力が涼宮さんから放たれたことは解わかっています。その結果は、もう言うまでもありませんね。涼宮さんは朝比奈みくると出会い、長門有希に出会い、そして僕をも彼女の一団に加えてしまった」
+
+　俺だけ除のけ者かよ。
+
+「そうではありません。それどころか、あなたが一番の謎なぞなんです。失礼とは思いましたが、あなたについては色々調べさせてもらいました。保証します、あなたは特別何の力も持たない普ふ通つうの人間です」
+
+　ほっとしていいのか、悲しむべきなのか。
+
+「解りませんね。ひょっとしたらあなたが世界の命運を握にぎっているということも考えられます。これは我々からのお願いです。どうか涼宮さんがこの世界に絶望してしまわないように注意して下さい」
+
+「ハルヒが神様だと言うのならな」と俺は提案した。「あいつを捕つかまえて解かい剖ぼうでもして、頭の中の仕組みでも調べるなりなんなりしてみたらどうだ。手っ取り早く世界の仕組みが解るかもしれないぞ」
+
+「そのように主張する強きよう硬こう派も、確かに『機関』には存在します』
+
+　あっさり古泉はうなずいた。
+
+「ですが、軽々しく手を出すべきではないという意見で大勢は占しめられています。もしうっかりと神の機き嫌げんを損そこねてしまうようなことがあれば、高確率で取り返しのつかないことになるでしょう。我々が望んでいるのは世界の現状維い持じですから、涼宮さんには平和な生活を送っていただけることを希望しています。ヘタを打てば、火ひ鉢ばちの中の焼やき栗ぐりを取ろうとして結果、火傷やけどをすることになるだけですよ」
+
+「……いったいどうすりゃいいんだよ」
+
+「それも解りません」
+
+「もし、もしもだな、ハルヒがポックリ逝いっちまったら世界はどうなる？」
+
+「さて、同時に世界も一いつ瞬しゆんにして消しよう滅めつするのか、神なき世界が続くのか、また新しい神が生まれるのか。誰だれにも解りません。その時が来るまでね」
+
+　紙コップのコーヒーはすっかり冷たくなっていた。飲む気が失うせて、俺はそれをテーブルの端はしに追いやると、
+
+「超能力者とか言ったな」
+
+「ええ、我々はまた違ちがう名めい称しようをつけていますが、簡単に言えばそれで間違いないでしょう」
+
+「だったら何か力を使って見せてくれよ。そうしたらお前の言うことを信用してやる。例えばこのコーヒーを元の熱さに戻すとか」
+
+　古泉は楽しそうに笑った。含ふくみ笑い以外の笑えみを見るのはこれが最初かもしれない。
+
+「すみません無理です。そういう解りやすい能力とはちょっと違うんです。それに普段の僕には何の力もありません。力を使えるのはいくつかの条件が重なって初めて出来ることなんです。お見せする機会もあるでしょう」
+
+　長々と話したりしてすみませんでした、今日はもう帰ります、と言って、古泉はにこやかにテーブルを離はなれた。
+
+　俺は軽快に去りゆく古泉の背中が見えなくなるまで見送って、ふと思いついて紙コップを手に取った。
+
+　言うまでもないかもしれないが。
+
+　当然、中身は冷たいままだった。
+
+
+
+
+
+　部室に戻ると朝比奈さんが下着姿で立っていた。
+
+
+
+
+
+「……」
+
+　朝比奈さんはフリフリのエプロンドレスを手に持って、ドアノブを握ったまま佇たたずむ俺をびっくりした猫ねこのように丸い目で見つめて、ゆっくりと口を悲鳴の形に開いていく。
+
+「失礼しました」
+
+　声を出される前に俺は踏ふみ出しかけていた足を元の位置に戻もどしてドアを閉めた。幸いなことに悲鳴は聞かずにすんだ。
+
+　しまったな、ノックすべきだった。いや待て、着き替がえるんなら鍵かぎくらいかけておいてくれよなあ。
+
+　網もう膜まくに映った白い裸ら身しんを長期記き憶おくに移行すべきかどうか考えていると、内側から控ひかえめなノックの音。「どうぞ……」声も控えめだ。
+
+「すみません」
+
+「いえ……」
+
+　ドアを開けてくれた朝比奈さんの頭二つぶんくらい低いところにある旋毛つむじを見つつ謝る俺に、朝比奈さんは目元をうっすらピンクに染めて、
+
+「わたしこそ、いつも恥はずかしいところばかり見せちゃって……」
+
+　全然けっこうです。
+
+　どうやらハルヒの注文を愚ぐ直ちよくに守っているらしい。朝比奈さんは例のメイド服を着込んでしきりと恥じらっていた。
+
+　やっぱり可愛かわいい。
+
+　このまま朝比奈さんと見つめ合っていたら、さっきの映像やら何やらが脳内でこんがらがって究極的にダメになりそうだったので、俺は理性を総動員してリビドーを迎げい撃げき、団長席に座ってパソコンのスイッチを入れた。
+
+　視線を感じて目を上げると長門有希が珍めずらしくこっちを眺ながめていて、眼鏡めがねのブリッジに手を添そえてちょいと上げ、読書に戻る。奇き妙みようなほど人間くさい仕草に見えた。
+
+　ＨＴＭＬエディタを起動してホームページファイルを呼び出す。いつまでも代わり映えしないＳＯＳ団サイトをどうにかしようと思ったのだが、何をどう発展させればいいのか見当もつかない。いつも無む駄だに時間を浪ろう費ひして嘆たん息そくとともにファイルを閉じるだけであり、だったらせんでもいいじゃないかという気もしつつ、何せヒマだからな。オセロも飽あきたし。
+
+　腕うでを組んで呻しん吟ぎんする俺の前に湯飲みが置かれた。メイド服の朝比奈さんが、にっこりして盆ぼんを掲かかげている。もうまるで本物のメイドさんに給仕されている気分。
+
+「ども」
+
+　さっき古泉にコーヒーを奢おごられたばかりだが、当たり前だ、ありがたく頂ちよう戴だいする。
+
+　朝比奈さんはさらに長門にもお茶を配って、その隣となりに座り、ふーふー冷ましながら煎せん茶ちやを飲み始めた。
+
+
+
+
+
+　結局その日、ハルヒは部室に姿を現さなかった。
+
+
+
+
+
+「昨日はどうして来なかったんだよ。反省会をするんじゃなかったのか？」
+
+　例によって例のごとし。朝のホームルーム前に後ろの席に話しかける俺である。
+
+　机に顎あごをつけて突つっ伏ぷしていたハルヒは面めん倒どうくさそうに口を開いた。
+
+「うるさいわね。反省会なら一人でしてたわよ」
+
+　訊きけばハルヒは土曜に三人で歩いたコースを、昨日学校が引けた後で一人で廻めぐっていたのだと言う。
+
+「見落としがあったんじゃないかと思って」
+
+　犯行現場に何度も足を運ぶ習性のあるのは刑けい事じだけかと思っていたが。
+
+「暑いし疲つかれた。衣ころも替がえはいつからなのかしら。早く夏服に着替えたいわ」
+
+　衣替えは六月からだ。あと一週間ほど五月は残っている。
+
+「涼宮、前にも言ったかもしれないけどさ、見つけることも出来ない謎なぞ探しはすっぱり止やめて、普ふ通つうの高校生らしい遊びを開かい拓たくしてみたらどうだ」
+
+　ガバッと起きあがって睨にらみつけられる……ことを予想したのだが、あにはからんや、ハルヒはぐてっと頬ほおを机にくっつけたままだった。疲れているのは本当のようだ。
+
+「高校生らしい遊びって何よ」
+
+　声にも潤うるおいがない。
+
+「だから、いい男でも見つけて市内の散策ならそいつとやれよ。デートにもなって一石二鳥だろうが」
+
+　あの日の朝比奈さんとの語らいを思い出しながら俺はそう提案する。
+
+「それにお前なら男には不自由しないぞ。その奇き矯きような性格を隠いん蔽ぺいしていればの話だが」
+
+「ふんだ。男なんかどうでもいいわ。恋れん愛あい感情なんてのはね、一時の気の迷いよ、精神病の一種なのよ」
+
+　机を枕まくらにして窓の外へぼんやり視線を固定したまま、ハルヒは無気力に言った。
+
+「あたしだってねー、たまーにだけどそんな気分になったりするわよ。そりゃ健康な若い女なんだし身体からだをもてあましたりもするわ。でもね、一時の気の迷いで面倒ごとを背負い込むほどバカじゃないのよ、あたしは。それにあたしが男漁あさりに精出すようになったらＳＯＳ団はどうなるの。まだ作ったばっかりなのに」
+
+　ほんと言うとまだ出来てもいないんだがな。
+
+「何か適当なお遊びサークルにすればいい。そうすりゃ人も集まるぞ」
+
+「いやよ」
+
+　一言で拒きよ絶ぜつされた。
+
+「そんなのつまんないからＳＯＳ団を作ったのに。萌もえキャラと謎の転校生も入団させたのに。何も起こらないのは何故なぜなのよ？　あああ、そろそろ何かパアッと事件の一つでも発生しないかな」
+
+　こんなに参っているハルヒを見るのも初めてだが、弱気になっている顔は割合可愛かった。笑わなくても普通の顔をしているだけで、こいつはけっこう見み栄ばえがするんだ。つくづく、もったいない。
+
+　その後、午前の授業中のほとんどを、ハルヒは熟じゆく睡すいして過ごした。一度も教師に発見されなかったのは奇き跡せき……いや偶ぐう然ぜんだろう、やはり。
+
+
+
+
+
+　だがこの時、奇くしくも事件はひそかに始まっていたのだ。パアッというほど派手じゃなかったからほとんど誰だれも知らないうちに始まって、また終わった事件なのだが、少なくとも俺は朝のホームルームの時点で、そうだな、足首にまでその事件に浸つかっていたんだ。
+
+　実はハルヒに話しかけながら、俺は一つの懸けん案あん事じ項こうを抱かかえていた。その懸案は朝、俺の下げ駄た箱ばこに入っていたノートの切れ端はし。
+
+　そこには、
+
+『放課後誰もいなくなったら、一年五組の教室に来て』
+
+　と、明らかな女の字で書いてあった。
+
+
+
+
+
+　どう解かい釈しやくするか、脳内人格を結集して会議を開く必要がある。まず一人目が「前にも同じようなことがあったよな」と言っている。しかしこれはあの栞しおりに書いてあった長門の字とは明らかに違ちがう。あの自じ称しよう宇宙人モドキの字は機械のように綺き麗れいだったが、この紙切れの字はいかにも女子高生が書きそうな丸味を帯びている。それに長門なら下駄箱にメッセージを入れるなんて率直な手は使わないだろう。すると二人目が「朝比奈みくるってセンはないか」と言い出した。それもどうかと思う。千切ったノートの切れっ端にこんな時間指定もない伝言をよこすとは思えない。そうだな、朝比奈さんだったらちゃんとした封ふう筒とうと便びん箋せんで書いてくれるであろう。それに一年五組などと俺の教室を場所に指名しているのもおかしい。「ハルヒなら？」と三人目。ますますありえん。あいつならいつかのように階段の踊おどり場ばまで強ごう引いんに引っ張って行って話をつけるだろう。似たような理由で古泉説も却きやつ下か。四人目がとうとう「じゃあ見も知らない第三の人物からのラブレター」。ラブレターかどうかはさておき、呼び出しを告げる連れん絡らく文書であることは確かだ。相手が女とは限らないが。「のぼせるなよ。谷口と国木田あたりのとびっきりジョークかもしれないぜ」。そうだな、その可能性が最も理解しやすい。いかにもアホの谷口がやりそうな頭の悪いギャグの匂においがプンプンする。が、だったらもっとディテールに凝こるような気もするのだが。
+
+　そんなことを考えながら俺はワケもなく校内を練り歩いた。ハルヒは体調不十分を理由に早々に帰宅しちまった。好都合と言えば好都合だ。
+
+　俺はいったん部室に行くことにした。あまり早く五組に戻もどって、それこそ誰もいない教室で誰とも知れない奴やつを待っているのも業ごう腹はらだし、待っている最中に谷口がやって来て、「よう、どんだけ待った？　あんな紙切れ一枚でひょいひょいやって来るとは、お前も単純だなゲラゲラ」とか言われるともっとシャクに障さわる。時間を潰つぶしてから教室をひょいと覗のぞいて、誰もいないことを確認してさっさと帰ろう。うむ、完かん璧ぺきな作戦だ。
+
+　一人うなずきながら歩いている間に部室の前までたどり着いた。ノックを忘れない。
+
+「はーい、どうぞ」
+
+　朝比奈さんの返答を確認して俺はドアを開ける。朝比奈さんのメイド姿はいつ何回見ても可か憐れんだ。
+
+「遅おそかったんですね。涼宮さんは？」
+
+　お茶を煎いれてくれる姿も様になっている。
+
+「帰りました。何だか疲つかれ気味のようでしてね。逆ぎやく襲しゆうするなら今ですよ、弱ってる最中みたいだから」
+
+「そんなの、しませんよー」
+
+　長門が読書に情熱を傾かたむける姿を背景に、俺たちは向かい合ってお茶を飲んだ。また元の無目的な同好会未満になっている感じ。
+
+「古泉は来てないんですか？」
+
+「古泉くんね、さっきちょっと顔を見せたんだけど、アルバイトがあるからって帰っちゃった」
+
+　何のバイトなんだかな。ま、この様子ではここにいる二人が手紙の主ではなさそうだ。
+
+　他ほかにすることもないので俺と朝比奈さんは途と切ぎれがちの会話の合間にオセロをして、三戦全勝を俺が飾かざり、次いでネットに繋つないで二人してニュースサイトをぐるぐる回っていると長門がパタリと本を閉じ、最近はそれを部活終しゆう了りようの合図にしている俺たちは帰り支じ度たくを始めた。もうまったく何を活動しているのか解わからない。
+
+　着き替がえるから先に帰ってて、という朝比奈さんのお言葉に甘えて俺は部室を飛び出した。
+
+　時計は五時半あたりを指している。教室に残っている生徒など一人としていまい。
+
+　谷口だって痺しびれを切らして帰っちまってる時間だろう。それでも俺は二段飛ばしで階段を駆かけ上がり、校舎の最上階を目指した。何事にも万が一ということがある。だろ？
+
+　人ひと気けの絶たえた廊ろう下かで、俺は深呼吸一つ。窓は磨すりガラスなので中の様子はうかがえないが、西日でオレンジ色に染まっていることだけは解る。俺はことさら何でもなさそうに一年五組の引き戸を開けた。
+
+
+
+
+
+　誰だれがそこにいようと驚おどろくことはなかったろうが、実際にそこにいた人物を目にして俺はかなり意表をつかれた。まるで予想だにしなかった奴が黒板の前に立っていたからだ。
+
+「遅いよ」
+
+　朝倉涼子が俺に笑いかけていた。
+
+　清潔そうなまっすぐの髪かみを揺ゆらして、朝倉は教きよう壇だんから降りた。プリーツスカートから伸のびた細い脚あしと白いソックスがやけに目に付く。
+
+　教室の中なか程ほどに進んで歩みを止め、朝倉は笑え顔がおをそのままに誘さそうように手を振ふった。
+
+「入ったら？」
+
+　引き戸に手をかけた状態で止まっていた俺は、その動きに誘われるように朝倉に近寄る。
+
+「お前か……」
+
+「そ。意外でしょ」
+
+　くったくなく笑う朝倉。その右半身が夕日に紅あかく染まっていた。
+
+「何の用だ？」
+
+　わざとぶっきらぼうに訊きく。くつくつと笑い声を立てながら朝倉は、
+
+「用があることは確かなんだけどね。ちょっと訊きたいことがあるの」
+
+　俺の真正面に朝倉の白い顔があった。
+
+「人間はさあ、よく『やらなくて後こう悔かいするよりも、やって後悔したほうがいい』って言うよね。これ、どう思う？」
+
+「よく言うかどうかは知らないが、言葉通りの意味だろうよ」
+
+「じゃあさあ、たとえ話なんだけど、現状を維い持じするままではジリ貧ひんになることは解ってるんだけど、どうすれば良い方向に向かうことが出来るのか解らないとき。あなたならどうする？」
+
+「なんだそりゃ、日本の経済の話か？」
+
+　俺の質問返しを朝倉は変わらない笑顔で無視した。
+
+「とりあえず何でもいいから変えてみようと思うんじゃない？　どうせ今のままでは何も変わらないんだし」
+
+「まあ、そういうこともあるかもしれん」
+
+「でしょう？」
+
+　手を後ろで組んで、朝倉は身体からだをわずかに傾けた。
+
+「でもね、上の方にいる人は頭が固くて、急な変化にはついていけないの。でも現場はそうもしてられない。手をつかねていたらどんどん良くないことになりそうだから。だったらもう現場の独断で強きよう硬こうに変革を進めちゃってもいいわよね？」
+
+　何を言おうとしているんだ？　ドッキリか？　俺は掃そう除じ用具入れにでも谷口が隠かくれてるんじゃないかと思って教室を見み渡わたした。隠れやすそうな所は、あと教きよう卓たくの中とかか。
+
+「何も変化しない観察対象に、あたしはもう飽あき飽きしてるのね。だから……」
+
+　キョロキョロするのに気を取られて、俺はあやうく朝倉の言うことを聞き漏もらすところだった。
+
+「あなたを殺して涼宮ハルヒの出方を見る」
+
+　惚ほうけているヒマはなかった。後ろ手に隠されていた朝倉の右手が一いつ閃せん、さっきまで俺の首があった空間を鈍にぶい金属光が薙ないだ。
+
+　猫ねこを膝ひざに抱だいて背中を撫なでているような笑顔で、朝倉は右手のナイフを振りかざした。軍隊に採用されてそうな恐おそろしげなナイフだ。
+
+　俺が最初の一いち撃げきをかわせたのはほとんど僥ぎよう倖こうだ。その証しよう拠こに俺は無様に尻しり餅もちをついて、しかもアホ面づらで朝倉の姿を見上げている。マウントポジションを取られたら逃にげようがない。慌あわててバッタみたいに跳とびすさる。
+
+　なぜか朝倉は追ってこない。
+
+　……いや、待て。この状じよう況きようは何だ？　なんで俺が朝倉にナイフを突つきつけられねばならんのか。待て待て、朝倉は何と言った？　俺を殺す？　ホワイ、なぜ？
+
+「冗じよう談だんはやめろ」
+
+　こういうときには常じよう套とう句くしか言えない。
+
+「マジ危ないって！　それが本物じゃなかったとしてもビビるって。だから、よせ！」
+
+　もうまったくワケが解らない。解る奴やつがいたらここに来い。そして俺に説明しろ。
+
+「冗談だと思う？」
+
+　朝倉はあくまで晴れやかに問いかける。それを見ているとまるで本気には見えない。笑顔でナイフを向けてくる女子高生がいたら、それはとても怖こわいと思う。と言うか、確かに今俺はめっちゃ怖い。
+
+「ふーん」
+
+　朝倉はナイフの背で肩かたを叩たたいた。
+
+「死ぬのっていや？　殺されたくない？　わたしには有機生命体の死の概がい念ねんがよく理解出来ないけど」
+
+　俺はそろそろと立ち上がる。冗談、シャレだよな、これ。本気だったらシャレですまされんが。だいたい信じられるわけがないだろ。別に泥どろ沼ぬま化したあげくこっぴどく振った女でもなくクラスでもロクに喋しやべりゃしない真ま面じ目めな委員長に刃は物もので斬きりつけられるなんて、本気の出来事だと思えるわけがない。
+
+　だが、もしあのナイフが本物だったなら、とっさに避よけなければ俺は今いま頃ごろ血だまりの中に沈しずんでいたに違ちがいないだろう。
+
+「意味が解わからないし、笑えない。いいからその危ないのをどこかに置いてくれ」
+
+「うん、それ無理」
+
+　無む邪じや気きそのもので朝倉は教室で女子同士かたまっているときと同じ顔で微笑ほほえんだ。
+
+「だって、あたしは本当にあなたに死んで欲しいのだもの」
+
+　ナイフを腰こしだめに構えた姿勢で突っ込んで来た。速い！　が、今度は俺にも余よ裕ゆうがあった。朝倉が動く前に脱だつ兎とのごとく走り出し、教室から逃げだそう──として、俺は壁かべに激げき突とつした。
+
+　？？？？？
+
+　ドアがない。窓もない。廊ろう下か側に面した教室の壁は、まったくの塗ぬり壁さながらにネズミ色一色で染まっていた。
+
+　ありえない。
+
+「無む駄だなの」
+
+　背後から近づいてくる声。
+
+「この空間は、あたしの情報制せい御ぎよ下にある。脱だつ出しゆつ路ろは封ふう鎖さした。簡単なこと。この惑わく星せいの建造物なんて、ちょっと分子の結合情報をいじってやればすぐに改変出来る。今のこの教室は密室。出ることも入ることも出来ない」
+
+　振ふり返る。夕日すら消えている。校庭側の窓もすべてコンクリートの壁に置き換かわっていた。知らないうちに点灯していた蛍けい光こう灯とうが寒々しく並んだ机の表面を照らしている。
+
+　嘘うそだろ？
+
+　薄うすい影かげを床ゆかに落としながら朝倉がゆっくりと歩いてくる。
+
+「ねえ、あきらめてよ。結果はどうせ同じことになるんだしさあ」
+
+「……何者なんだ、お前は」
+
+　何回見ても壁は壁でしかない。立て付けの悪かった引き戸も磨すりガラスの窓も何もない。それとも、どうかしちまったのは俺の頭のほうなのか。
+
+　俺はじりじりと机の間をぬって朝倉から少しでも離はなれようとする。しかし朝倉は一直線に俺に向かってきた。机が勝手に動いて朝倉の進路を妨ぼう害がいしないようにしているのに比べて、俺の下がる先には必ず机が一団になっている。
+
+　おっかけっこは長くは続かず、俺はたちまちのうちに教室の端はしに追いやられた。
+
+　こうなったら。
+
+　椅い子すを持ち上げて思い切り投げつけてやった。椅子は朝倉の手前で方向転てん換かんすると横に飛んで、落ちた。そんなアホな。
+
+「無駄。言ったでしょう。今のこの教室はすべてあたしの意のままに動くって」
+
+　待て待て待て待て。
+
+　何だこれは。何なんだこれは。冗談でもシャレでも俺か朝倉の頭が変になったわけでもないとしたら、いったいこれは何だ。
+
+　あなたを殺して涼宮ハルヒの出方を見る。
+
+　またハルヒか。人気者だな、ハルヒ。
+
+
+
+
+
+「最初からこうしておけばよかった」
+
+　その言葉で俺は身体からだを動かせなくなっているのを知る。アリかよ！　反則だ。
+
+　足が床から生える木にでもなったみたいに微び動どうだにしない。手もパラフィンで固められたみたいに上がらない。それどころか指一本動かせない。下を向いた状態で固定された俺の視線に朝倉の上うわ履ばきが入ってきた。
+
+「あなたが死ねば、必ず涼宮ハルヒは何らかのアクションを起こす。多分、大きな情報爆ばく発はつが観測出来るはず。またとない機会だわ」
+
+　知らねえよ。
+
+「じゃあ死んで」
+
+　朝倉がナイフを構える気配。どこを狙ねらってるんだろう。頸けい動どう脈みやくか、心臓か。解っていれば少しは心構えも出来るんだが。せめて目を閉じ……れない。なんつうこっちゃ。
+
+　空気が動いた。ナイフが俺に降ってくる。
+
+　その時。
+
+　天てん井じようをぶち破るような音とともに瓦が礫れきの山が降ってきた。コンクリートの破片が俺の頭にぶつかって痛えなこの野や郎ろう！　降り注ぐ白い石の雨が俺の身体を粉まみれにして、このぶんじゃ朝倉も粉だらけだろう、しかし確認しようにも身体がピクリとも……あれ、動く。
+
+　顔を上げた俺は見た。何を？
+
+　俺の首筋に今にも触ふれようとしているナイフの切っ先とナイフの柄えを逆さか手てに握にぎって驚おどろきの表情で静止する朝倉とナイフの刃はを素す手でで握りしめている──素手でだぜ──長門有希の小こ柄がらな姿だった。
+
+「一つ一つのプログラムが甘い」
+
+　長門は平素と変わらない無感動な声で、
+
+「天井部分の空間閉へい鎖さも、情報封鎖も甘い。だからわたしに気づかれる。侵しん入にゆうを許す」
+
+「邪じや魔まする気？」
+
+　対する朝倉も平然たるものだった。
+
+「この人間が殺されたら、間ま違ちがいなく涼宮ハルヒは動く。これ以上の情報を得るにはそれしかないのよ」
+
+「あなたはわたしのバックアップのはず」
+
+　長門は読ど経きようのような平へい坦たんな声で、
+
+「独断専行は許可されていない。わたしに従うべき」
+
+「いやだと言ったら？」
+
+「情報結合を解除する」
+
+「やってみる？　ここでは、わたしのほうが有利よ。この教室はわたしの情報制御空間」
+
+「情報結合の解除を申しん請せいする」
+
+　言うが早いか、長門の握ったナイフの刃が煌きらめき出した。紅茶に入れた角砂糖のように、微び小しような結けつ晶しようとなってサラサラとこぼれ落ちていく。
+
+「！」
+
+　ナイフを放して朝倉はいきなり五メートルくらい後ろにジャンプした。それを見て俺は、
+
+　ああ、この二人本当に人間じゃないみたいだな、とか悠ゆう長ちようなことを思った。
+
+　一気に距きよ離りを稼かせいだ朝倉は教室の後ろにふわりと着地。微笑ほほえみは変わりない。
+
+　空間がぐにゃりと歪ゆがんだ。としか言いようがない。朝倉も机も天井も床ゆかもまとめて揺ゆらぎ、液体金属のように変化する様が見て取れたが、よくは見えない。
+
+　ただその空間そのものが槍やりのように凝ぎよう縮しゆくする、と思った瞬しゆん間かんには長門のかざした掌てのひらの前で結晶が爆発したことだけが解わかった。
+
+　間かん髪はつ置かず、長門の周囲で次々と結晶の粉が炸さく裂れつしては舞まい落ちる。空間を凝こごめた槍状の武器が視認不可能な速度で俺たちを襲おそい、長門の手が同様の速度でそのすべてを迎げい撃げきしていることに気付いたのは、しばらくたってからのことだった。
+
+「離れないで」
+
+　長門は朝倉の攻こう撃げきを弾はじきながら片手で俺のネクタイをつかんで引き下ろし、俺は屈かがみ込んだ長門の背中に乗っかるような体勢で膝ひざをついた。
+
+「うわっ！」
+
+　俺の頭を見えない何かがかすめて黒板を粉々に叩たたき潰つぶした。
+
+　長門がチラリと上を見上げる。その刹せつ那な、天井から氷柱が生えて朝倉の頭上に降り注ぐ。残像だけを残す高速移動。天井色の氷柱が床に何十本ともなく突つき立って林を作る。
+
+「この空間ではわたしには勝てないわ」
+
+　まったくの余よ裕ゆうの表情で朝倉は佇たたずんでいる。数メートルの間を挟はさんで長門と対たい峙じ。俺はと言うと、情けないことに腰こしが立たず、床にへばりついていた。
+
+　長門は俺の頭をまたいで立っていた。生き真ま面じ目めにも上履きの横に小さく名前を書いているのがこいつらしい。小説の朗読をするような口調で長門は何かを呟つぶやいた。こう聞こえた。
+
+「SELECTシリアルコードFROMデータベースWHEREコードデータORDER BY攻性情報戦せん闘とうHAVINGターミネートモード。パーソナルネーム朝倉涼子を敵性と判定。当とう該がい対象の有機情報連結を解除する」
+
+　教室の中はもうまともな空間ではなくなっていた。何もかもが幾き何か学模様と化して湾わん曲きよくし、渦うずを巻いて躍おどっている。見ていると酔よいそうだ。まるで遊園地のビックリハウスに乗っているような視覚効果。目が回る。
+
+「あなたの機能停止のほうが早いわ」
+
+　極ごく彩さい色しきの蜃しん気き楼ろうの陰かげに隠かくれた朝倉の声がどこから聞こえてくるのか全然解らない。
+
+　ヒュン、と風切り音。
+
+　長門のかかとが俺を思い切り蹴け飛ばした。
+
+「なにす」
+
+　る、と言いかけた俺の鼻先を見えない槍が通過、床がめくれ返る。
+
+「そいつを守りながら、いつまで持つかしら。じゃあ、こんなのはどう？」
+
+　次の瞬間、俺の前に立ちはだかった長門の身体からだが一ダースほどの茶色の槍に貫つらぬかれていた。
+
+「…………」
+
+　つまり、朝倉は俺と長門に向かって同時に多方向から攻撃を加え、そのうちのいくつかを結晶化して無効にしたものの、迎撃しきれなかった槍が俺を襲い、俺を守るために長門は自分の身体を使用した、ということだったのだが、この時の俺にはそんなこと知るよしもなかった。
+
+　長門の顔から眼鏡めがねが落ちて、床で小さく跳はねた。
+
+「長門！」
+
+「あなたは動かないでいい」
+
+　胸から腹にかけてビッシリと突き刺ささった槍を一いち瞥べつして長門は平然と言った。
+
+　鮮せん血けつが長門の足許に小さな池を作り始めている。
+
+「へいき」
+
+　いや、ちっとも平気には見えねえって。
+
+　長門は眉まゆ一つ動かさずに身体に生えた槍を引き抜ぬいて床に落とした。乾かわいた音を立てて転がった血まみれの槍は、数瞬ののちに生徒机へと姿を変える。槍の正体はそれか。
+
+「それだけダメージを受けたら他の情報に干かん渉しようする余裕はないでしょ？　じゃ、とどめね」
+
+　揺らぐ空間の向こうに、朝倉の姿が見え隠れする。笑っている。両手が静かに上がり──俺の見み間ま違ちがいでなければ、指先から二にの腕うでまでがまばゆい光に包まれて二倍ほどに伸のびた。いや、二倍どころか──。
+
+「死になさい」
+
+　朝倉の腕が、さらに伸び、触しよく手しゆのようにのたくって突とつ出しゆつ、左右からの同時攻撃、動けない長門の小こ柄がらな身体が揺れ……。俺の顔に赤くて温かい液体が飛び散った。
+
+　右の脇わき腹ばらに突き立った朝倉の左腕と、左胸を貫いた右腕が、背中を突き破やぶって教室の壁かべをもぶち抜いてようやく止まっていた。
+
+　長門の身体から吹ふき出した血が白い足をつたって床の血ち溜だまりの幅はばを拡大させていく。
+
+「終わった」
+
+　ポツリと言って、長門は触手を握にぎった。何も起こらない。
+
+「終わったって、何のこと？」
+
+　朝倉は勝ちを確信したかのような口調。
+
+「あなたの三年あまりの人生が？」
+
+「ちがう」
+
+　これだけの重傷を負いながら長門は何もなかったように言った。
+
+「情報連結解除、開始」
+
+　いきなりだ。
+
+　教室のすべてのものが輝かがやいたかと思うと、その一秒後にはキラキラした砂となって崩くずれ落ちていく。俺の横にあった机も細かい粒りゆう子しに変じて、崩ほう壊かいする。
+
+「そんな……」
+
+　天てん井じようから降る結けつ晶しようの粒つぶを浴びながら、今度こそ朝倉は驚きよう愕がくの様子だった。
+
+「あなたはとても優ゆう秀しゆう」
+
+　長門の体中に刺さった槍やりも砂になる。
+
+「だからこの空間にプログラムを割り込ませるのに今までかかった。でももう終わり」
+
+「……侵しん入にゆうする前に崩壊因子を仕込んでおいたのね。どうりで、あなたが弱すぎると思った。あらかじめ攻こう性せい情報を使い果たしていたわけね……」
+
+　同じく結晶化していく両腕を眺ながめながら朝倉は観念したように言葉を吐はいた。
+
+「あーあ、残念。しょせんわたしはバックアップだったかあ。膠こう着ちやく状態をどうにかするいいチャンスだと思ったのにな」
+
+　朝倉は俺を見てクラスメイトの顔に戻もどった。
+
+「わたしの負け。よかったね、延命出来て。でも気を付けてね。統合思念体は、この通り、一枚岩じゃない。相反する意識をいくつも持ってるの。ま、これは人間も同じだけど。いつかまた、わたしみたいな急進派が来るかもしれない。それか、長門さんの操あやつり主が意見を変えるかもしれない」
+
+　朝倉の胸から足はすでに光る結晶に覆おおわれていた。
+
+「それまで、涼宮さんとお幸せに。じゃあね」
+
+　音もなく朝倉は小さな砂場となった。一ひと粒つぶ一粒の結晶はさらに細かく分解、やがて目に見えなくなるまでになる。
+
+　さらさら流れ落ちる細かいガラスのような結晶が降る中、朝倉涼子という女子生徒はこの学校から存在ごと消しよう滅めつした。
+
+　とすん、と軽い音がして、俺はそっちへ首をねじ曲げ、長門が倒たおれているのを発見して慌あわてて立ち上がった。
+
+「おい！　長門、しっかりしろ、今救急車を、」
+
+「いい」
+
+　目を見開いて天井を見上げながら長門は、
+
+「肉体の損傷はたいしたことない。正常化しないといけないのは、まずこの空間」
+
+　砂の崩ほう落らくが止まっていた。
+
+「不純物を取り除いて、教室を再構成する」
+
+　見る間に一年五組が見慣れた一年五組へと、元通りに、そうだな、まるでビデオの逆回しだな、いつもの教室に戻っていく。
+
+　白い砂から黒板が、教きよう卓たくが、机が生まれて、放課後教室を出た時と同じ場所に並んでいく光景は、何と言えばいいんだろうな。こうして生で見ていなければ良く出来たＣＧだと思ったろうな。
+
+　壁だったところに窓まど枠わくが出来て、すうっと透とう明めい化して窓ガラスとなる。西日がオレンジ色に俺と長門を彩さい色しよくした。試しに自分の机の中を調べてみたら、ちゃんと入れたままにしておいたものがそのまま入っている。俺の体中に散った長門の血もいつしか消えている。たいしたもんだ。魔ま法ほうとしか思えない。
+
+　俺はまだ寝ねている長門の脇わきに屈かがみ込んだ。
+
+「本当にだいじょうぶなのか？」
+
+　確かにどこにもケガがあるように見えない。あれだけ突つき刺ささっていたら制服も穴だらけだと思ったが、そんなものは一つもなかった。
+
+「処理能力を情報の操作と改変に回したから、このインターフェースの再生は後回し。今やってる」
+
+「手を貸そうか」
+
+　俺の伸のばした手に、案外素直にすがりついた。上体を起こしたところで、
+
+「あ」
+
+　わずかに唇くちびるを開いた。
+
+「眼鏡めがねの再構成を忘れた」
+
+「……してないほうが可愛かわいいと思うぞ。俺には眼鏡属性ないし」
+
+「眼鏡属性って何？」
+
+「何でもない。ただの妄もう言げんだ」
+
+「そう」
+
+　こんなどうでもいい会話をしている場合ではなかったのである。後々俺は、とことん悔くやむことになる。長門を置き去りにしてでも、さっさとこの場を立ち去るべきだったかと。
+
+「ういーす」
+
+　ガサツに戸を開けて誰だれかが入ってきた。
+
+「わっすれーもの、忘れ物ー」
+
+　自作の歌を歌いながらやって来たそいつは、よりにもよって谷口だった。
+
+　まさか谷口もこんな時間に教室に誰かがいるとは思わなかっただろう。俺たちがいるのに気づいてギクリと立ち止まり、しかるのちに口をアホみたいにパカンと開けた。
+
+　この時、俺はまさに長門を抱だき起こそうとするモーションに入ったばかりだった。その静止画をみたら、逆に押し倒そうとしているとも思えなくもない体勢なわけで。
+
+「すまん」
+
+　聞いたこともない真ま面じ目めな声で谷口は言うとザリガニのように後ろへ下がり、戸も閉めないで走り去った。追うヒマもなかった。
+
+「面おも白しろい人」と長門。
+
+　俺は盛大なため息をついた。
+
+「どうすっかなー」
+
+「まかせて」
+
+　俺の手にもたれ掛かかったまま動くことなく長門は言った。
+
+「情報操作は得意。朝倉涼子は転校したことにする」
+
+　そっちかよ！
+
+　などとツッコンでいる場合ではない。唐とう突とつに俺は愕がく然ぜんとした。よく考えたら俺はとんでもない体験をしてしまったんじゃないか？　この前に長門が延々と語ったデンパ話、トンチキな妄もう想そう語りを信じるとか信じないとかいう問題ではない。半信半疑とも言ってられん。さっきの出来事は本気のヤバさとは何かを俺に実感させてくれた。マジで死ぬかと思った。長門が天てん井じようから落ちてこなければ、確実に俺は朝倉によって強制昇しよう天てんさせられていただろう。ぐにゃぐにゃした教室の光景も、バケモノじみた姿になった朝倉も、それをどうやってか消しよう滅めつさせてしまった長門の無感動さも、それらはすべてリアルに俺の身へと降り注いだことだった。
+
+　これじゃ、長門が本格的に宇宙人か何かの関係者であることを納得せざるを得ないではないか。
+
+　おまけに、このままでは俺はこのイカレタ状じよう況きようの当事者になってしまう。冒ぼう頭とうに言ったとおり、俺は巻き込まれ型の傍ぼう観かん者でいたいのだ。脇わき役やくで充じゆう分ぶんなのだ。なのに、これではまるで俺が主人公みたいじゃねえか。確かに俺は宇宙人みたいな奴やつが出てくる物語の登場人物になりたいとかつて思っていたが、本当に自分がそんなキャラになってしまうとなると話は別だ。
+
+　はっきり言や、困る。
+
+　何かしらの問題に直面して困っている奴に横から半笑いで適当なアドバイスをするような、そんな役割を俺は望んでいたのだ。こんな俺自身がクラスメイトに命を狙ねらわれるような、不条理な展開は願い下げにしたい。本当の話、俺はまだ人生に執しゆう着ちやくがあるのだ。
+
+　オレンジ色に染められた教室で、俺はしばし唖あ然ぜんとしたまま硬こう化かしていた。長門の体重を感じさせない身体からだを支えたままで。
+
+　これは……いったいどうしたものだろう？　俺は何を思えばいいんだ？　呆ぼけていたおかげで俺は、とっくに再生とやらが終しゆう了りようした長門が無表情に見上げていることにも気付かずじまいだった。
+
+
+
+
+
+　翌日、クラスに朝倉涼子の姿はなかった。
+
+　当たり前と言えば当たり前のことなのだが、それを当たり前だと思っているのはどうやら俺だけであり、岡部担任が、
+
+「あー、朝倉くんだがー、お父さんの仕事の都合で、急なことだと先生も思う、転校することになった。いや、先生も今朝聞いて驚おどろいた。なんでも外国に行くらしく、昨日のうちに出立したそうだ」
+
+　と、あまりにも嘘うそくさいことをホームルームで言ったときも、「えーっ？」「何でーっ？」と主に女子どもが騒さわぎ立て、男子連中も、ザワ……ザワ……と顔を見合わせ、岡部教師も首をひねっていたわけなのだが、もちろんこの女も黙だまっていたりはしなかった。
+
+　ごん、と俺の背中を拳こぶしで突ついて、
+
+「キョン。これは事件だわ」
+
+　すっかり元気を取り戻もどした涼宮ハルヒが目を輝かがやかせていた。
+
+　どうする？　本当のことを言うか？
+
+　実は朝倉は情報統合思念体なる正体不明の存在に作られた長門の仲間で、なんか知らんが仲間割れして、その理由が俺を殺すか殺さないかで、なぜ俺かと言うとハルヒの情報がどうのこうので、あげくの果てに長門によって砂に変えられてしまいました、とさ。
+
+　言えるわけねえ。つーか俺が言いたくない。あれはすべて俺の幻げん覚かくだったと思っていたいくらいなのだ。
+
+「謎なぞの転校生が来たと思ったら、今度は理由も告げずに転校していく女子までいたのよ。何かあるはずよ」
+
+　勘かんの良さを褒ほめてやるべきなのだろうか。
+
+「だから親父おやじの仕事の都合なんだろ」
+
+「そんなベタな理由は認めらんない」
+
+「認めるも認めないも、転校の理由で一番ポピュラーなのはそれだろうよ」
+
+「でもおかしいでしょ。いくら何でも昨日の今日よ。転勤の辞令から引ひっ越こしまで一日もないって、どんな仕事よ、それ」
+
+「娘むすめに知らせてなかったとか……」
+
+「あるわけないわよ、そんなの。これは調査の必要ありね」
+
+　仕事の都合というのは言い訳で本当は夜よ逃にげだったんじゃないかとか言おうとしたがやめておいた。それが真実でないのは俺が一番よく知っている。
+
+「ＳＯＳ団として、学校の不思議を座視するわけにはいかないわ」
+
+　やめてくれ。
+
+　昨日の事件は俺に徹てつ底てい的な変革を要求せしめた。なにしろ、マジモノの超ちよう常じよう現象を目まの当たりにしてしまったのだから、それをなかったことにするには、俺の目か頭かのどちらかがどうにかしていたか、この世界そのものが実はおかしかったのか、実は俺は長々と夢を見続けているのかの、どれかを選ばなくてはならなくなってしまった。
+
+　そして俺はこの世界が非現実のシロモノだとは、どうしても思うことが出来ないでいるのだ。
+
+　まったく、人生の転機が訪れるには、十五年と数ヶ月は少々早すぎの気がしやしないか？
+
+　なんで俺は高一にして、世界の在り方などという哲てつ学がく的な命題に直面しなければならないのだろう。そんなもん、俺が考える事ではないはずだ。これ以上、余計な仕事を増やさないで欲しい。
+
+　そうでなくとも、俺はまたまた懸けん案あん事じ項こうを抱かかえているんだからな。
+
+
+
+
+
+　　第六章
+
+
+
+
+
+　その懸案事項は封ふう筒とうの形をして昨日に引き続き俺の下げ駄た箱ばこに入っていた。なんだろう、下駄箱に手紙を入れるのが最近の流行なのか？
+
+　しかし今度のブツは一味違ちがうぞ。二つにおったノートの切きれ端はしの名無しではない。少女マンガのオマケみたいな封筒の裏にちゃんと名前が記入されている。几き帳ちよう面めんなその文字は、俺の目がどうにかしているのでもない限り、
+
+　朝比奈みくる
+
+　と、読めた。
+
+　封筒を一動作でブレザーのポケットに収めた俺が男子トイレの個室に飛び込んで封ふうを切ったところ、印刷された少女キャラのイラストが微笑ほほえむ便びん箋せんの真ん中に、
+
+『昼休み、部室で待ってます　　　みくる』
+
+　昨日あんな目にあったおかげで、俺の人生観と世界観と現実感はまとめてバレルロールを描えがきつつ現在アクロバット中だ。
+
+　ほいさと出かけて行って、また生命の危機に直面するのは御ご免めんこうむりたい。
+
+　しかしここで行かないわけにはいくまい。誰だれあろう、朝比奈さんの呼び出しである。この手紙の主が朝比奈さんであると断言する根こん拠きよはないが、俺はさっぱり疑わなかった。いかにもこんな回りくどいことをしそうな人だし、可愛かわいらしいレターセットにいそいそとペンを走らせている光景はまさしく彼女に似つかわしいじゃないか。それに昼休みの部室なら、長門もいるだろうし、何かあればあいつがなんとかしてくれるさ。
+
+　情けないとか言わんでくれ。こちとら一いつ介かいの通常な男子高生に過ぎないんだからよ。
+
+
+
+
+
+　四時限が終わるや俺は、休み時間の間から意味深な視線を送ってくる谷口に話しかけられたり一いつ緒しよに弁当食べようと国木田が近寄ったり職員室行って朝倉の引っ越し先を調べようとかハルヒが言い出す前に、弁当も持たずに教室から脱だつ出しゆつした。部室まで早歩き。
+
+　まだ五月だと言うのに照りつける陽気はすでに夏の熱気、太陽は特大の石炭でもくべられたみたいに嬉うれしそうにエネルギーを地球へ注いでいる。今からこれじゃ夏本番になると日本は天然のサウナ列島になるんじゃないだろうか。歩いているだけで汗あせでパンツのゴムが濡ぬれてくる。
+
+　三分とかからず、俺は文芸部の部室前に立つ。とりあえずノック。
+
+「あ、はーい」
+
+　確かに朝比奈さんの声だった。間ま違ちがいない。俺が朝比奈さんの声を聞き間違えるわけがない。どうやら本物だ。安心して、入る。
+
+　長門はいなかった。それどころか朝比奈さんもいなかった。
+
+　校庭に面した窓にもたれるようにして、一人の女性が立っていた。白いブラウスと黒のミニタイトスカートをはいている髪かみの長いシルエット。足あし許もとは来客用のスリッパ。
+
+　その人は俺を見ると、顔中に喜色を浮うかべて駆かけ寄り、俺の手を取って握にぎりしめた。
+
+「キョンくん……久しぶり」
+
+　朝比奈さんじゃなかった。朝比奈さんにとてもよく似ている。本人じゃないかと錯さつ覚かくするほど似ている。実際、本人としか思えない。
+
+　でもそれは朝比奈さんではなかった。俺の朝比奈さんはこんなに背が高くない。こんなに大人っぽい顔をしていない。ブラウスの布地を突つき上げる胸が一日にして三割増しになったりはしない。
+
+　俺の手を胸の前で捧ささげ持って微笑んでいるその人は、どうやったって二十歳前後だろう。中学生のような朝比奈さんとは雰ふん囲い気きが違う。しかしそれでもなお、彼女は朝比奈さんとウリ二つだった。何もかもが。
+
+「あの……」
+
+　俺はとっさに思いつく。
+
+「朝比奈さんのお姉さん……ですか？」
+
+　その人は可笑おかしそうに目を細めて肩かたを震ふるわせた。笑った顔まで同じだ。
+
+「うふ、わたしはわたし」と彼女は言った。
+
+「朝比奈みくる本人です。ただし、あなたの知ってるわたしより、もっと未来から来ました。……会いたかった」
+
+　俺はバカみたいな顔をしていたに違いない。そうだ、確かに目の前の女性が今から何年後かの朝比奈さんだと言われると一番すっきりする。朝比奈さんが大人になったらこんな感じの美人になるだろうなというそのまんまな美人がここにいた。ついでに言うと身長も伸のびてさらにグラマー度がアップしている。まさかここまでになるとは。
+
+「あ、信用してないでしょ？」
+
+　その秘書スタイルの朝比奈さんはいたずらっぽく言うと、
+
+「証しよう拠こを見せてあげる」
+
+　やにわにブラウスのボタンを外しだした。第二ボタンまでを外してしまうと、面食らう俺に向けて胸むな元もとを見せつけ、
+
+「ほら、ここに星形のホクロがあるでしょう？　付けボクロじゃないよ。触さわってみる？」
+
+　左の胸のギリギリ上に確かにそんな形のホクロが艶なまめかしく付いていた。白い肌はだに一つだけ浮かんだアクセント。
+
+「これで信じた？」
+
+　信じるも何も、俺は朝比奈さんのホクロの位置なんか覚えちゃいない。そんな際きわどい部分までを見ることが出来たのは、バニーガールのコスプレをしていた時と、不ふ可か抗こう力りよくで着き替がえを覗のぞいてしまった時くらいだが、どっちにしたってそこまで細かいところを観察などしていない。俺がその旨むねを伝えると、魅み惑わくの大人朝比奈さんは、
+
+「あれ？　でもここにホクロがあるって言ったのキョンくんだったじゃない。わたし、自分でも気づいてなかったのに」
+
+　不思議そうに首を傾かしげ、次に彼女は驚おどろきに目を見開き、それから急激に赤くなった。
+
+「あ……やだ、今……あっ、そうか。この時はまだ……うわ、どうしよっ」
+
+　シャツの前をはだけたまま、その朝比奈さんは両手で頬ほおを包んで首を振ふった。
+
+「わたし、とんでもない勘かん違いを……ごめんなさい！　今の忘れて下さい！」
+
+　そう言われてもなあ。それより早くボタンとめてくれないかな。どこ見たらいいのか迷います。
+
+「解わかりました。とにかく信じますから。今の俺はたいていのことは信じてしまえるような性格を獲かく得とくしたので」
+
+「は？」
+
+「いえ、こちらの話です」
+
+　まだ赤らむ頬を押さえていた年ねん齢れい不ふ詳しようの朝比奈さんは、どうしてもそっちに吸い寄せられてしまう俺の目線に気づいて、慌あわててボタンをとめた。居住まいを正し、こほんと乾かわいた咳せきを一つ落として、
+
+「この時間平面にいるわたしが未来から来たって、本当に信じてくれました？」
+
+「もちろん。あれ、そしたら今、二人の朝比奈さんがこの時代にはいるってことですか？」
+
+「はい。過去の……わたしから見れば過去のわたしは、現在教室でクラスメイトたちとお弁当中です」
+
+「そっちの朝比奈さんはあなたが来ていることを……」
+
+「知りません。実際知りませんでしたし。だってそれ、わたしの過去だもの」
+
+　なるほど。
+
+「あなたに一つだけ言いたいことがあって、無理を言ってまたこの時間に来させてもらったの。あ、長門さんには席を外してもらいました」
+
+　長門のことだから、この朝比奈さんを見ても瞬まばたき一つしなかったことだろう。
+
+「……朝比奈さんは長門のことを知ってるんですか？」
+
+「すみません。禁則事じ項こうです。あ、これ言うのも久しぶりですね」
+
+「俺は先日聞いたばかりですが」
+
+　そうでした、と自分の頭をぽかりと叩たたいて朝比奈さんは舌を出した。こんなところは間ま違ちがいようもなく朝比奈さんである。
+
+　が、急に真ま面じ目めな顔になると、
+
+「あまりこの時間にとどまれないの。だから手短に言います」
+
+　もう何でも言ってくれ。
+
+「白雪姫ひめって、知ってます？」
+
+　俺は今や背せ丈たけのそう変わらない朝比奈さんを見つめた。ちょっと潤うるみがちの黒い瞳ひとみ。
+
+「そりゃ知ってますけど……」
+
+「これからあなたが何か困った状態に置かれたとき、その言葉を思い出して欲しいんです」
+
+「七人の小人とか魔ま女じよとか毒リンゴとかの、あれですか？」
+
+「そうです。白雪姫の物語を」
+
+「困った状態なら昨日あったばかりですが」
+
+「それではないんです。もっと……そうですね、詳くわしくは言えないけど、その時、あなたの側そばには涼宮さんもいるはずです」
+
+　俺と？　ハルヒが？　揃そろってやっかいごとに巻き込まれるって？　いつ、どこで。
+
+「……涼宮さんはそれを困った状じよう況きようとは考えないかもしれませんが……あなただけじゃなくて、わたしたち全員にとって、それは困ることなんです」
+
+「詳しく教えてもらうわけには──いかないんでしょうね」
+
+「ごめんなさい。でもヒントだけでもと思って。これがわたしの精せい一いつ杯ぱい」
+
+　大人朝比奈さんはちょっと泣きが入っている顔をした。ああ、確かに朝比奈さんだな、これは。
+
+「それが白雪姫なんですか」
+
+「ええ」
+
+「覚えておきますよ」
+
+　俺がうなずくと朝比奈さんは、もうちょっとだけ時間があります、と言って、懐なつかしそうに部室を見み渡わたし、ハンガーラックにかかっていたメイド服を手にして愛いとおしげに撫なでた。
+
+「よくこんなの着れたなあ、わたし。今なら絶対ムリ」
+
+「今の格好もＯＬのコスプレみたいですよ」
+
+「ふふ、制服を着るわけにはいかなかったから、ちょっと教師風にしてみました」
+
+　何を着ても似合う人というのはいるものだ。試しに訊きいてみる。
+
+「ハルヒには他ほかにどんな衣装を着せられたんです？」
+
+「内ない緒しよ。恥はずかしいもん。それに、そのうち解るでしょう？」
+
+　スリッパをペタペタ鳴らしながら朝比奈さんは俺の目の前に立つと、妙みように潤んだ目とまだ少し赤い頬で、
+
+「じゃあ、もう行きます」
+
+　もの問いたげに、朝比奈さんは真正面から俺を見つめ続ける。唇くちびるが何かを求めるように動き、俺はキスでもしたほうがいいのかなと思って朝比奈さんの肩かたを抱だこうとして──逃にげられた。
+
+　ひょいと身をひねった朝比奈さんは、
+
+「最後にもう一つだけ。わたしとはあまり仲良くしないで」
+
+　鈴すず虫むしのため息のような声。
+
+　入り口に走った朝比奈さんに、俺は声をかけた。
+
+「俺も一つ教えて下さい！」
+
+　ドアを開こうとしてピタリと止まる朝比奈さんの後ろ姿。
+
+「朝比奈さん、今、歳としいくつ？」
+
+　巻き毛を翻ひるがえして朝比奈さんは振ふり返った。見る者すべてを恋こいに落としそうな笑え顔がおだった。
+
+「禁則事項です」
+
+
+
+
+
+　ドアが閉まった。多分、追いかけていっても無む駄だなんだろうな。
+
+　はー、それにしても朝比奈さんがあんなに美人になるとは、と考えて、俺は先ほど彼女が最初に言ったセリフを思い出した。何と言った？　「久しぶり」。この言葉が表す意味は一つしかない。つまり朝比奈さんは長らく俺に会っていなかったのだ。と言うことは。
+
+「そうか。そうだよな」
+
+　未来人であるところの朝比奈さんは、遠からず元いた時代に戻もどってしまうのだ。それから何年も経たって再び相まみえたのが、つまり今さっきなのだ。
+
+　いったい彼女にとってどれくらいの時間が経過していたのだろうか。あの成長ぶりから見ると、五年……三年くらいか。女ってのは高校を出ると劇的に変化するからな。それまで秀しゆう才さいタイプの目立たない女だったのに大学に入った途と端たんにサナギから羽う化かしたブラジル蝶ちようみたいになってしまった従姉妹いとこを思い浮うかべて、そういやそもそも朝比奈さんの実じつ年ねん齢れいを知らないな、本当に十七ってことはないと思うのだが。
+
+　腹が減った。教室に戻ろう。
+
+「…………」
+
+　長門有希が冷れい凍とう保存したような普ふ段だん通りの顔で入ってきた。ただし、眼鏡めがねはない。ガラス越ごしではない生の視線が直接俺を射い抜ぬく。
+
+「よお、来るとき朝比奈さんに良く似た人とすれ違ちがわなかったか」
+
+　冗じよう談だん交じりに言った言葉に長門は、
+
+「朝比奈みくるの異時間同位体。朝に会った」
+
+　衣きぬ擦ずれの音をまったく立てずに長門はパイプ椅い子すに座りテーブルの上で本のページを広げた。
+
+「今はもういない。この時空から消えたから」
+
+「ひょっとしてお前も時間移動とか出来るのか？　その情報ナントカ体も」
+
+「わたしには出来ない。でも時間移動はそんなに難しいことではない。今の時代の地球人はそれに気づいていないだけ。時間は空間と同じ。移動するのは簡単」
+
+「コツを教えてもらいたいね」
+
+「言語では概がい念ねんを説明出来ないし理解も出来ない」
+
+「そうかい」
+
+「そう」
+
+「そりゃ、しょうがないな」
+
+「ない」
+
+　山びこと会話しているようなむなしさを感じ、俺は今度こそ教室に戻ることにした。飯食う時間あるかな。
+
+「長門、昨日はありがとよ」
+
+　無機質な表情がほんの少しだけ動いた。
+
+「お礼ならいい。朝倉涼子の異常動作はこっちの責任。不ふ手て際ぎわ」
+
+　前まえ髪がみがわずかに動いた。
+
+　ひょっとして頭を下げたのだろうか。
+
+「やっぱり眼鏡はないほうがいいぞ」
+
+　返答はなかった。
+
+
+
+
+
+　なんとか超ちよう特急でオカズだけでも食おうと弁当の待ちわびる教室の前で、俺はハルヒの妨ぼう害がいにあい、ついに食いっぱぐれることになった。これも運命というやつなのだろう。すでに諦てい観かんの域に達しつつある俺である。
+
+　どうやら廊ろう下かで俺を待っていたらしいハルヒは、苛いら立だたしげに、
+
+「どこ行ってたのよ！　すぐ帰ってくると思ってご飯食べないで待ってたのに！」
+
+　そんな心から怒おこるんじゃなくて幼おさな馴な染じみが照てれ隠かくしで怒っている感じで頼たのむ。
+
+「アホなことほざいてないで、ちょっとこっち来て」
+
+　俺の腕うでをとって関節技わざを決めたハルヒはまた俺を薄うす暗ぐらい階段の踊おどり場ばへと拉ら致ちした。
+
+　とにかく腹が減っていた。
+
+「さっき職員室で岡部に聞いたんだけどね、朝倉の転校って朝になるまで誰だれも知らなかったみたいなのよ。朝イチで朝倉の父親を名乗る男から電話があって急に引ひっ越こすことになったからって、それもどこだと思う？　カナダよカナダ。そんなのあり？　胡う散さん臭くさすぎるわよ」
+
+「そうかい」
+
+「それであたし、カナダの連れん絡らく先を教えてくれって言ったのよ。友達のよしみで連絡したいからって」
+
+　まともに口をきいたこともないくせに。
+
+「そしたらどうよ、それすら解わからないって言うのよ？　普ふ通つう引っ越し先くらい伝えるでしょ。これは何かあるに違いないわ」
+
+「ねえよ」
+
+「せっかくだから引っ越し前の朝倉の住所を訊きいてきた。学校が終わったら、その足で行くことにするわ。何か解るかもしれない」
+
+　相変わらず人の話を聞かない奴やつだ。
+
+　ま、別に止めないことにする。無む駄だ骨ぼねを折るのはハルヒであって、俺ではない。
+
+「あんたも行くのよ」
+
+「なんで？」
+
+　ハルヒは肩かたを怒いからせ、火か炎えんを吹ふく前の怪かい獣じゆうのように呼気を吸い上げ、廊下にまで届くような大声で叫さけんだ。
+
+「あんたそれでもＳＯＳ団の一員なの！」
+
+
+
+
+
+　ハルヒの伝言を仰おおせつかった俺はその場を這ほう々ほうの体ていで退散し、部室へと取って返すと長門に今日は俺もハルヒも部室には来ないことを伝え、それを朝比奈さんと古泉が放課後に来たら教えるように言い、しかしこの寡か黙もくな宇宙人だけではどんな伝言ゲームが結果になるか知れたものではなかったので、部室に余っていた藁わら半ばん紙しのビラの裏に「ＳＯＳ団、本日自主休日　　　ハルヒ」とマジックで書いてドアに画が鋲びようで留めた。
+
+　古泉はともかく朝比奈さんがメイド服に着き替がえる手間くらいは省いてあげるべきだろう。
+
+　そんなことをしていたおかげで、俺は徹てつ底てい的に空腹のまま、五限の始まりの鐘かねを聞く羽目になった。合間の休み時間に食ったけどな。
+
+
+
+
+
+　女子と肩を並べて下校する、なんてのは実に学生青春ドラマ的で、俺だってそういう生活を夢に見なかったかと言うと嘘うそになる。俺は現在その夢を実現させているわけなのだが、ちっとも楽しくないのはどうしたことだろう。
+
+「何か言った？」
+
+　俺の左ひだり隣どなりでメモを片手に大またで歩いているハルヒが言った。俺には、「何か文句あるの？」とでも言ってるように思える。
+
+「いや何も」
+
+　坂をずんずんと下って私鉄の線路沿いを歩いている。もう少し行けば光陽園駅だ。
+
+　そろそろ長門の住んでるマンションだなと思っていたら、ハルヒは本当にその方角を目差し、ついに見覚えのある新築の分ぶん譲じようマンションの前で止まった。
+
+「ここの５０５号室に住んでいたみたい」
+
+「なるほどね」
+
+「何がなるほどよ」
+
+「いや何でも。それよりどうやって入るつもりだ。玄げん関かんも鍵かぎ付きだぜ」
+
+　と、俺はインターフォン横のテンキーの存在を教えてやる。
+
+「あれで数字を入力して開ける仕組みだろ。お前ナンバー知ってんのか？」
+
+「知らない。こういうときは持久戦ね」
+
+　何を待つというのか、と思っていたら、そう待つこともなかった。買い物に行くらしいオバサンが中から扉とびらを開けて、棒立ちしている俺たちを気味悪そうに眺ながめながら出て行き、その扉が閉まりきらないうちにハルヒがつま先を押し込んでストッパー代わりにする。
+
+　あまりスマートな手口とは言えないな。
+
+「早く来なさいよ」
+
+　引きずり込まれるようにして俺はマンションの玄関ホールに立っていた。ちょうど一階に止まっていたエレベータに乗り込む。黙だまって階数表示を見つめるのがマナーだ。
+
+「朝倉なんだけど」
+
+　どうやらハルヒはそんなマナーなどおかまいなしのようだ。
+
+「おかしなことがまだあるのよね。朝倉って、この市内の中学から北きた高に来たんじゃないらしいのよ」
+
+　そりゃまあそうだろうが。
+
+「調べてみたらどこか市外の中学から越えつ境きよう入学してたわけ。絶対おかしいでしょ。別に北高は有名進学校でもなんでもない、ただのありふれた県立高校よ。なんでわざわざそんなことするわけ？」
+
+「知らん」
+
+「でも住居はこんなに学校の近くにある。しかも分譲よ、このマンション。賃貸じゃないのよ。立地もいいし、高いのよ、ここ。市外の中学へここから通っていたの？」
+
+「だから、知らん」
+
+「朝倉がいつからここに住んでたのか調べる必要があるわね」
+
+　五階に到とう着ちやくし、５０５号室の前で俺たちはしばらく物言わぬ扉を眺めた。あったかもしれない表札は今は抜ぬき取られ、無言で空き部屋であることを示している。ハルヒがノブを捻ひねっていたが、当然開くはずもなく。
+
+　どうにかして中に入れないかと腕うでを組むハルヒの横で俺はあくびをかみ殺していた。我ながら時間の無む駄だなことをしていると思う。
+
+「管理人室に行きましょ」
+
+「鍵貸してくれるとは思えないけどな」
+
+「そうじゃなくて、朝倉がいつからここに住んでんのか聞くためよ」
+
+「あきらめて帰ろうぜ。そんなん解わかったところでどうしょうもないだろ」
+
+「ダメ」
+
+　俺たちはエレベータで一階に取って返し、玄関ホール脇わきの管理人室へと向かった。ガラス戸の向こうは無人だったが、壁かべのベルを鳴らすと、ややあって白はく髪はつをふさふさとさせた小さな爺じいさんがゆっくりゆっくり現れた。
+
+　爺さんが何かを言うより早く、
+
+「あたしたちここに住んでた朝倉涼子さんの友達なんですけど、彼女ったら急に引ひっ越こしちゃって連れん絡らく先とか解んなくて困ってるんです。どこに引っ越すとか聞いてませんか？　それからいつから朝倉さんがここに入ってたのかそれも教えて欲しいんです」
+
+　こういう常識的な口調も出来るのかと俺が感かん嘆たんしていると、耳の遠いらしい管理人に何度も「えっ？」「えっ？」と訊きき返されながら、ハルヒは朝倉一家の突とつ然ぜんの引っ越しは管理人たる自分にも寝ね耳みみに水だったこと（引っ越し屋が来た様子もないのに部屋が空っぽになっておって度ど肝ぎもを抜かれたわ）、朝倉がいたのは三年ほど前からだったこと（めんこいお嬢じようさんがわしんとこに和わ菓が子しの折おり詰づめを持ってきたから覚えておる）、ローンはなく一いつ括かつニコニコ現金払ばらいだったこと（えれえ金持ちだと思ったもんだて）、などを首しゆ尾び良く聞き出していた。探たん偵ていにでもなればいい。
+
+　爺さんはうら若き乙女おとめと会話することがよほど楽しいらしく、
+
+「そう言えばお嬢さんのほうはたびたび目にしたが、両親さんとはついぞ挨あい拶さつした覚えもないのー」
+
+「涼子さんと言うのかね、あの娘むすめさんは。気だての良い、いい子だったのー」
+
+「せめて一言別れを言いたかったのに、残念なことよのー。ところであんたもなかなか可愛かわいい顔しとるのー」
+
+　とか、もはやジジイの繰くり言ごとの様相を呈ていしてきて、ハルヒもこれ以上の情報提供は得られないと判断したのか、
+
+「ご丁てい寧ねいにありがとうございました」
+
+　模も範はん的なお辞じ儀ぎをして、俺をうながした。うながされるまでもなく、俺はハルヒに遅おくれてマンションを後にする。
+
+「少年、その娘さんは今にきっと美人になる。取り逃にがすんじゃないぞー」
+
+　追ってくるジジイの声が余計だ。ハルヒの耳にも届いたはずで、それに何かのリアクションがあるかとビクビクしていたがハルヒは何をコメントすることもなくずんずんと歩き続け、見習って俺もノーコメントを選せん択たくし、玄げん関かんから数歩歩いたところで、コンビニ袋ぶくろと学生鞄かばんを提さげた長門に出くわした。いつもは下校時間まで部室に残っているのが通例なのにこの時間にここにいるということは、あれから間もなくこいつも学校を出たのだろう。
+
+「あら、ひょっとしてあんたもこのマンションなの？　奇き遇ぐうねえ」
+
+　白はく皙せきの表情で長門はうなずいた。どう考えても奇遇じゃないだろ。
+
+「だったら朝倉のこと、何か聞いてない？」
+
+　否定の仕草。
+
+「そう。もし朝倉のことで解ったら教えてよね。いい？」
+
+　肯こう定ていの動作。
+
+　俺は缶かん詰づめや総菜のパックが入っているコンビニ袋を見ながら、こいつも飯食うんだなとか考えてた。
+
+「眼鏡めがねどうしたの？」
+
+　その問いには直接答えず、長門はただ俺を見た。見られても困る。ハルヒもまともな回答が返ってくるとはハナから思っていなかったようだ。肩かたをすくめ後も見ずに歩き出す。俺は片手をヒラヒラと振ふって長門に別れの意を表明し、すれ違ちがいざま、長門は俺にだけ聞こえる小声で言った。
+
+「気をつけて」
+
+　今度は何に気をつければいいんだか、それを訊こうと振り返る前に、すでに長門はマンションに吸い込まれていた。
+
+
+
+
+
+　ローカル線の線路沿いを歩いていくハルヒの二、三歩後に俺は位置し、目的地不明のウォーキングに付き従っている。このままでは俺の自宅から離はなれるばかりなので、ハルヒにこれからどこに行くつもりなのかを尋たずねてみた。
+
+「別に」
+
+　答えが返ってきた。俺はハルヒの後頭部を眺ながめたまま、
+
+「俺、もう帰っていいか？」
+
+　いきなり立ち止まるもんだから、もう少しでつんのめるところだった。ハルヒは長門みたいな無感動な白い顔を俺に向け、
+
+「あんたさ、自分がこの地球でどれだけちっぽけな存在なのか自覚したことある？」
+
+　何を言い出すんだ。
+
+「あたしはある。忘れもしない」
+
+　線路沿いの県道、そのまた歩道の上で、ハルヒは語り始めた。
+
+
+
+
+
+「小学生の、六年生の時。家族みんなで野球を見に行ったのよ球場まで。あたしは野球なんか興味なかったけど。着いて驚おどろいた。見み渡わたす限かぎり人だらけなのよ。野球場の向こうにいる米こめ粒つぶみたいな人間がびっしり蠢うごめいているの。日本の人間が残らずこの空間に集まっているんじゃないかと思った。でね、親父おやじに聞いてみたのよ。ここにはいったいどれだけ人がいるんだって。満員だから五万人くらいだろうって親父は答えた。試合が終わって駅まで行く道にも人が溢あふれかえっていたわ。それを見て、あたしは愕がく然ぜんとしたの。こんなにいっぱいの人間がいるように見えて、実はこんなの日本全体で言えばほんの一部に過ぎないんだって。家に帰って電でん卓たくで計算してみたの。日本の人口が一億数千ってのは社会の時間に習っていたから、それを五万で割ってみると、たった二千分の一。あたしはまた愕然とした。あたしなんてあの球場にいた人混みの中のたった一人でしかなくて、あれだけたくさんに思えた球場の人たちも実は一つかみでしかないんだってね。それまであたしは自分がどこか特別な人間のように思ってた。家族といるのも楽しかったし、なにより自分の通う学校の自分のクラスは世界のどこよりも面おも白しろい人間が集まっていると思っていたのよ。でも、そうじゃないんだって、その時気付いた。あたしが世界で一番楽しいと思っているクラスの出来事も、こんなの日本のどこの学校でもありふれたものでしかないんだ。日本全国のすべての人間から見たら普ふ通つうの出来事でしかない。そう気付いたとき、あたしは急にあたしの周りの世界が色あせたみたいに感じた。夜、歯を磨みがいて寝ねるのも、朝起きて朝ご飯を食べるのも、どこにでもある、みんながみんなやってる普通の日常なんだと思うと、途と端たんに何もかもがつまらなくなった。そして、世の中にこれだけ人がいたら、その中にはちっとも普通じゃなく面白い人生を送っている人もいるんだ、そうに違いないと思ったの。それがあたしじゃないのは何故なぜ？　小学校を卒業するまで、あたしはずっとそんなことを考えてた。考えていたら思いついたわ。面白いことは待っててもやってこないんだってね。中学に入ったら、あたしは自分を変えてやろうと思った。待ってるだけの女じゃないことを世界に訴うつたえようと思ったの。実際あたしなりにそうしたつもり。でも、結局は何もなし。そうやって、あたしはいつの間にか高校生になってた。少しは何かが変わるかと思ってた」
+
+
+
+
+
+　まるで弁論大会の出場者みたいにハルヒは一気にまくしたて、喋しやべり終えると喋ったことを後こう悔かいするような表情になって天を仰あおいだ。
+
+　電車が線路を走り抜ぬけ、その轟ごう音おんのおかげで俺は、ここはツッコムべきなのか何か哲てつ学がく的な引用でもしてごまかしたほうがいいのか、考える時間を得た。ドップラー効果を残して遠くへ去っていく電車を意味もなく見送って、
+
+
+
+
+
+「そうか」
+
+　こんなことくらいしか言えない自分がちょっと憂ゆう鬱うつだ。ハルヒは電車が巻き起こした突とつ風ぷうで乱れた髪かみを撫なでつけ、
+
+「帰る」
+
+　と言って、もと来た方向へ歩き出した。俺もどっちかと言えばそっちから帰ったほうが早く帰れるんだが。しかしハルヒの背中は無言で「ついてくんな！」と言っているような気がして、俺はただひたすらに、ハルヒの姿が見えなくなるまで──その場に立ちつくしていた。
+
+　何をやってるんだろうね。
+
+
+
+
+
+　自宅に戻もどると、門の前で古泉一樹が俺を待っていた。
+
+「こんにちは」
+
+　十年前からの友人みたいな笑え顔がおがそらぞらしい。制服に通学鞄かばんという完かん璧ぺきな下校途と中ちゆうスタイルで、馴なれ馴れしく手を振ふりながら、
+
+「いつぞやの約束を果たそうかと思いまして。帰りを待たせてもらいました。意外に早かったですね」
+
+「俺がどこに行ってたのか知ってるみたいな話し方だな」
+
+　スマイルゼロ円みたいな笑みをたたえた古泉は、
+
+「少しばかりお時間を借りていいでしょうか。案内したいところがあるんですよ」
+
+「涼宮がらみで？」
+
+「涼宮さんがらみで」
+
+　俺は自宅の扉とびらを開けると玄げん関かんに鞄を置き、ちょうど奥から出てきた妹に、ちょっと遅おそくなるかもしれないことを告げ、また古泉のところへ取って返し、その数分後には車上の人となっていた。
+
+
+
+
+
+　ありえないくらいのタイミングの良さで通りかかったタクシーを古泉が止め、俺と奴やつを乗せた車は国道を東へと向かっている。乗り際ぎわに古泉が口にした地名は、県外にある大都市のものであり、電車で行ったほうが遥はるかに安上がりに違ちがいないのだが、どうせ払はらいはこいつ持ちだ。
+
+「ところで、いつぞやの約束って何だっけ」
+
+「超ちよう能のう力りよく者ならその証しよう拠こを見せてみろとおっしゃったでしょう？　ちょうどいい機会が到とう来らいしたもんですから、お付き合い願おうと思いまして」
+
+「わざわざ遠出する必要があるのか？」
+
+「ええ。僕が超能力者的な力を発揮するには、とある場所、とある条件下でないと。今日これから向かう場所が、いい具合に条件を満たしているというわけです」
+
+「まだハルヒが神様だとか思ってんのか」
+
+　後部座席に並んで座っている古泉は、俺に横目をくれて、
+
+「人間原理という言葉をご存じですか？」
+
+「ご存じでないな」
+
+　ふっと息いき継つぎみたいな笑い声を上げて、古泉は言った。
+
+「煎せんじ詰つめて言えば、『宇宙があるべき姿をしているのは、人間が観測することによって初めてそうであることを知ったからだ』という理論です」
+
+　ちっとも解わからん。
+
+「我観測す、ゆれに宇宙あり。とでも言い換かえましょうか。要するに、この世に人間なる知的生命体がいて物理法則や定数を発見し、宇宙はこのようにして成っていると観測出来て初めて宇宙そのものの存在が知られたわけです。ならば宇宙を観測する人類がもし地球でここまで進化することがなかったら、観測するものがいない以上、宇宙はその存在を誰だれにも知られることがない。つまりあってもなくても同じことになってしまう。人類がいるからこそ宇宙は存在を認められている、という人間本位的な理り屈くつのことです」
+
+「そんな無茶な話があるか。人類がいようがいまいが、宇宙は宇宙だろう」
+
+「その通りです。だから人間原理は科学的とは言えません。思し索さく的な理論にすぎない。しかし面おも白しろい事実がここから浮ふ上じようします」
+
+　タクシーが信号で止まる。運転手は前を見たまま、俺たちを一いつ顧こだにしない。
+
+「なぜ宇宙は、こうも人類の生存に適した形で創造されたのか。重力定数がわずかでも小さいか大きいかしていたなら、宇宙がこのような世界になることはなかったでしょう。あるいはプランク定数が、あるいは粒りゆう子しの質量比が、まさに人間にとってうってつけとしか言いようがない値をとっているゆえに世界はあり、人類もある。不思議なことだとは思いませんか？」
+
+　俺は背中がむず痒がゆくなるのを感じた。何だか科学かぶれした新興宗教のパンフレットにありそうな謳うたい文句だ。
+
+「ご安心を。僕は全知全能たる絶対神が人間の造物主である、などと信しん仰こうしているわけではありません。僕の仲間たちもね。ただし疑ってはいます」
+
+　何をだ。
+
+「僕たちは、崖がけっぷちで爪つま先さき立だちしている道化師のごとき存在なのではないかとね」
+
+　俺がよほど変な顔をしていたのだろう。古泉は喘ぜん息そくにかかった鶏にわとりのオスみたいな笑い声を響ひびかせ、
+
+「冗じよう談だんです」
+
+「お前の言ってることは何一つとして理解出来ん」
+
+　俺はハッキリ言ってやった。笑えないコントに付き合っているヒマはない。ここで俺を降ろすか、さっさとＵターンしろ。出来れば後者がいい。
+
+「人間原理を引き合いに出したのは、ものの例えですよ。涼宮さんの話がまだです」
+
+　だから、どうしてお前も長門も朝比奈さんもハルヒがそんなに好きなんだ。
+
+「魅み力りよく的な人だとは思いますが。それは置いときましょう。覚えていますか、僕が、世界は涼宮さんによって作られたのかもしれないと言ったこと」
+
+　いまいましいことだが記き憶おくには残っているようだな。
+
+「彼女には願望を実現する能力がある」
+
+　そんなことを大まじめに断言するな。
+
+「断言せざるを得ません。事態はほとんど涼宮さんの思い通りに推移していますから」
+
+　そんなはずがあるか。
+
+「涼宮さんは宇宙人はいるに違ちがいない、そうであって欲しいと願った。だから長門有希がここにいる。同様に未来人もいて欲しいと思った。だから朝比奈みくるがここにいる。そして僕も、彼女に願われたからというただそれだけの理由でここにいるのですよ」
+
+「だーかーら、何で解るんだよ！」
+
+「三年前のことです」
+
+　三年前はもういい。聞き飽あきた。
+
+「ある日、突とつ然ぜん僕は自分に、ある能力が備わったことに気付いた。その力をどう使うべきかも何故なぜか知っていた。僕と同じ力を持つ人間が僕と同様に力に目覚めたこともね。ついでにそれが涼宮ハルヒによってもたらされたことも。これは説明出来ません。解ってしまうんだから仕方がないとしか」
+
+「一億万歩譲ゆずったとして、ハルヒにそんなことが出来るとは思えん」
+
+「そうでしょうね。我々だって信じられなかった。一人の少女によって世界が変化、いや、ひょっとしたら創造されたのかもしれない、なんてことをね。しかもその少女はこの世界を自分にとって面白くないものだと思いこんでいる。これはちょっとした恐きよう怖ふですよ」
+
+「なぜだ」
+
+「言ったでしょう。世界を自由に創造出来るのなら、今までの世界をなかったことにして、望む世界を一から作り直せばいい。そうなると文字通りの世界の終わりが訪れます。もっとも僕たちがそれを知るすべもないでしょうが。むしろ、我々が唯ゆい一いつ無二だと思っているこの世界も、実は何度も作り直された結果なのかもしれません」
+
+　信じられるか、と言う代わりに俺は別の言葉を作っていた。
+
+「だったらハルヒに自分の正体を明かしたらいい。超ちよう能のう力りよく者が実在すると知ったら、喜ぶぞ、あいつ。世界をどうにかしようとは思わないかもしれん」
+
+「それはそれで困るんですよ。涼宮さんが超能力なんて日常に存在するのが当たり前だと思ったなら、世界は本当にそのようになります。物理法則がすべてねじ曲がってしまいます。質量保存の法則も、熱力学の第二法則も。宇宙全体がメチャメチャになりますよ」
+
+「どうにも解わからないことがある」
+
+　俺は言った。
+
+「ハルヒが宇宙人や未来人や超能力者を望んだから、お前や長門や朝比奈さんがいるんだって言ったな」
+
+「そうです」
+
+「なら、なぜハルヒ自身はまだそれに気付いていないんだ。お前たちや、俺までが知っているのに。おかしいだろう」
+
+「矛む盾じゆんだと思いますか。ところがそうではないのですよ。矛盾しているのは涼宮さんの心のほうです」
+
+　解りやすく言え。
+
+「つまるところ、宇宙人や未来人や超能力者が存在して欲しいという希望と、そんなものがいるはずないという常識論が、彼女の中でせめぎ合っているんですよ。彼女は言動こそエキセントリックですが、その実、まともな思考形態を持つ一いつ般ぱん的な人種なんです。中学時代は砂すな嵐あらしのようだった精神も、ここ数ヶ月は割に落ち着いて、僕としてはこのまま落ち着いていて欲しかったんですけどね、ここに来てまた、トルネードを発生させている」
+
+「どういうわけだ」
+
+「あなたのせいですよ」
+
+　古泉は口だけで笑っていた。
+
+「あなたが涼宮さんに妙みようなことを思いつかせなければ、我々は今もまだ彼女を遠目から観察するだけですんでいたでしょう」
+
+「俺がどうしたって？」
+
+「怪あやしげなクラブを作るように吹ふき込んだのはあなたです。あなたとの会話によって彼女は奇き妙みような人間ばかりを集めたクラブを作る気になったのだから、責任のありかはあなたに帰結します。その結果、涼宮ハルヒに関心を抱いだく三つの勢力の末まつ端たんが一堂に会することになってしまった」
+
+「……濡ぬれ衣ぎぬだ」
+
+　我ながら力のこもらない反論。古泉は薄うすく笑いながら、
+
+「まあ、それだけが理由ではないのですが」
+
+　それだけ言って口を閉ざした。俺が続きを言えと言い出す前に、運転手が言った。
+
+「着きました」
+
+　車が止まり、ドアが開かれる。雑ざつ踏とうの中に俺と古泉は降り立った。料金を受け取ることもなくタクシーは走り去ったが、俺は全然驚おどろかなかった。
+
+
+
+
+
+　周辺地域に住む人間が、街に出る、と言えばたいていこの辺りのことを差す。私鉄やＪＲのターミナルがごちゃごちゃと連なり、デパートや複合建築物が建ち並ぶ日本有数の地方都市。夕日がせわしなく道行く人々を明るく彩さい色しきするスクランブル交差点。どこから湧わいたのかと思うほどの人間が青信号と同時に動き出した。その長い横断歩道の際きわで車を降りた俺たち二人は、たちまちのうちに雑踏に紛まぎれた。
+
+「ここまでお連れして言うのも何ですが」
+
+　ゆっくりと横断歩道を渡わたりつつ、古泉は前を見たまま、
+
+「今ならまだ引き返せますよ」
+
+「いまさらだな」
+
+　すぐ横を歩く古泉の手が俺の手を握にぎった。何のマネだ、気持ち悪い。
+
+「すみませんが、しばし目を閉とじていただけませんか。すぐすみます。ほんの数秒で」
+
+　肩かたがぶつかりそうになった会社員風のスーツ姿を身体からだをよじって避よける。青信号が点てん滅めつを始める。
+
+　いいだろう。俺は素す直なおに目をつむった。大量の靴くつ音おと、車のエンジン音、一時も途と絶だえることのない人声、喧けん噪そう。
+
+　古泉に手を引かれて、一歩、二歩、三歩。ストップ。
+
+「もうけっこうです」
+
+　俺は目を開いた。
+
+
+
+
+
+　世界が灰色に染まっていた。
+
+
+
+
+
+　暗い。思わず空を見上げる。あれほど目ま映ばゆい橙だいだい色いろを放っていた太陽はどこにもなく、空は暗あん灰かい色しよくの雲に閉ざされている。雲なのだろうか？　どこにも切れ目のない平面的な空間がどこまでも広がり、周囲を陰かげで覆おおっている。太陽がない代わりに灰色の空は薄うすボンヤリとした燐りん光こうを放って世界を暗黒から救っている。
+
+　誰だれもいない。
+
+　交差点の真ん中に立ちつくす俺と古泉以外、横断歩道を埋うめ尽つくすまでだった人の群れは、存在の名残なごりもなく消え失うせていた。薄うす闇やみの中で、信号機だけがむなしく点滅し、今、赤になった。車道側の信号が青に変わる。しかし走り出す車も一台もなかった。地球の自転すら止まったのではないかと思うまでの静せい寂じやく。
+
+「次元断層の隙すき間ま、我々の世界とは隔かく絶ぜつされた、閉へい鎖さ空間です」
+
+　古泉の声が静まりかえった大気の中でやけによく響ひびいた。
+
+「ちょうどこの横断歩道の真ん中が、この閉鎖空間の《壁かべ》でしてね。ほら、このように」
+
+　伸のばした古泉の手が抵てい抗こうを受けたように止まった。俺も真似まねしてみる。冷たい寒天のような手て触ざわり。弾だん力りよくのある見えない壁はわずかに俺の手を受け入れたが、十センチも進まないうちにビクともしなくなった。
+
+「半径はおよそ五キロメートル。通常、物理的な手段では出入り出来ません。僕の持つ力の一つが、この空間に侵しん入にゆうすることですよ」
+
+　タケノコのように地面から生えているビルの数々には明かり一つ灯ともっていない。商店街に並ぶ店にも。人工的な光を放っているのは信号と、弱々しく輝かがやく街灯だけだ。
+
+「ここはどこだ」
+
+　むしろ、何だ、と言うべきだろうか。
+
+　歩きながら説明しましょう、と古泉はどうということもなさそうに、
+
+「詳しよう細さいは不明ですが、我々の住む世界とは少しだけズレたところにある違ちがう世界……とでも言いましょうか。先ほどの場所から次元断層が発生し、我々はその隙間に入り込んだ状態になっています。今この時でも、外部は何ら変わらない日常が広がっていますよ。常人がここに迷い込むことは……まあ滅めつ多たにありません」
+
+　道路を渡り切り、古泉は目的地が決まっているのか、確かな足取りで歩を進める。
+
+「地上に発生したドーム状の空間を想像して下さい。お椀わんを伏ふせたようなと言いますか。ここはその内部ですよ」
+
+　雑居ビルの中に入る。人の気配どころかホコリ一つ落ちていない。
+
+「閉鎖空間はまったくのランダムに発生します。一日おきに現れることもあれば、何ヶ月も音おと沙さ汰たなしのこともある。ただ一つ明らかなのは、」
+
+　階段を登る。ひどく暗い。前を歩く古泉の姿がわずかでも見えていなければ足を取られるところだ。
+
+「涼宮さんの精神が不安定になると、この空間が生まれるってことです」
+
+　四階建ての雑居ビルの屋上に出る。
+
+「閉鎖空間の現出を僕は探知することが出来ます。僕の仲間も。なぜそれを知ってしまうのかは僕らにも謎なぞです。なぜだか出る場所と時間が解わかってしまう。同時にここへの入り方もね。言葉では説明出来ません、この感覚は」
+
+　屋上の手すりにもたれて空を見上げる。そよとも風が吹ふいていない。
+
+「こんなものを見せるために、わざわざ連れてきたのか？　誰もいないだけじゃないか」
+
+「いえ、核かく心しんはこれからですよ。もう間もなく始まります」
+
+　もったいぶるな。しかし古泉は俺の仏ぶつ頂ちよう面づらに気付かないふりをして、
+
+「僕の能力は閉鎖空間を探知して、ここに入るだけではありません。言うなれば、僕には涼宮さんの理性を反映した能力が与あたえられているのです。この世界が涼宮さんの精神に生まれたニキビだとしたら、僕はニキビ治ち療りよう薬なんですよ」
+
+「お前の比ひ喩ゆは解りにくい」
+
+「よく言われます。しかしあなたもたいしたものだ。この状じよう況きようを見て、ほとんど驚おどろいていませんね」
+
+　俺は消えた朝倉とゴージャスな朝比奈さんを思い出した。すでに色々あったからな。
+
+　不意に古泉は顔を上げた。相対した俺の頭の向こう側に、遠くに焦しよう点てんを合わせた目を向ける。
+
+「始まったようです。後ろを見て下さい」
+
+　見た。
+
+
+
+
+
+　遠くの高層ビルの隙すき間まから、青く光る巨きよ人じんの姿が見えた。
+
+
+
+
+
+　三十階建ての商業ビルよりも頭一つ高い。くすんだコバルトブルーの痩そう身しんは発光物質ででも出来ているのか、内部から光を放っているようだ。輪りん郭かくもはっきりしない。目鼻立ちといえるものもない。目と口があるらしき部分がそこだけ暗くなっている他ほかは、ただののっぺらぼうだ。
+
+　何だ、アレは。
+
+　挨あい拶さつでもするように、巨人は片手をゆるゆると上げ、鉈なたのように振ふり下ろした。
+
+　かたわらのビルを屋上から半ばまで叩たたき割り、腕うでを振る。コンクリートと鉄筋の瓦が礫れきがスローモーションで落下、轟ごう音おんとともにアスファルトに降り注ぐ。
+
+「涼宮さんのイライラが具現化したものだと思われます。心のわだかまりが限界に達するとあの巨人が出てくるようです。ああやって周りをぶち壊こわすことでストレスを発散させているんでしょう。かと言って、現実世界で暴れさせるわけにもいかない。大惨さん事じになりますかね。だからこうして閉鎖空間を生み出し、その内部のみで破は壊かい行動をする。なかなか理性的じゃないですか」
+
+　青い光の巨人が腕を振るたびにビルたちは半分からへし折られて崩ほう壊かいし、崩壊したビルの残ざん骸がいを踏ふみつぶしながら巨人は足を踏み出した。建物がひしゃげる鈍にぶい音は聞こえても、巨人の足音は不思議と響いて来ない。
+
+「あれくらいの巨大な人型になると、物理的には自重で立つことも出来ないはずなんですがね。あの巨人はまるで重力がないかのように振る舞まうんです。ビルを破壊出来るということは質量を持っているはずなんですが、いかなる理り屈くつもあれには通用しませんよ。たとえ軍隊を動員したとしても、あれを止めることは出来ないでしょう」
+
+「じゃ、あれは暴れっぱなしなのか」
+
+「いいえ。僕がいるのはそのためでもあるのですから。見てください」
+
+　古泉は指を巨人に向けた。俺は目を凝こらす。さっきまではなかった、赤い光点がいくつか巨人の周りを旋せん回かいしていた。高層ビルと伍ごする雲つく青い巨人に比べると、ゴマ粒つぶみたいな矮わい小しような球状の赤い光。五つまでは数えれたが、動きが速すぎて目で追いきれない。衛星のように巨人を周回する赤い点は、まるで巨人の行く手を遮さえぎるような動きを見せていた。
+
+「僕の同志ですよ。僕と同じように涼宮さんによって力を与えられた、巨人を狩かる者です」
+
+　赤い光の粒は、淡たん々たんと街並みを破壊する青い巨人が振り回す両腕を巧たくみに回かい避ひしながら、急激に軌き道どうを変えて巨人の身体からだに突とつ撃げきを仕し掛かけていた。巨人の身体はまるで気体で出来ているようだった。やすやすと貫かん通つうする。
+
+　だが巨人は自分の顔の前を飛び回る赤い球体など目に入らない様子で、攻こう撃げきを無視、義務的な動作でまた一つのデパートビルに手刀を振り下ろした。
+
+　複数の赤しやつ光こうが一いつ斉せいに突撃してもその動きは変わらない。巨人は体中を速すぎてレーザーのようにも見える赤い光に貫つらぬかれていたが、遠目からではどんなダメージを受けているのかはまったく解らなかった。巨人の身体には穴すら開いていないように見える。
+
+「さて、僕も参加しなければ」
+
+　古泉の身体から赤い光が滲しみ出していた。オーラが可視光線なんだとしたら、まさにそんな感じだ。発光する古泉の身体はたちまちのうちに赤い光の球体に飲み込まれ、俺の目の前に立っているのは、もはや人間の姿ではなく、ただの大きな光の玉だった。
+
+　デタラメだな、もう。
+
+　ふわりと浮うき上がった赤い光球は、俺に目配せでもするように二三度ばかり左右に揺ゆれると、残像すら残らないスピードで飛び去った。一直線に、巨人へ向けて。
+
+　古泉のなれの果てを加えた赤い光群は一秒もじっとしていないため総数を数える気にもならないが、二桁けたってことはないだろう。果か敢かんに巨人への体当たりアタックをかましているものの突つき抜ぬけるばかりで何かの効果を上げているようには思えない、と俺が傍ぼう観かんしていると、赤い玉の一つが巨人の青い腕、肘ひじの辺りに取りついて、そのまま腕に沿って一周した。
+
+　ゆらあり、と巨人の片腕が肘から切断され、主あるじを失った巨きよ腕わんが地面に落下していく、と思いきや、青い光がモザイク状に煌きらめきながら、腕は厚みを失って、日向ひなたに置いた雪の欠片かけらのように消えた。肘を失った切断部から気体のような青い煙けむりがゆっくりと滴したたっているのは、あれは巨人の血液だろうか。幻げん想そう的と言えなくもない光景である。
+
+　赤い玉たちは猪ちよ突とつ猛もう進しんから切り刻み攻撃に宗しゆう旨し変えをしたようで、犬にたかるノミみたいに一斉に巨人の身体にピタリと身を寄せると、青い光を切り刻み始める。巨大な顔に赤い線が斜ななめ走り頭部がずり落ちる。肩かたが崩ほう落らくし、たちまちのうちに上半身は奇き怪かいなオブジェと化した。切断された部位はモザイクとなって広がり、そして消しよう滅めつする。
+
+　青い光が立つ辺り一面が荒こう野やになっているおかげで遮しや蔽へい物がなく、俺は一部始終を観劇することが出来た。身体の半分以上を失ったと同時に巨人、崩壊。塵ちりよりも小さく分解し、後には瓦礫の山が残されるばかりだった。
+
+　上空を旋回していた赤い点々は、それを見届けると、四方に散った。大半はすぐに見えなくなったが一つが俺に向かって飛んできて、雑居ビルの屋上に軟なん着ちやく陸りくを決めると赤い光がパトランプからコタツ強、弱へと明るさを弱め、すっかり光の放出をやめたとき、そこに立っているのは、気取った手つきで髪かみをなでつけているいつもの微笑ほほえみを浮かべた古泉なのだった。
+
+「お待たせしました」
+
+　息一つ乱れていない。
+
+「最後に、もう一つ面おも白しろいものが観みれますよ」
+
+　空を指さした。これ以上何があるんだと思いながら、俺はダークグレー一色に染まった天空を見上げ、それを見た。
+
+　最初に巨人を見かけた辺り、その上空に亀き裂れつが入っていた。卵から孵ふ化かしようとしている雛ひな鳥どりがつついたようなひび割れ。亀裂は蜘蛛くもの巣状に成長していた。
+
+「あの青い怪かい物ぶつの消滅に伴ともない、閉へい鎖さ空間も消滅します。ちょっとしたスペクタクルですよ」
+
+　古泉の説明口調が終わるかどうかのうちに、亀裂は世界を覆おおい尽つくしていた。まるで金属製の巨大なザルをすっぽりかぶせられた気分だ。網あみの目が細かくなっていき、ほぼ黒い湾わん曲きよくとしか思えなくなったその直後、
+
+　パリン。
+
+　音はしなかった。だが俺はガラスが砕くだけるような擬ぎ音おんを脳のう裏りに感じた。天頂の一点から明るい光が一いつ瞬しゆんにして円形に広がる。光が降ってくる、と思ったのは間ま違ちがいで、ドーム球場の開閉式の屋根が数秒もしないで全開された、というのが近い。ただし屋根だけではなく建物すべてが。
+
+　つんざくような騒そう音おんが鼓こ膜まくを打って、俺は反射的に耳を押さえた。だがその音は無音の世界でしばらく過ごしたことによる単なる錯さつ覚かく、日常の喧けん噪そう。
+
+　世界は元の姿を取り戻もどしている。
+
+　崩くずれ去った高層ビルも灰色の空も空飛ぶ赤い光もどこにもない。道路は車と人の山でごった返し、ビルの合間には見慣れたオレンジ色の太陽が輝かがやき、世界をあまねく照らすその光は恩おん恵けいを受ける物体すべてに長い影かげを生じさせていた。
+
+　風が吹ふいていた。
+
+
+
+
+
+「解わかっていただけましたか？」
+
+　雑居ビルを後にした俺たちの前に嘘うそみたいに止まったタクシーに乗り込みながら古泉が訊きいた。見覚えのある無口な運転手。
+
+「いいや」と俺は答えた。本心から。
+
+　そう言うと思いました、と古泉は笑いを含ふくんだ声で、「あの青い怪物──我々は《神しん人じん》と呼んでいますが──は、すでにお話ししたとおり涼宮さんの精神活動と連動しています。そして我々もまたそうなんです。閉鎖空間が生まれ、《神人》が生まれるときに限り、僕は異能の力を発揮出来る。それも閉鎖空間の中でしか使えない力です。例えば今、僕には何の力もありません」
+
+　俺は黙だまって運転手の後頭部を眺ながめていた。
+
+「なぜ我々にだけこんな力が備わったのかは不明ですが、多分誰だれでもよかったんでしょう。宝くじに当たったみたいなものです。到とう底てい当たりそうにない低確率でも、誰かには命中する。たまたま僕に矢が刺ささっただけなんですよ」
+
+　因果な話です、と言って古泉は微び苦く笑しようを浮うかべ、俺は黙り続けた。何と言っていいものやらさっぱりだ。
+
+「《神人》の活動を放置しておくわけにはいきません。なぜなら、《神人》が破は壊かいすればするほど、閉鎖空間も拡大していくからです。あなたがさっき見たあの空間は、あれでもまだ小規模なものなのです。放ほっておけばどんどん広がっていって、そのうち日本全国を、それどころか全世界を覆い尽くすでしょう。そうなれば最後、あちらの灰色の空間が、我々のこの世界と入れ換かわってしまうのですよ」
+
+　俺はようやく口を開いた。
+
+「なぜそんなことが解る」
+
+「ですから、解ってしまうのだからしょうがありません。『機関』に所属している人間はすべてそうです。ある日突とつ然ぜん、涼宮さんと彼女が及およぼす世界への影えい響きようについての知識と、それから妙みような能力が自分にあることを知ってしまったのです。閉鎖空間の放置がどのような結果をもたらすのかもね。知ってしまった以上はなんとかしなければならないと思うのが普ふ通つうですよ。僕たちがしなければ、確実に世界は崩ほう壊かいしますから」
+
+　困ったものです、と呟つぶやいて、古泉も黙り込んだ。
+
+　それきり俺の自宅に到とう着ちやくするまで、俺たちは窓を流れる日常の風景を眺め続けた。
+
+　車が止まって俺が降りる際きわになって、
+
+「涼宮さんの動向には注意しておいて下さい。ここしばらく安定していた彼女の精神が、活性化の兆きざしを見せています。今日のあれも、久しぶりのことなんですよ」
+
+　俺が注意しててもどうこうなるもんでもないんじゃないのか？
+
+「さあ、それはどうでしょうか。僕としてはあなたにすべてのゲタを預けてしまってもいいと思ってるんですがね。我々の中でも色々と思おも惑わくが錯さく綜そうしておりまして」
+
+　半分ほど開いたドアから身を乗り出していた古泉は俺が言い返すよりも早く頭を引っ込めた。ドアが閉まる。都市伝説にありそうな幽ゆう霊れいタクシーのように走り去る車を見送るのもバカらしく、俺はさっさと自宅に戻った。
+
+
+
+
+
+　　第七章
+
+
+
+
+
+　自じ称しよう、宇宙人に作られた人造人間。自称、時をかける少女。自称、少年エスパー戦隊。それぞれに自称が取れる証しよう拠こを律りち儀ぎにも俺に見せつけてくれた。三者三様の理由で、三人は涼宮ハルヒを中心に活動しているようだが、それはいい。いや、ちっともよくないが、百光年ほど譲ゆずっていいことにしてみても、さっぱり解わからないことがある。
+
+　なぜ、俺なのだ？
+
+　宇宙人未来人エスパー少年がハルヒの周りをうようよするのは、古泉いわくハルヒがそう望んだからだと言う。
+
+　では、俺は？
+
+　なんだって俺はこんなけったいなことに巻き込まれているんだ？　百パーセント純正の普通人だぞ。突然ヘンテコな前世に目覚めでもしない限り履り歴れき書に書けそうもない謎なぞの力もなんにもない普ふ遍へん的な男子高校生だぞ。
+
+　これは誰の書いたシナリオなんだ？
+
+　それとも誰かに怪あやしいクスリでも嗅かがされて幻げん覚かくでも見ているのか。毒電波を受信しているだけなのか。俺を踊おどらせているのはいったい誰だ。
+
+　お前か？　ハルヒ。
+
+
+
+
+
+　なーんてね。
+
+
+
+
+
+　知ったこっちゃねえや。
+
+　なぜ俺が悩なやまなくてはならんのだ。すべての原因はハルヒにあるらしい。だとしたら悩まなくてはならないのは俺ではなくてハルヒだろう。俺がその困こん惑わくを肩かた代がわりしなければならない理由がどこにある。ない。ないと言ったらない。俺がそう決めた。長門も古泉も朝比奈さんも、俺にあんなことを告白するくらいなら本人に直接何もかも話してやればいいのだ。その結果、世界がどうなろうとそれはハルヒの責任であって、俺は無関係だ。
+
+　せいぜい走り回ればいいのさ。俺以外の人間がな。
+
+　季節は本格的に夏の到とう来らいを前まえ倒だおしすることを決めたに違ちがいない。俺は汗あせをダラダラ垂らしながら坂道を登りながら脱ぬいだブレザージャケットで汗を拭ぬぐいながらネクタイも外してシャツの第三ボタンまでを開けながらノロくさく足を動かしていた。朝にこんなに暑ければ昼にはどんなことになるのか解らないというくらい暑い。ナチュラルハイキングコースが学校への通学路になっている虚むなしさをかみしめる俺の肩かたが後ろから叩たたかれた。触さわるな、余計に暑くなるだろ、と振ふり返った先には谷口のにやけ面づら。
+
+「よっ」
+
+　俺の横に並んだ谷口もさすがに汗まみれだった。うっとおしいよなあ、せっかくキメた髪かみ型がたが汗でベタベタになっちまう、などと言いながらも元気そうな奴やつである。
+
+「谷口」
+
+　一方的に興味ゼロの飼っている犬の話を始めた口を遮さえぎって俺は訊きいた。
+
+「俺って、普ふ通つうの男子高校生だよな」
+
+「はあ？」
+
+　そんな面おも白しろい冗じよう談だんは初めて聞いたと言わんばかりのわざとらしい顔をする谷口。
+
+「まず普通の意味を定義してくれ。話はそっからだな」
+
+「そうかい」
+
+　訊かないほうがマシだった。
+
+「嘘うそ嘘、冗談。お前が普通かって？　あのな、普通の男子生徒は、誰だれもいなくなった教室で女を押し倒たおしたりはしねえ」
+
+　当たり前だが、覚えていたらしい。
+
+「俺も男だ。根ほり葉ほり訊いたりしないだけの分別とプライドを持っている。だがな、解るだろ？」
+
+　全然。
+
+「どうやっていつのまにああなったんだ。え？　しかも俺様的美的ランクＡマイナーの長門有希と」
+
+　Ａマイナーだったのか。そんなことより、
+
+「あれはだな……」
+
+　俺は釈しやく明めいした。谷口が考えていると思われるストーリーは妄もう想そう、夢想、完全フィクションである。長門は気の毒にも部室を根城にしてしまったハルヒの被ひ害がい者しやであり、文芸部の活動に支障をきたすようになった彼女は困りあぐねたあげく、俺に相談した。なんとか涼宮さんをここから退去させるわけにはいかないだろうか。真しん摯しな訴うつたえに同調すること大だった俺は気の毒な彼女を救うべく、ハルヒの目の届かない場所で共とも々どもに善後策を協議することにし、ハルヒの帰ったあとの教室でアイデアを出し合っていると、長門は持病の貧ひん血けつを起こして倒れとっさに俺が彼女と床ゆかとの衝しよう突とつを防ごうとしたまさにその時闖ちん入にゆうしてきたのがお前、谷口である。まこと、真実とは明らかになってみれば下らないものであることよなあ。
+
+「嘘うそつけ」
+
+　一いつ蹴しゆうされた。くそ、ところどころに真実を交えた完かん璧ぺきな作り話だと思ったのに。
+
+「その嘘話を信じたとして、あの誰とも接点を持ちたがらない長門有希から相談を持ちかけられた時点でもうお前は普通じゃねえよ」
+
+　そんなに有名人だったのか、長門は。
+
+「なにより涼宮の手下でもあるしな。お前が普通の男子生徒ってんなら、俺なんかミジンコ並に普通だぜ」
+
+　ついでに訊いておこう。
+
+「なあ、谷口。お前、超ちよう能のう力りよくを使えるか？」
+
+「あーん？」
+
+　マヌケ面が第二段階に進行する。ナンパに成功した美少女がアブナイ宗教の勧かん誘ゆう員だったと知ったときのような顔をして、谷口は、
+
+「……そうか。お前はとうとう涼宮の毒に浸おかされてしまいつつあるんだな……。短い間だったが、お前はいい奴だった。あんまり近づかないでくれ。涼宮が移る」
+
+　俺は谷口を小こ突づき、谷口はぷふぅっと吹ふき出してから表情を崩くずして笑い出した。こいつが超能力者と言うのなら、俺は今日から国連事務総長だ。
+
+　校門から校舎へと続く石いし畳だたみを歩きながら、まあ一応感謝しておく。少なくとも話している間は暑さが少しは紛まぎれたからな。
+
+
+
+
+
+　さしものハルヒも熱気にだけはいかんともしがたいらしく、くたりと机に寄りかかってアンニュイに彼方かなたの山並を見物していた。
+
+「キョン、暑いわ」
+
+　そうだろうな、俺もだよ。
+
+「扇あおいでくんない？」
+
+「他人を扇ぐくらいなら自分を扇ぐわい。お前のために余分に使うエネルギーが朝っぱらからあるわけないだろ」
+
+　ぐんにゃりとしたハルヒは昨日の弁べん舌ぜつさわやかな面おも影かげもなく、
+
+「みくるちゃんの次の衣装なにがいい？」
+
+　バニー、メイドと来たからな、次は……ってまだ次があるのかよ。
+
+「ネコ耳？　ナース服？　それとも女王様がいいかしら？」
+
+　俺は頭の中で朝比奈さんを次々と着きせ替かえさせ、恥はずかしそうに顔を赤らめる小さな姿を想像して眩暈めまいを感じた。可愛かわいすぎる。
+
+　真しん剣けんに悩なやみ始めた俺を、ハルヒは眉まゆをひそめて睨ねめつけて耳の後ろに髪かみを払はらい、
+
+「マヌケ面づら」
+
+　と決めつけた。お前が話を振ふったんだろうが。多分その通りだろうから抗こう議ぎするつもりはないが。セーラー服の胸むな元もとから教科書で風を送り込みながら、
+
+「ほんと、退たい屈くつ」
+
+　ハルヒは口を見事なへの字にした。まるでマンガのキャラクターみたいに。
+
+
+
+
+
+　輻ふく射しや熱でこんがり焼けそうな午後の時間をまるまる使った地じ獄ごくの体育が終わり、二時間も使ってマラソンさせんじゃねえよバカ岡部などとののしりながら俺たちは六組で濡ぬれ雑ぞう巾きんになった体操着を着き替がえて、五組に戻もどってきた。
+
+　早めに体育を切り上げていた女子どもの着替えは終わっていたが、後はホームルームを残すだけとあって運動部に直行する数人は体操着のままであり、運動部とは無む縁えんのハルヒもなぜか体操服を着ていた。
+
+「暑いから」
+
+　というのがその理由である。
+
+「いいのよ、どうせ部室に行ったらまた着替えるから。今週は掃そう除じ当番だし、このほうが動きやすい」
+
+　頬ほお杖づえをついた卵形の顔を外に向けたままハルヒは流れる入道雲を目で追っていた。
+
+「そりゃ合理的だな」
+
+　朝比奈さんのコスプレは体操着でもいいな。コスプレと言わないか。正体は不明でも一応は高校生をやってるんだし。
+
+「なんか妄もう想そうしてるでしょ」
+
+　心を読んだとしか思えない的確なツッコミを放って俺をじろりと睨にらむ。
+
+「あたしが部室に行くまで、みくるちゃんにエロいことしちゃダメよ」
+
+　お前が来てからならいいのか、という言葉を飲み込んで、俺は新米の保安官に拳けん銃じゆうを突つきつけられた西部時代の指名手配犯のようにぞんざいな仕草で両手を広げた。
+
+
+
+
+
+　いつものようにノックの返事を待って部室に入る。テレーズ人形のようにちょこんと椅い子すに座ったメイドさんが草原のヒマワリのような笑え顔がおで出で迎むかえてくれた。安らぐ。
+
+　テーブルの隅すみでページを繰くる長門はさしずめなんかの間ま違ちがいで春に咲さいてしまったサザンカである。いやもう自分でも何の例えなんだか解わからん。
+
+「お茶煎いれますね」
+
+　頭のカチューシャをちょいと直し朝比奈さんは上うわ履ばきをパタパタ鳴らしてガラクタが溢あふれているテーブルに駆かけ寄った。急きゆう須すにお茶っ葉を慎しん重ちような手つきで入れている。
+
+　俺はどっかりと団長机に腰こしを下ろして、いそいそとお茶の用意をする朝比奈さんを眺ながめて一人悦えつに入いっていたが、その姿をみているうちに天てん啓けいが閃ひらめいた。
+
+　パソコンのスイッチを入れ、ＯＳの起動を待つ。ポインタから砂時計マークが消えたのを見計らって、俺はフリーソフトのビューワを立ち上げると、自分で設定したパスワードを入力してフォルダ「ＭＩＫＵＲＵ」の中身を表示させた。さすがコンピュータ研が泣きながら手放した新機種だけあってたちどころにサムネイル表示、朝比奈さんのメイド画像コレクション。
+
+　朝比奈さんが湯飲みを用意している様子を片目で確認しながら、俺はその中の一枚を拡大し、さらに拡大。
+
+　ハルヒによって無理矢理取らされた雌め豹ひようのポージング。大きくはだけた胸元から豊満な谷間がギリギリまで覗のぞいている。左の白い丘おかに黒い点があった。もう一段階拡大表示。だいぶドットが荒あれていたが、確かにそれは星形をしていた。
+
+「なるほど、これか」
+
+「何か解ったんですか？」
+
+　机に湯飲みが置かれるより前に俺は手際よく画像を閉じていた。このへん、抜ぬかりはない。朝比奈さんがモニタを横から覗き込む。何もないですよん。
+
+「あれ、これ何です？　このＭＩＫＵＲＵってフォルダ」
+
+　ぐあ、抜かった。
+
+「どうして、あたしの名前がついてるの？　ね、ね、何が入ってるの？　見せて見せて」
+
+「いやあ、これはその、何だ、さあ何なんでしょうね。きっと何でもないでしょう。うん、そうです、何でもありません」
+
+「嘘うそっぽいです」
+
+　朝比奈さんは楽しそうに笑ってマウスに手を伸のばし、後ろから覆おおい被かぶさるように俺の右手を取ろうとする。させるまじ、とマウスをつかむ俺。背中に柔やわらかい身体からだを押しつけてくれながら朝比奈さんは俺の肩かたの上に顔を出した。甘やかな吐と息いきが頬ほおにかかる。
+
+「あの、朝比奈さん、ちょっと離はなれ……」
+
+「見せて下さいよー」
+
+　左手を俺の肩にかけ、右手でマウスを追いかける朝比奈さんの上半身が背中でつぶれている感かん触しよくに、俺はほとほと参るしかなかった。
+
+　クスクス笑いが耳じ朶だを打ち、そのあまりの心地ここちよさに俺はマウスを放しそうになり──、
+
+「何やってんの、あんたら」
+
+　摂せ氏しマイナス２７３度くらいに冷え切った声が俺と朝比奈さんを凍こおり付かせた。通学鞄かばんを肩に引っかけた体操服のハルヒが父親の痴ち漢かん現場を目もく撃げきしたような顔で立っていた。
+
+　止まっていた朝比奈さんの時間が動いた。メイド服のスカートをぎこちなく揺ゆらせて俺の背中から離れた朝比奈さんはロボット歩きで後ずさり、バッテリー切れ寸前のＡＳＩＭＯアシモのように、かくんと椅子に座り込んだ。蒼そう白はくの顔が今にも泣きそうになっている。
+
+　ふん、と鼻息を吹ふいて、ハルヒは足音高く机に近寄って俺を見下ろし、
+
+「あんた、メイド萌もえだったの？」
+
+「なんのこった」
+
+「着き替がえるから」
+
+　好きにしたらいい。朝比奈さんが煎いれてくれた番茶を飲んでくつろぐ俺。
+
+「着替えるって言ってるでしょ」
+
+　だから何なんだ。
+
+「出てけ！」
+
+　ほとんど蹴け飛ばされるように俺は廊ろう下かへ転がり、鼻先で荒あら々あらしくドアが閉められた。
+
+「なんだ、あいつ」
+
+　湯飲みを置くヒマもなかった。俺は茶色の液体で濡ぬれたシャツを指でつまみ上げて、ドアに背をあずけた。
+
+　この違い和わ感かんはなんだろう。何か日常と違うところが感じられてならない。
+
+「あー、そうか」
+
+　教室でも堂々と着替えをおっぱじめるハルヒが、わざわざ俺を部室から放りだしたのが引っかかっているのだ。
+
+　はて。どういう心境の変化だろ。それともいつしか恥はじらいを覚えるお年とし頃ごろになったのか。相変わらず五組の男は体育の時間前には脱だつ兎とのごとく教室から飛び出すのが習慣になってるから解りようもない。そう言えばその習慣を植え付けた朝倉ももういないんだな。
+
+　持ったままの湯飲みをリノリウムの廊下に置いて、俺は片あぐらをかいた。
+
+　しばらく待って、部屋でごそごそする気配が止まっても中に入れと言う声がかからず、俺がぼんやり膝ひざを抱かかえて待つこと十分、
+
+「どうぞ……」
+
+　朝比奈さんの小さな声がドア越ごしに聞こえた。本物のメイドよろしく扉とびらを開けてくれた朝比奈さんの肩かた越ごしに、たいして面おも白しろくもなさそうに机に肘ひじをついたハルヒの白く長い脚あしが見える。頭で揺れるウサ耳。懐なつかしのバニーガール姿。面めん倒どうくさいのか、カラーやカフス抜き、網あみタイツなしの生足で、しかし耳だけはしっかりつけたバニースタイルのハルヒが足を組んで座っていた。
+
+「手と肩は涼すずしいけど、ちょっと通気性が悪いわね、この衣装」
+
+　と言って、ハルヒはずるずると湯飲みの茶をすする。長門がページをパラリとめくった。
+
+　バニーガールとメイドさんに囲まれ、どうしていいものやら見当もつかない。どっかでこの二人を客引きのバイトにでも斡あつ旋せんしたら儲もうかりそうだなと考えていると、
+
+「うわ、なんですか」
+
+　笑顔のままで素すっ邨とん狂きような声をあげるという愉ゆ快かいな反応をしつつ、古泉が現れた。
+
+「あれ、今日は仮装パーティの日でしたっけ。すみません、僕、何の準備もしてなくて」
+
+　話をややこしくするようなことを言うな。
+
+「みくるちゃん、ここに座って」
+
+　ハルヒが自分の前のパイプ椅い子すを指し示す。朝比奈さんは明らかにおどおどと、おっかなびっくりハルヒに背を向けて椅子に座った。何をするのかと思ったら、おもむろにハルヒは朝比奈さんの栗くり色いろの髪かみを手にとって、三つ編みに結ゆい始めた。
+
+　この場面だけを切り取れば、まるで妹の髪をセットしてやっている姉、みたいな美しい風ふ情ぜいだが、いかんせん朝比奈さんは表情をこわばらせているし、ハルヒは仏ぶつ頂ちよう面づらだ。単に三つ編みメイドにしたいだけだろう。
+
+　底の浅い笑えみでその風景を見ている古泉に俺は問いかけた。
+
+「オセロでもやるか」
+
+「いいですね。久しぶりです」
+
+　俺たちが白と黒の争そう覇は戦せんをひたすら繰くり返している間（光の玉に変化出来るくせに古泉はやたらに弱かった）、ハルヒは朝比奈さんの髪を結ったりほどいたりツインテールにしたり団子にしたりして遊び（ハルヒの手が触ふれるごとに小さく震ふるえる朝比奈さん）、長門は一いつ瞬しゆんたりとも面おもてを上げずに読書に浸ひたっていた。
+
+　何の集まりなんだか、ますます解わからなくなってきた。
+
+
+
+
+
+　そう、その日、俺たちは何の変へん哲てつもないＳＯＳ団的活動をして過ごした。そこには空間を歪ゆがめる情報がどうとか言う宇宙人も未来からの訪問者も青い巨きよ人じんと赤い球体も何も関係なかった。やりたいことも取り立てて見当たらず、何をしていいのかも知らず、時の流れに身をまかすままのモラトリアムな高校生活。当たり前の世界、平へい凡ぼんな日常。
+
+　あまりの何もなさに物足りなさを感じつつも、「なあに、時間ならまだまだあるさ」と自分に言い聞かせてまた漫まん然ぜんと明日を迎むかえる繰り返し。
+
+　それでも俺は充じゆう分ぶん楽しかった。無目的に部室に集まり、小間使いのようによく動く朝比奈さんを眺ながめ、仏像のように動かない長門を眺め、人じん畜ちく無む害がいな微笑ほほえみの古泉を眺め、ハイとローの間を忙いそがしく行き来するハルヒの顔を眺めているのは、それはそれで非日常の香かおりがして、それは俺にとって妙みように満足感を与あたえてくれる学校生活の一部だった。クラスメイトに殺されそうになったり、灰色の無人世界で暴れる化け物に出会ったりなんぞ、そうそうありやしないだろうしな。あれが幻げん覚かくや催さい眠みん術や白昼夢でないとは断言しきれないが。
+
+　涼宮ハルヒとその一味みたいに呼ばれるのは業ごう腹はらだが、色んな意味でこんな面白い連中と一いつ緒しよにいれるのは俺だけだ。なぜ俺だけなのかという疑問はこの際脇わきに置いておく。そのうち俺以外の人間の参加もあるかもしれん。
+
+　そうさ、俺はこんな時間がずっと続けばいいと思っていたんだ。
+
+　そう思うだろ？　普ふ通つう。
+
+　だが、思わなかった奴やつがいた。
+
+　決まっている。涼宮ハルヒだ。
+
+
+
+
+
+　夜になって、晩飯だの風ふ呂ろだの明日の英語で和訳を当てられそうなところの予習だのを適当に済ませ、もう後は寝ねるしかない時間を時計の針が指したあたりで、俺は自室のベッドに寝ころんで長門から押しつけられた厚い書物をひもといていた。たまには読書もいいかなと思って何の気なしに読み始めたのだが、これが存外面白くてすいすいページが進む進む。やっぱり本なんてものは読むまで面白さが解らないもんだ。いいね、読書は。
+
+　ただし一夜で読み切るにはあまりに文字量が多いので、俺は登場人物の一人が長々とした独白をちょうど終えたキリのいいところで本を置いた。そろそろ睡すい魔まの野や郎ろうが目ま蓋ぶたの上でキャンプを張った頃ころ合あいだ。長門の文字が刻まれた栞しおりを挟はさんで本を閉じ、電気を消して布ふ団とんに潜もぐり込む。まどろみ数分、俺は寝付きよく眠ねむりに落ちた。
+
+
+
+
+
+　ところで人が夢を見る仕組みをご存じだろうか。睡眠にはレム睡眠とノンレム睡眠の二種類があって周期的に繰り返されるわけなのだが、眠りばなの数時間は深い眠り、ノンレム睡眠が多く訪れる。この時の脳は活動を休止しており、身体からだは眠っているが脳が軽く活動しているレム睡眠時に我々は夢を見るのである。朝方になってレム睡眠の構成比は増えていき、つまり夢というものはほとんど寝起き直前に続けて見るものなのだ。俺も毎日のように夢を見るが、ギリギリまで寝ね床どこにいていざ起きたら慌あわただしく登校の用意をしなくてはならないからすぐに忘れてしまう。ふとしたきっかけで何年か前の見たことも忘れていた夢の内容を思い出すこともあって、いや人間の記き憶おくの仕組みってのはまだ不思議で満ちているんだな。
+
+　閑かん話わ休きゆう題だい。そんなことはどうでもいいんだ。
+
+　頬ほおを誰だれかが叩たたいている。うざい。眠い。気持ちよく眠っている俺を邪じや魔まするな。
+
+「……キョン」
+
+　まだ目覚ましは鳴ってないぞ。何度鳴ってもすぐ止めてしまうけどな。お袋ふくろに命じられた妹が面おも白しろ半分に俺を布団から引きずり出すにはまだ余よ裕ゆうがあるはずだ。
+
+「起きてよ」
+
+　いやだ。俺は寝ていたい。胡う乱ろんな夢を見ているヒマもない。
+
+「起きろってんでしょうが！」
+
+　首を絞しめた手が俺を揺ゆり動かし、後頭部を固い地面に打ち付けて俺はやっと目を開いた。
+
+……固い地面？
+
+　上半身を跳はね上げる。俺を覗のぞき込んでいたハルヒの顔がひょいと俺の頭を避よけた。
+
+「やっと起きた？」
+
+　俺の横で膝ひざ立ちになっているセーラー服姿のハルヒが、白い顔に不安を滲にじませていた。
+
+「ここ、どこだか解わかる？」
+
+　解る。学校だ。俺たちの通う県立北高校。その校門から靴くつ脱ぬぎ場までの石いし畳だたみの上。明かり一つ灯ともっていない、夜の校舎が灰色の影かげとなって俺の目の前にそびえ──、
+
+　違ちがう。
+
+　夜空じゃない。
+
+　ただ一面に広がる暗い灰色の平面。単一色に塗ぬり潰つぶされた燐りん光こうを放つ天空。月も星も雲さえない、壁かべのような灰色空。
+
+　世界が静せい寂じやくと薄うす闇やみに支配されていた。
+
+　閉へい鎖さ空間。
+
+　俺はゆっくりと立ち上がった。寝ね間ま着きがわりのスウェットではなく、ブレザーの制服が俺の身体をまとっている。
+
+「目が覚めたと思ったら、いつの間にかこんな所にいて、隣となりであんたが伸のびてたのよ。どういうこと？　どうしてあたしたち学校なんかにいるの？」
+
+　ハルヒが珍めずらしくか細い声で訊きいている。俺は返事の代わりに自分の身体にあちこち手を触ふれてみた。手の甲こうをつねった感かん触しよくも、制服の手て触ざわりも、まるで夢とは思えない。髪かみの毛を二本ばかり引っ張って抜ぬくと確かに痛い。
+
+「ハルヒ、ここにいたのは俺たちだけか？」
+
+「そうよ。ちゃんと布団で寝てたはずなのに、なんでこんな所にいるわけ？　それに空も変……」
+
+「古泉を見なかったか？」
+
+「いいえ。……どうして？」
+
+「いや何となくだが」
+
+　ここが例の次元断層がどうのこうのしたとかの閉鎖空間なら、光の巨きよ人じんと古泉たちもいるはずだ。
+
+「とりあえず学校を出よう。どこかで誰かに会うかもしれない」
+
+「あんた、あんまり驚おどろかないのね」
+
+　驚いてるさ。特にお前がここにいることにな。ここはお前が作り出す巨人の遊び場じゃなかったのか？　それともやはりこれは異常にリアル感のある俺が見ている夢か。人気のない学校でハルヒと二人きり。フロイト博士ならなんと分ぶん析せきしてくれるだろう。
+
+　ハルヒと付つかず離はなれず並んで門もん扉ぴから足を踏ふみ出そうとした俺の鼻先が見えない壁に押された。ねっとりした感触には記憶がある。力を込めればある程度は進めるものの、すぐに固い壁にぶち当たる。透とう明めいな壁が校門のすぐ外に立ちはだかっていた。
+
+「……何、これ」
+
+　ハルヒが両手を盛んに突つき出しながら、目を見開いている。俺は学校の敷しき地ちぞいに歩いて確認する。不可視の壁は歩いた範はん囲い内では途と切ぎれることなく続いていた。
+
+　まるで、俺たちを学校に閉じこめるように。
+
+「ここからは出られないらしい」
+
+　風がそよとも吹ふいていない。大気すら動きを止めたようだ。
+
+「裏門へ回ってみるか」
+
+「それより、どこかと連れん絡らくが取れない？　電話でもあればいいんだけど、携けい帯たいは持ってないし」
+
+　ここが古泉が説明したとおりの閉鎖空間なら電話があっても無む駄だだろうが、俺たちはいったん校舎へ入ることにした。職員室に行けば電話くらいあるだろう。
+
+　電気のついていない、暗い校舎というのはなかなかに不気味なものだ。俺たちは土足のまま下げ駄た箱ばこの列を通り抜け、無音の校舎を歩く。途と中ちゆう、一階の教室のスイッチを入れてやると瞬またたきながら蛍けい光こう灯とうがついた。味も素っ気もない人工の光だが、それだけでも俺とハルヒは、ほっとした顔を見合わせた。
+
+　俺たちはまず宿直室へと向かい、誰もいないことを確認してから職員室へ、当然鍵かぎがかかっていたので消しよう火か栓せん扉とびらから消火器を取り出してその底を窓ガラスに叩きつけ、窓から部屋に侵しん入にゆうした。
+
+「……通じてないみたい」
+
+　ハルヒが差し出す受話器を耳に押し当てる。何の音もしない。試しにダイヤルボタンを押してみたが反応なし。
+
+　職員室を後にした俺たちは、教室の電気を次々点灯させながら上を目差した。我らが一年五組の教室は最上階にある。そこから下界を覗のぞけば、周囲がどうなってんのか解るかもしれない、とハルヒは言った。
+
+　校舎を歩いている間、ハルヒは俺のブレザーの裾すそをつまんでいた。頼たよりにしてくれるなよ、俺には何の力もないんだからな。それに怖こわいならいっそ腕うでにすがりついてくれよ。そっちのほうが気分が出る。
+
+「バカ」
+
+　ハルヒは上目遣づかいで俺にきつい視線を送ったものの、指を離そうとはしなかった。
+
+　一年五組の教室に変わるところは何もない。出てきたときのままだ。黒板の消し跡も、画が鋲びようの刺ささったモルタルの壁も。
+
+「……キョン、見て……」
+
+　窓に駆かけ寄ったハルヒはそう言ったきり絶句した。その隣となりで、俺もまた眼下の世界を見下ろした。
+
+　見み渡わたす限りダークグレーの世界が広がっていた。山の中腹に建っている校舎の四階からは遠くの海岸線までを目にすることが出来る。左右百八十度、視界が届く範囲に、人間の生活を思わせる光はどこにもない。すべての家々は闇やみに閉とざされ、カーテン越ごしにでも光を漏もらす窓が一つもなかった。この世から人間が残らず消えてしまったかのように。
+
+「どこなの、ここ……」
+
+　俺たち以外の人間が消えたのではなく、消えたのは俺たちのほうだ。この場合、俺たちこそが誰だれもいない世界に紛まぎれ込んだ闖ちん入にゆう者になるのだろう。
+
+「気味が悪い」
+
+　ハルヒは自分の肩かたを抱だくようにして呟つぶやいた。
+
+
+
+
+
+　行く当てもない。そんなわけで俺たちは夕方に後にしたばかりの部室にやって来た。鍵は職員室からガメてきたので問題ない。
+
+　蛍光灯の下、俺たちは見慣れた根城に戻もどった安心感からかどちらともなく安あん堵どの息を漏らした。
+
+　ラジオをつけてみてもホワイトノイズすら入らず、風の音一つしない静まりかえった部屋にポットから急きゆう須すに注つがれる湯の音だけがこだました。茶葉を入れ替かえる気にもならないので出がらしのお茶だ。煎いれているのは俺。ハルヒは半ば呆ぼう然ぜんと灰色の外げ界かいを眺ながめている。
+
+「飲むか？」
+
+「いらない」
+
+　俺は自分のぶんの湯飲みを持ってパイプ椅い子すを引き寄せた。一口飲んでみる。朝比奈さんのお茶のが百倍美味うまい。
+
+「どうなってんのよ、何なのよ、さっぱり解わからない。ここはどこで、なぜあたしはこんな場所に来ているの？」
+
+　ハルヒは窓の前に立ったまま振ふり返らずに言った。後ろ姿がやけに細く見えた。
+
+「おまけに、どうしてあんたと二人だけなのよ？」
+
+　知るものか。ハルヒはスカートと髪かみを翻ひるがえし、俺を怒おこったような顔で見ると、
+
+「探検してくる」と言って、部室を出ようとする。腰こしをあげかけた俺に、
+
+「あんたはここにいて。すぐ戻るから」
+
+　言い残してさっさと出て行った。うむ、そういうところはハルヒらしいな。溌はつ剌らつとした足音が遠ざかるのを聞きながら一人不味まずい茶を飲む俺の前に、やっと奴やつが現れた。
+
+　小さな赤い光の玉。最初、ピンポン球くらいの大きさ、次いで徐じよ々じよに輪りん郭かくを広げた光は蛍ほたるのような明めい滅めつを繰くり返して、最終的に人型を取った。
+
+「古泉か？」
+
+　人の形をしていても人間には見えない。目も鼻も口もない、赤く輝かがやく人の形。
+
+「やあ、どうも」
+
+　能天気な声は、確かに赤い光の中から届く。
+
+「遅おそかったな。もうちょっとまともな姿で登場すると思ってたが……」
+
+「それも込みで、お話しすることがあります。手間取ったのは他ほかでもありません。正直に言いましょう。これは異常事態です」
+
+　赤い光が揺ゆらめいた。
+
+「普ふ通つうの閉へい鎖さ空間なら僕は難なく侵しん入にゆう出来ます。しかし今回はそうではありませんでした。こんな不完全な形態で、しかも仲間のすべての力を借り受けてやっとなんです。それも長くは持たないでしょう。我々に宿った能力が今にも消えようとしているんです」
+
+「どうなってるんだ？　ここにいるのはハルヒと俺だけなのか？」
+
+　その通りです、と古泉は言い、
+
+「つまりですね、我々の恐おそれていたことがついに始まってしまったわけですよ。とうとう涼宮さんは現実世界に愛想を尽つかして新しい世界を創造することに決めたようです」
+
+「…………」
+
+「おかげで我々の上の方は恐きよう慌こう状態ですよ。神を失ったこちらの世界がどうなるのか、誰にも解りません。涼宮さんが慈じ悲ひ深ければこのまま何もなく存続する可能性もありますが、次の瞬しゆん間かんに無に帰することもありえます」
+
+「何だってまた……」
+
+「さあて」
+
+　赤い光が炎ほのおのようにふらふらと、
+
+「ともかく涼宮さんとあなたはこちらの世界から完全に消えています。そこはただの閉鎖空間じゃない。涼宮さんが構築した新しい時空なんです。もしかしたら今までの閉鎖空間もその予行演習だったのかも」
+
+　面おも白しろい冗じよう談だんだが、それのどこで笑っていいのか教えてくれ。はっはっはっ。
+
+「笑い事じゃないですよ。大マジです。そちらの世界は今までの世界より涼宮さんの望むものに近づくでしょう。彼女が何を望んでいるかまでは知りようがありませんが。さあどうなるんでしょうね」
+
+「それはいいとして、俺がここにいるのはどういうわけだ」
+
+「本当にお解りでないんですか？　あなたは涼宮さんに選ばれたんですよ。こちらの世界から唯ゆい一いつ、涼宮さんが共にいたいと思ったのがあなたです。とっくに気付いていたと思いましたが」
+
+　古泉の光は今や電池切れ間近の懐かい中ちゆう電灯並に光度が落ちていた。
+
+「そろそろ限界のようです。このままいくとあなたがたとはもう会えそうにありませんが、ちょっとホッとしてるんですよ、僕は。もうあの《神人》狩りに行くこともないでしょうから」
+
+「こんな灰色の世界で、俺はハルヒと二人で暮らさないといかんのか」
+
+「アダムとイヴですよ。産めや増やせばいいじゃないですか」
+
+「……殴なぐるぞ、お前」
+
+「冗談です。おそらくですが、閉ざされた空間なのは今だけでそのうち見慣れた世界になると思いますよ。ただしこちらとまったく同じではないでしょうが。今やそちらが真実で、こっちが閉鎖空間だと言えます。どう違ちがってしまうのか、それを観測出来ないのは残念です。まあそっちに僕が生まれるようなことがあれば、よろしくしてやってください」
+
+　古泉はもとのピンポン球に戻もどりつつあった。人間の形が崩くずれ、燃もえ尽きた恒こう星せいのように収縮していく。
+
+「俺たちはもうそっちに戻れないのか？」
+
+「涼宮さんが望めば、あるいは。望み薄うすですがね。僕としましては、あなたや涼宮さんともう少し付き合ってみたかったので惜おしむ気分でもあります。ＳＯＳ団での活動は楽しかったですよ。……ああ、そうそう、朝比奈みくると長門有希からの伝言を言付かっていたのを忘れてました」
+
+　完全に消え失うせる前に、古泉はこう言い残した。
+
+「朝比奈みくるからは謝っておいて欲しいと言われました。『ごめんなさい、わたしのせいです』と。長門有希は、『パソコンの電源を入れるように』。では」
+
+　最後はあっさりしたものだった。蝋ろう燭そくの火を吹ふき消したような。
+
+　俺は朝比奈さんの伝言とやらに頭をひねった。なぜ謝る。朝比奈さんが何をしたと言うんだ。考えるのは後にして、俺はもう一つの伝言に従ってパソコンのスイッチを押した。ハードディスクがシーク音を立てながらディスプレイにＯＳのロゴマークを浮うかび上がらせ……なかった。ものの数秒で立ち上がるはずのＯＳがいつまでたっても表示されず、モニタは真っ黒のまま、白いカーソルだけが左端はしで点てん滅めつしていた。そのカーソルが音もなく動き、素っ気なく文字を紡つむぐ。
+
+
+
+
+
+　YUKI.N〉みえてる？
+
+
+
+
+
+　しばしほうけた後、俺はキーボードを引き寄せた。指を滑すべらせる。
+
+『ああ』
+
+　YUKI.N〉そっちの時空間とはまだ完全には連結を絶たれていない。でも時間の問題。すぐに閉じられる。そうなれば最後。
+
+『どうすりゃいい』
+
+　YUKI.N〉どうにもならない。こちらの世界の異常な情報噴ふん出しゆつは完全に消えた。情報統合思念体は失望している。これで進化の可能性は失われた。
+
+『進化の可能性ってな結局何だったんだよ。ハルヒのどこが進化なんだ』
+
+　YUKI.N〉高次の知性とは情報処理の速度と正確さのこと。有機生命体に付ふ随ずいする知性は肉体から受ける錯さく誤ごとノイズ情報が多すぎて処理に制限がかかる。それ故に一定以上のレベルで進化はストップする。
+
+『肉体がなければいいのか』
+
+　YUKI.N〉情報統合思念体は初めから情報のみによって構成されていた。情報処理能力は宇宙が熱死を迎むかえるまで無限に上じよう昇しようすると思われた。それは違った。宇宙に限りがあるように進化にも限りがあった。少なくとも情報による意識体である以上は。
+
+『涼宮は、』
+
+　YUKI.N〉涼宮ハルヒは何もないところから情報を生み出す力を持っていた。それは情報統合思念体にもない力。有機体に過ぎない人間が一生かかっても処理しきれない情報を生み出している。この情報創造能力を解かい析せきすれば自律進化への糸口がつかめるかもしれないと考えた。
+
+　カーソルが瞬またたいた。どこかためらう気配を感じさせて、次の文字が流れる。
+
+　YUKI.N〉あなたに賭かける。
+
+『何をだよ』
+
+　YUKI.N〉もう一度こちらへ回帰することを我々は望んでいる。涼宮ハルヒは重要な観察対象。もう二度と宇宙に生まれないかもしれない貴重な存在。わたしという個体もあなたには戻ってきて欲しいと感じている。
+
+　文字が薄れてきた。弱々しく、カーソルはやけにゆっくりと文字を生んだ。
+
+　YUKI.N〉また図書館に
+
+　ディスプレイが暗転しようとしていた。とっさに明度を上げてみても無む駄だ。最後に長門の打ち出した文字が短く、
+
+　YUKI.N〉sleeping beauty
+
+
+
+
+
+　カカカ、ハードディスクが回り出す音に俺は飛び上がりそうになる。アクセスランプが明めい滅めつし、ディスプレイには見慣れたＯＳのデスクトップ表示。パソコンの冷れい却きやくファンが立てる唸うなりだけがこの世の音のすべてだった。
+
+「どうしろってんだよ。長門、古泉」
+
+　俺は腹の底からこみ上げるため息をついて、何気なく、本当に何気なく窓を見上げ、
+
+
+
+
+
+　青い光が窓の枠わく内ないを埋うめ尽つくしていた。
+
+
+
+
+
+　中庭に直立する光の巨きよ人じん。間近で見るそれはほとんど青い壁かべだった。
+
+　ハルヒが飛び込んできた。
+
+「キョン！　なんか出た！」
+
+　窓まど際ぎわに立ちつくす俺の背中にぶつかるようにして止まったハルヒは隣となりに並んで、
+
+「なにアレ？　やたらでかいけど、怪かい物ぶつ？　蜃しん気き楼ろうじゃないわよね」
+
+　興奮した口調だった。先ほどまでの悄しよう然ぜんとした様子が嘘うそのよう。不安など感じていないように目を輝かがやかせている。
+
+「宇宙人かも、それか古代人類が開発した超ちよう兵器が現代に蘇よみがえったとか！　学校から出られないのはあいつのせい？」
+
+　青い壁が身じろぎする。高層ビルを蹂じゆう躙りんする光景が脳のう裏りでフラッシュバック、俺はとっさにハルヒの手を取ると部屋から飛び出した。
+
+「な、ちょっ！　ちょっと、何？」
+
+　転がるように廊ろう下かに出る、と同時に轟ごう音おんが大気を震しん動どうさせ、俺はハルヒを廊下に押し倒たおして覆おおい被かぶさった。びりびりと部室棟とうが揺ゆれる。硬かたく重たいものが地面に激げき突とつする衝しよう撃げきと音が廊下を伝わって俺に届いた。その度合いからして巨人の攻こう撃げき目標になったのは部室棟ではない、多分向かいの校舎だ。
+
+　俺は口をパクパク開閉させているハルヒの手を握にぎって起こし、走り出した。ハルヒは意外におとなしくついてくる。
+
+　汗あせばんでいるのは俺の掌てのひらか、それともハルヒか。
+
+　古びた部室棟の中は埃ほこりの匂においすらしない。階段目指して全力ダッシュする俺は二回目の破は壊かい音を聞く。
+
+　ハルヒの体温を掌に感じながら階段を駆かけ下り、中庭を横切ってスロープからグラウンドへ出た。横目でうかがったハルヒの顔は、俺の気の迷いなのかどうなのか、なぜだか少し嬉うれしがっているように思える。まるでクリスマスの朝、枕まくら元もとに事前に希望していた通りのプレゼントが置かれていることを発見した子供のように。
+
+　校舎からとりあえずの距きよ離りをとるまで走り続ける。振ふり仰あおいで見ると、巨人の大きさがさらによく解わかった。だいたい古泉に連れられて行った場所では、あいつは高層ビルほどもあったのだ。
+
+　巨人が手を振り上げ、拳こぶしを校舎に叩たたきつけた。最初の一いち撃げきによって縦に割れていた四階建ての安やす普ぶ請しんはいとも簡単に崩ほう壊かいした。破片が四方八方に飛び散って耳みみ障ざわりな音を立てる。
+
+　二百メートルトラックの真ん中まで進んで、俺たちは脚あしを止めた。薄うす暗ぐらいモノトーンのキャンバスにそこだけが冗じよう談だんのように青い巨大な人型が浮うかび上がっている。
+
+　写真に撮とるならこの情景だと俺は思った。朝比奈さんの胸をつかむコンピュータ研の部長ではなく、ましてや朝比奈さんのコスプレ姿でもなく、この映像こそをホームページに貼はり付けるべきだろう。
+
+　そんなことを考えている俺の耳にハルヒの早口が届いた。
+
+「あれさ、襲おそってくると思う？　あたしには邪じや悪あくなもんだとは思えないんだけど。そんな気がするのね」
+
+「わからん」
+
+　答えながら俺は考えていた。最初に俺を閉へい鎖さ空間へと導いた古泉は説明した。《神人》の破壊活動をほったらかしにしていれば、やがて世界が置き換かわってしまう、と。この灰色世界が今までいた現実世界に取って代わってしまい、そうして……。
+
+　どうなってしまうと言うのだろう。
+
+　さっきの古泉によると、新しい世界がハルヒによって創造されるのだと言うことらしい。そこには俺の知っている朝比奈さんや長門はいるのだろうか。それか、目の前にいる《神人》が自在に闊かつ歩ぽし、宇宙人や未来人や超ちよう能のう力りよく者やらが普ふ通つうにそこらをブラブラしているような、非日常的な風景が常識として迎むかえ入れられるような世界になるのか。
+
+　そんな世界になったとして、そこで俺の果たす役割は何なのか。
+
+　考えるだけ無む駄だのようにも思える。解るわけがないからだ。ハルヒが何を考えているのかなんて、他人の思考を読めるほど俺は達者な人間ではない。俺には何の芸もない。
+
+　考え込む俺の耳元でハルヒの朗ほがらかな声が、
+
+「何なんだろ、ホント。この変な世界もあの巨人も」
+
+　お前が生み出したものらしいぜ、ここも、あいつもな。それより俺が訊ききたいのは、なぜ俺を巻き込んだかということだ。アダムとイヴだと？　アホらしい。そんなベタな展開を俺は認めない。認めてたまるか。
+
+「元の世界に戻もどりたいと思わないか？」
+
+　棒読み口調で俺は言った。
+
+「え？」
+
+　輝かがやいていたハルヒの目が曇くもったように見えた。灰色の世界でも際きわだつ白い顔が俺に向く。
+
+「一生こんなところにいるわけにもいかないだろ。腹が減っても飯食う場所がなさそうだぜ、店も開いてないだろうし。それに見えない壁かべ、あれが周囲を取り巻いているんだとしたら、そこから出ていくことも出来ん。確実に飢うえ死にだ」
+
+「んー、なんかね。不思議なんだけど、全然そのことは気にならないのね。なんとかなるような気がするのよ。自分でも納得出来ない、でもどうしてだろ、今ちょっと楽しいな」
+
+「ＳＯＳ団はどうするんだ。お前が作った団体だろう。ほったらかしかよ」
+
+「いいのよ、もう。だってほら、あたし自身がとっても面おも白しろそうな体験をしているんだし。もう不思議なことを探す必要もないわ」
+
+「俺は戻りたい」
+
+　巨きよ人じんは校舎の解体作業の手を休めていた。
+
+「こんな状態に置かれて発見したよ。俺はなんだかんだ言いながら今までの暮らしがけっこう好きだったんだな。アホの谷口や国木田も、古泉や長門や朝比奈さんのことも。消えちまった朝倉をそこに含ふくめてもいい」
+
+「……何言ってんの？」
+
+「俺は連中ともう一度会いたい。まだ話すことがいっぱい残っている気がするんだ」
+
+　ハルヒは少しうつむき加減に、
+
+「会えるわよきっと。この世界だっていつまでも闇やみに包まれているわけじゃない。明日になったら太陽だって昇のぼってくるわよ。あたしには解るの」
+
+「そうじゃない。この世界でのことじゃないんだ。元の世界のあいつらに、俺は会いたいんだよ」
+
+「意味わかんない」
+
+　ハルヒは口を尖とがらせて俺を見上げていた。せっかくのプレゼントを取り上げられた子供のような怒いかりと悲ひ哀あいが混じった微び妙みような表情だ。
+
+「あんたは、つまんない世界にうんざりしてたんじゃないの？　特別なことが何も起こらない、普通の世界なんて、もっと面白いことが起きて欲しいと思わなかったの？」
+
+「思ってたとも」
+
+　巨人が歩き出した。崩くずれ落ちることなく残っていた校舎の残ざん骸がいを蹴けり倒たおして中庭を進んでくる。渡わたり廊ろう下かに手刀をかまし、部室棟とうにもパンチを入れる。吹ふき飛んでいく俺たちの学校。俺たちの部室。
+
+　ハルヒの頭越ごしに、その巨人とは別の方角にも青い壁が立ち上がってくるのが見えた。一つ、二つ、三つ……。五匹ひき目まで数えて、俺はカウントを放ほう棄きした。
+
+　光の巨人たちは、赤い光玉に邪じや魔まされることもなく、灰色の世界を好きなように破は壊かいし始め、し続けていた。その姿がどこか喜々として見えるのは俺の精神上の問題だろうか。奴やつらが手足を振ふり上げるたびに空間が削けずり取られるように、そこに見えていた風景が消え去っていく。
+
+　もう校舎の跡あと形かたは半分も残っていない。
+
+　閉へい鎖さ空間が拡大しているのかどうか俺は感じ取ることが出来ないし、また拡大しまくったこの空間がやがて新たな現実空間に成り果てるのかどうかも知らん。ただ、そうなのだろうと思うだけだ。今の俺は、電車で隣となりに座った酔よっぱらいのおっさんが「誰だれにも言うなよ、実はわしは宇宙人じゃ」と言ったところで信じてしまえる。すでに俺の経験値は一ヶ月前の三倍の数値くらいには膨ふくれあがっているのだ。
+
+　俺に出来ることは何か。一ヶ月前なら無理でも、今の俺になら出来ることだ。ヒントならすでにいくつも貰もらってある
+
+　俺は決意して、そして言った。
+
+「あのな、ハルヒ。俺はここ数日でかなり面白い目にあってたんだ。お前は知らないだろうけど、色んな奴らが実はお前を気にしている。世界はお前を中心に動いていたと言ってもいい。みんな、お前を特別な存在だと考えていて、実際そのように行動してた。お前が知らないだけで、世界は確実に面白い方向に進んでいたんだよ」
+
+　俺はハルヒの肩かたをつかもうとして、まだ手を握にぎりしめたままだったことに気付いた。ハルヒは、こいつは何か悪いものでも食べたのかと言いたそうな顔をしていた。
+
+　つい、と視線をそらしてハルヒは校舎をめちゃくちゃに破壊している巨人を、そうするのが当然だと言うように眺ながめた。
+
+　その横顔は、あらためて見ると年相応の線の柔やわらかさが浮うき彫ぼりになっている。長門は言った、「進化の可能性」と。朝比奈さんによると「時間の歪ゆがみ」で、古泉に至っては「神」扱あつかいだ。では俺にとってはどうなのか。涼宮ハルヒの存在を、俺はどう認識しているのか？
+
+　ハルヒはハルヒであってハルヒでしかない、なんてトートロジーでごまかすつもりはない。ないが、決定的な解答を、俺は持ち合わせてなどいない。そうだろ？　教室の後ろにいるクラスメイトを指して「そいつはお前にとって何なのか」と問われて何と答えりゃいいんだ？　……いや、すまん。これもごまかしだな。俺にとって、ハルヒはただのクラスメイトじゃない。もちろん「進化の可能性」でも「時間の歪み」でもましてや「神様」でもない。あるはずがない。
+
+　巨きよ人じんが振り向いた。グラウンドへと。顔も目もないのに、俺は確かな視線を感じた。歩き出す。その一歩は何メートルあるのか、緩かん慢まんな歩みの割に俺たちに近づく姿が巨大さを増してくる。
+
+　思い出せ。朝比奈さんは何と言ったか。その予言を。それから長門が最後に俺に伝えたメッセージ。白雪姫ひめ、スリーピング・ビューティ。いくら俺でもsleeping beautyの邦ほう訳やくを何というのかは知っている。両者に共通することと言えば何だ？　俺たちが今置かれている状じよう況きようと合わせて考えてみたら答えは明快だ。なんてベタなんだ。ベタすぎるぜ、朝比奈さん、そして長門。そんなアホっぽい展開を俺は認めたくはない。絶対にない。
+
+　俺の理性がそう主張する。しかし人間は理性のみによって生きる存在にあらず。長門ならそれを「ノイズ」と言うかもしれない。俺はハルヒの手を振りほどいて、セーラー服の肩をつかんで振り向かせた。
+
+「なによ……」
+
+「俺、実はポニーテール萌もえなんだ」
+
+「なに？」
+
+「いつだったかのお前のポニーテールはそりゃもう反則なまでに似合ってたぞ」
+
+「バカじゃないの？」
+
+　黒い目が俺を拒きよ否ひするように見る。抗こう議ぎの声を上げかけたハルヒに、俺は強ごう引いんに唇くちびるを重ねた。こういう時は目を閉じるのが作法なので俺はそれに則のつとった。ゆえに、ハルヒがどんな顔をしているのかは知らない。驚おどろきに目を見開いているのか、俺に合わせて目を閉じているのか、今にもぶん殴なぐろうと手を振りかざしているのか、俺に知るすべはない。だが俺は殴られてもいいような気分だった。賭かけてもいい。誰がハルヒにこうしたって、今の俺のような気持ちになるさ。俺は肩にかけた手に力を込める。しばらく離はなしたくないね。
+
+　遠くでまた轟ごう音おんが響ひびき、巨人がまた校舎に殴る蹴けるをしているんだろ、とか思った次の瞬しゆん間かん、俺は不意に無重力下に置かれ、反転し、左半身を嫌いやと言うほどの衝しよう撃げきが襲おそって、いくら何でも払はらい腰ごしをかけることはないだろうと思いながら上体を起こして目を開き、見慣れた天てん井じようを目にして固まった。
+
+
+
+
+
+　そこは部屋。俺の部屋。首をひねればそこはベッドで、俺は床ゆかに直接寝ね転ころがっている自分を発見した。着ているものは当然スウェットの上下。乱れた布ふ団とんが半分以上もベッドからずり下がり、そして俺は手を後ろについてバカみたいに半口を開けているという寸法だ。
+
+　思考能力が復活するまでけっこうな時間がかかった。
+
+　半分無意識の状態で立ち上がった俺は、カーテンを開けて窓の外をうかがい、ぽつぽつと光る幾いくばくかの星や道を照らす街灯、ちらちらと点ついている住宅の明かりを確認してから、部屋の中央をぐるぐる円を描えがいて歩き回った。
+
+　夢か？　夢なのか？
+
+　見知った女と二人だけの世界に紛まぎれ込んだあげくにキスまでしてしまうという、フロイト先生が爆ばく笑しようしそうな、そんな解わかりやすい夢を俺は見ていたのか。
+
+　ぐあ、今すぐ首つりてえ！
+
+　日本が銃じゆう社会化を免まぬかれていることに感謝すべきだったかもしれない。手の届く範はん囲いに自動小銃の一丁でもあれば、俺は躊ちゆう躇ちよなく自分の頭を打ち抜ぬいていただろう。あれが朝比奈さんなら、まだ俺は自分の夢の内容について正しい自己分ぶん析せきが出来ていたものを、なのによりにもよってハルヒとは、俺の深層意識はいったい何を考えているんだ？
+
+　俺はぐったりとベッドに着席し、頭を抱かかえた。夢だったとすると、俺は未いまだかつてないリアルなもんを見たことになる。汗あせばんだ右手、それに唇に残る温かくて湿しめった感かん触しよく。
+
+　……か、ここはすでに元の世界ではないとか。ハルヒによって創造された新世界なのか。だったとして、俺にそんなことを確かめるすべはあるのか。
+
+　ない。あるのかもしれないが思いつかない。というか何も考えたくない。自分の脳ミソがあんな夢を見せたなどと認めるくらいなら、世界がぶっ壊こわれたと言われたほうがだんだんマシに思えてきた。今すぐ誰だれかに逆ギレしたい。
+
+　目覚まし時計を持ち上げて現時刻を確認、午前二時十三分。
+
+　……寝ねよう。
+
+　俺は布団を頭まで被かぶり、冴さえ渡わたった脳のう髄ずいに睡すい眠みんを要求した。
+
+
+
+
+
+　一いつ睡すいも出来なかったけどな。
+
+　そんなわけで俺は今、這はうようにして今日も不元気に坂道を登っている。正直、ツライ。途と中ちゆうで谷口に会ってバカ話をされなかっただけマシと思おう。かんかん照りの太陽は律りち儀ぎに核かく融ゆう合ごう全開だ。少しは休めばいいのに。
+
+　来て欲しいときに来なかった睡すい魔まの野や郎ろうが今いま頃ごろ俺の頭の上を旋せん回かいしている。一限を何分聞いていられるか、かなり疑問だ。
+
+　校舎が見えてきた時、俺は不覚にも立ち止まってしみじみと古ぼけた四階建てを眺ながめてしまった。汗だらけになった生徒たちが巣穴に向かうアリの行列のように吸い込まれていく玄げん関かんも、部室棟とうも、渡り廊ろう下かもちゃんとそのままだ。
+
+　俺は足を引きずり引きずり、よたよたと階段を上がって懐なつかしむべき一年五組の教室へ向かい、開けっ放しの戸口から三歩歩いたところでまた立ち止まった。
+
+　窓まど際ぎわ、一番後ろの席に、ハルヒはすでに座っていた。何だろうね、あれ。頬ほお杖づえをつき、外を見ているハルヒの後頭部がよく見える。
+
+　後ろでくくった黒くろ髪かみがちょんまげみたいに突つき出していた。ポニーテールには無理がある。それ、ただくくっただけじゃないか。
+
+「よう、元気か」
+
+　俺は机に鞄かばんを置いた。
+
+「元気じゃないわね。昨日、悪夢を見たから」
+
+　ハルヒは平へい坦たんな口調で応こたえる。それは奇き遇ぐうなことがあったもんだ。
+
+「おかげで全然寝れやしなかったのよ。今日ほど休もうと思った日もないわね」
+
+「そうかい」
+
+　硬かたい椅い子すにどっかと腰こしを下ろし、俺はハルヒの顔をうかがった。耳の上から垂れる髪かみが横顔を覆おおっていて表情が解りにくい。ただ、まあ、あんまり上じよう機き嫌げんではなさそうだ。少なくとも、顔の面だけは。
+
+「ハルヒ」
+
+「なに？」
+
+　窓の外から視線を外さないハルヒに、俺は言ってやった。
+
+「似合ってるぞ」
+
+
+
+
+
+　　エピローグ
+
+
+
+
+
+　その後のことを少しだけ語ろう。
+
+　ハルヒはその昼にはあっさり髪をほどいて元のストレートヘアに戻もどしてしまった。飽あきたのだろう。また髪が伸のびた頃ころに、遠回しに薦すすめてみようと思っている。
+
+　古泉とはトイレ行った帰りの休み時間に廊下で出会った。
+
+「あなたには感謝すべきなんでしょうね」
+
+　無む駄だに爽さわやかな笑え顔がおで言う。
+
+「世界は何も変わらず、涼宮さんもここにいる。僕のアルバイトもしばらく終わりそうにありません。いやいや、本当にあなたはよくやってくれましたよ。皮肉じゃありませんよ？　まあ、この世界が昨日の晩に出来たばかりという可能性も否定できないわけですが。とにかく、あなたと涼宮さんにまた会えて、光栄です」
+
+　長い付き合いになるかもしれませんね、と言いつつ、古泉は俺に手を振ふった。
+
+「また、放課後に」
+
+
+
+
+
+　昼休みに顔を出した文芸部部室では、長門がいつもの情景で本を読んでいた。
+
+「あなたと涼宮ハルヒは二時間三十分、この世界から消えていた」
+
+　第一声がそれである。そしてそれだけだった。素知らぬ顔で文字を黙もく読どくし続ける長門に、
+
+「貸してくれた本な、今読んでるんだ。あと一週間もしたら返せると思う」
+
+「そう」
+
+　視線を合わさないのはいつものことだ。
+
+「教えてくれ。お前みたいな奴やつは、お前の他ほかにどれだけ地球にいるんだ？」
+
+「けっこう」
+
+「なあ、また朝倉みたいなのに俺は襲おそわれたりするのかな」
+
+「だいじょうぶ」
+
+　この時だけ長門は顔を上げ、俺を見つめた。
+
+「あたしがさせない」
+
+　図書館の話はしないことにした。
+
+
+
+
+
+　放課後の部室にいた朝比奈さんは珍めずらしくメイド服を着ておらずセーラー服姿で、俺を目にするや全身でぶつかってきた。
+
+「よかった、また会えて……」
+
+　俺の胸に顔を埋うずめて朝比奈さんは涙なみだ声ごえで、
+
+「もう二度と……（ぐしゅ）こっちに、も、（ぐしゅ）戻ってこないかと、思、」
+
+　背中に手を回そうとした俺の動きを感じたのか、朝比奈さんは両手を俺の胸に当てて突っ張ぱった。
+
+「だめ、だめです。こんなとこ涼宮さんに見られたら、また同じ穴の二にの舞まいです」
+
+「意味解わからないですよ、それ」
+
+　涙を溜ためた大きな瞳ひとみが可か憐れんを通り越こしている。思わず人生をやり直したくなるような、この素す直なおな瞳に参らない男はいまい。
+
+「今日はメイド服は着ないんですか」
+
+「お洗せん濯たく中です」
+
+　その時思いついた。俺は自分の心臓の上を指さして、
+
+「そう言えば朝比奈さん、胸のここんとこに星形のホクロがありますよね」
+
+　目め尻じりを指で拭ぬぐっていた朝比奈さんは、目の前で散さん弾だん銃じゆうをぶっ放された旅りよ行こう鳩ばとみたいな顔になり、くるりと背を向けて、襟えりぐりを広げて胸むな元もとを覗のぞき込み、面おも白しろいようにみるみる耳を赤く染めた。
+
+「どっ！　どうして知ってるんですか！　あたしも今まで星の形なんて気付かなかったのにっ！　いいいいいつ見たんですか！」
+
+　首まで赤くして朝比奈さんは幼児のように両手で俺をぽかすか殴なぐりつける。
+
+　もっと未来のあなたが教えてくれました、正直に言ったほうがいいのだろうか。
+
+「なにやってんの、あんたら？」
+
+　戸口のハルヒが呆あきれたように言った。握にぎり拳こぶしを停止させた朝比奈さんがまた顔面蒼そう白はくになる。しかしハルヒは、義理の娘むすめは毒リンゴを囓かじって死にましたと報告を受けた継母ままははのようなニマニマ笑いを顔中で表現しながら、提さげていた紙かみ袋ぶくろを持ち上げた。
+
+「みくるちゃん、メイド服もそろそろ飽きたでしょう。さあ、着き替がえの時間よ」
+
+　古流武術の達人さながら、一いつ瞬しゆんにして間合いを詰つめたハルヒはいともやすやすと硬こう直ちよく中の朝比奈さんを取り押さえ、
+
+「いっ、きゃ、なっ、やっ、やめ、」
+
+　悲鳴を上げる朝比奈さんの制服を脱ぬがせにかかるのだった。
+
+「暴れないの。抵てい抗こうは無駄よ。今度のはナースよナース、看護婦さん。最近は看護師って言うんだっけ？　まあいいや。同じことだし」
+
+「せめてドアは閉じてぇ！」
+
+　ものすごく見物していたかったが、俺は失礼して部室を辞し、扉とびらを閉めて合がつ掌しようした。
+
+　朝比奈さんには悪いが、扉を開ける時が実に楽しみだ。
+
+　ああ、長門なら最初から最後までテーブルで本読んでた。
+
+
+
+
+
+　さて長らく棚たな上げしていたＳＯＳ団設立に伴ともなう書類申しん請せいだが、このたび俺はようやくそれらしい文書をでっちあげて生徒会に提出してやった。「世界を大いに盛り上げるための涼宮ハルヒの団」では賄わい賂ろでも包まない限り却きやつ下かされること確実と思われたので、「生徒社会を応おう援えんする世界造りのための奉ほう仕し団体（同好会）」（略りやく称しよう・ＳＯＳ団）と独断で改名し、活動内容も「学園生活での生徒の悩なやみ相談、コンサルティング業務、地域奉仕活動への積極参加」ということにした。言葉の意味なんか俺にだって解りはしないが、首しゆ尾び良く申請を受け付けられたら悩み相談募ぼ集しゆうのポスターでも掲けい示じ板ばんに貼はり付けようかと思う。俺たちに相談してどうなるもんでもないような気もするけどな。
+
+
+
+
+
+　一方で、ハルヒ指揮のもと、市内の「不思議探たん索さくパトロール」も鋭えい意い継けい続ぞく中で、本日は記念すべきその第二回目である。例によってせっかくの休みを一日潰つぶしてあてどもなくそこらをウロウロするという企き画かくなのだが、どういう偶ぐう然ぜんだろう、朝比奈さんと長門と古泉が直前になって行けなくなった、どうしても外せない重要な用事が出来て、と言い出し、というわけで俺は今、駅の改札口で一人、ハルヒを待っている。
+
+　三人が何かの気をきかせたつもりでいるのか、それとも本当に急用が出来たのかは解らないが、それぞれ常人ばなれしている三人のことだから、また俺たちの知らないところで妙みような事態になっててその対応に追われている気がしないでもない。
+
+　俺は腕うで時計に目をやった。集合時間まではあと三十分もある。俺がここに突つっ立ってからすでに三十分が経過してて、つまり俺は待ち合わせの一時間前にここに到とう着ちやくしたのであって、これは別段はやる心を抑おさえかねてというわけではなく、遅ち刻こくの有う無むにかかわらず最後に来た者は罰ばつ金きんという定めがＳＯＳ団にあるからであり他意はない。なんせ参加人数二人だからな。
+
+　時計から目を上げると、すぐに遠くから歩いてくる見覚えのある私服姿が目に入った。よもや三十分前に来たのに俺がもう待っていると思わなかったのか、ぎくりとしたように立ち止まり、また憤ふん然ぜんと歩き始める。眉まゆ根ねを寄せるしかめっ面つらのゆえんが参加率の低さを嘆なげいたものか、俺に後おくれを取った不覚を嘆いたものなのかは解らない。後でゆっくり聞いてやろう。ハルヒの奢おごりの喫きつ茶さ店てんで。
+
+　その際に俺は色々なことを話してやりたいと思う。ＳＯＳ団の今後の活動方針について、朝比奈さんへのコスプレ衣装の希望、クラスでは俺以外の奴やつとも会話してやれ、フロイトの夢判断をどう思うか、などなど。
+
+　しかしまあ、結局のところ。
+
+　最初に話すことは決まっているのだ。
+
+　そう、まず──。
+
+　宇宙人と未来人と超ちよう能のう力りよく者について話してやろうと俺は思っている。
+
+
+
+
+
+　　あとがき
+
+
+
+
+
+　なんとなくですが、一人の人間が一いつ生しよう涯がいで書くことのできる文章量は、その人が生まれ落ちた瞬しゆん間かんにすでに決定されているのではないかと思うことがあります。あらかじめ規定の文字数があるのだとすると、書けば書くほど目減りしていくわけなので、そうするとどんどん書くことがなくなっていく計算になりますが、実際問題として一日で四百字詰づめ原げん稿こう用紙換かん算さん三百枚くらい書いてしまおうと思っても書けたためしがないので案外正解なのかもしれません。もっとも一日で十二万文字も書こうとしたら一秒で一文字をタイプしたとしても約三十三時間かかるため、そんなんできっこないのですが、どこかでやり遂とげている人がいるかもしれないので確証を得ることができません。
+
+　できないと言えば、この前まえ振ふりから話題を膨ふくらませることもできないのですが、それはいったん脇わきに置いておいて別の話に移行すると、猫ねこは良い生き物です。可愛かわいいしグンニャリしてるしニャーと鳴きます。だからそれがどうしたんだと思われても困るのですが、僕自身が困っているのでそのあたりはいいわけのしようもなく、「そのようなものである」と思っていただければ幸いです。
+
+　ところで、この本は畏おそれ多くも有あり難がたくもスニーカー大賞を授じゆ与よされた結果としてこの世に出ていると思うのですが、受賞した旨むねの連れん絡らくをいただいたとき、僕はまず自分の耳を疑い次に頭を疑い受話器を疑い現実を疑い地球が自転しているという事実を疑い始めて、ようやく「どうやら本当のことらしい」と思い当たり、意味もなく猫を振り回してみたりもして噛かみつかれ、手の甲こうに残った歯形を眺ながめながら、もし人間が持っている運があらかじめ決定されているのならば、この時点ですべての幸運を使い果たしているに違ちがいないと考えたところまでは覚えていますが、なにぶん、あまりの精神的衝しよう撃げきにより部分的な記き憶おくの欠けつ如じよが見られますので自分でも確かなことが言えません。いろいろあったような気がします。
+
+　そのようなわけで、この本が出るにあたっての作業行程過程決定にたずさわられた方々の労苦は書いた本人のそれをさらに二乗した以上のものだと思われます。現在私が感じている感謝の念を言語化しようとしても日本語にその感謝規模を表現できる語ご彙いは存在しないくらいの途と方ほうもなさです。特に選考委員の方々には何とお礼申し上げればいいものか解わからず、新しい形容詞を考案している最中なのですが、たぶんそんな自作言語で何か言われても意味不明となって終しゆう了りようするであろうことも容易に想像できます。とにかく有り難いことです。有り難うございました。心底から、そう思います。
+
+　今ここにいる私は、なんとかスタート地点に立たせてもらったばかりの上に号ごう砲ほうと同時にコケるかもしれずゴールがどっちでどこらへんにあるのか、ひょっとしたら給水ポイントすらない道を走り出してしまったのかもしれませんが、迷走しつつも走り続けることができたらよいなとしみじみと思います。そんな他人ひと事ごとみたいに思っている場合でもないのですが。
+
+　最後に、この本の製造制作出版に際し直接的間接的有形無形のかかわりを持っていただけた方々全員と、読んでいただけた方々全員に無限の感謝をささげつつ、今回はこれにて失礼いたします。
+
+
+
+
+
+谷川　流
+
+
+
+
+
+　　解説
+
+
+
+
+
+　本作『涼宮ハルヒの憂鬱』は、第８回スニーカー大賞の〈大賞〉を受賞した作品です。新しい才能を発はつ掘くつするために設けられたスニーカー大賞は、設立以来、数多くの作家を見いだしてきましたが、最高の賞である〈大賞〉はこれまで２人しか受賞していませんでした。〈第２回〉吉よし田だ直すなお（代表作『トリニティ・ブラッド』）、〈第３回〉安やす井い健けん太た郎ろう（代表作『ラグナロク』）です。ご存じのとおり、この両名ともが大人気シリーズを発表し、大賞受賞という大きな看板にふさわしい活かつ躍やくをしています。逆に言えば、大賞を受賞するためには、この両名と同じ、いやそれ以上の実力がある、と認められなければならないのですから大変です。だけどもついに、安井健太郎以来、５年ぶりに大賞を与あたえるにふさわしい才能、作品が登場しました。それが谷たに川がわ流ながる『涼宮ハルヒの憂鬱』だったのです。
+
+
+
+
+
+　スニーカー大賞の最終選考会では毎年、選考委員の熱い議論が交かわされています。選考委員全員が、新しい才能を一人でも多く世に送り出したい、という気持ちで選考にあたっているのですが、候補者に対して無節操に賞を与えるわけにはいきません。ちょっと選考会の裏話をすると、まずは選考委員の議論の過程でその作品の長所と短所を徹てつ底てい的に指し摘てきしあいます。それをふまえてなお魅み力りよく的なポイントがあるかどうかが、受賞の大きな分かれ目になるのです。そしてその作品が賞を受賞した場合、編集者はそこで指摘された短所を解消し、長所をさらに伸のばすべく、著者と作品づくりをしていくわけです。
+
+　さてこの『涼宮ハルヒの憂鬱』は、その最終選考において選考委員全員一いつ致ちの上で大賞に推おされました。涼宮ハルヒという破は天てん荒こうなキャラクターを軸じくにした小説の、その根幹となるアイデアの料理の仕方、一いち人にん称しようというスタイルで最後まで飽あきさせずに読ませるストーリーの運び方と文章力、登場するキャラクターのあふれる魅力、どれをとっても大賞にふさわしいと、それはもう同席した編集者もびっくりするぐらい、あっさりと大賞に決定したのでした。
+
+
+
+
+
+　本作『涼宮ハルヒの憂鬱』とはどういった内容なのか。それは、涼宮ハルヒという美少女がとっぴな言動と行動で周りを振ふり回す学園物語なのです……かと思いきや、途と中ちゆうで明かされるハルヒ本人も知らない秘密のなんと大おお風ぶ呂ろ敷しきなことか！　ネタばれになりますのでその大風呂敷を解説するわけにはいきませんが、思わず「うそー！」と言ってしまう展開が進むにつれ、いつのまにかこの驚おどろくべきハルヒ・ワールドに誰だれしもが納なつ得とくさせられてしまうところが、この作品の不思議な、そして大きな魅力なのです。現実というものが薄うす皮かわ一枚であっというまに非日常になってしまう不思議さ、異常だと思っていた出来事が本当は通常だとわかった瞬しゆん間かんの奇き妙みような感覚にぜひハマってください。
+
+　登場するキャラクターたちも強きよう烈れつな個性をもったヤツらばかりです。わがまま、自己中、ご意見無用なスーパーヒロイン・涼宮ハルヒは、自分が面おも白しろいと思えることを妥だ協きようせずに求め続ける、良く言えば超ちようポジティブ、悪く言うと迷めい惑わく感あふれる女の子。そんな彼女に振り回されるこの物語の語かたり部べのキョンは、最初から最後まで本名を呼んでもらえないかわいそうな扱あつかいの上に、ＳＯＳ団の設立やその後のとんでもない騒そう動どうに巻き込まれてしまいます。それでもハルヒとつきあえるのですから、これは一種の才能でしょう。そして、いつもハルヒに無理矢理コスプレさせられてしまう朝比奈みくる。毎回イヤだイヤだと言いながら、実は彼女、コスプレを気に入っているんじゃないでしょうか？　雑誌連れん載さいのほうでも様々なコスチュームにチャレンジしていますし。
+
+　そう、この文庫発売と合わせて雑誌『ザ・スニーカー』での短編連載が始まっています。文庫版の後の物語が描えがかれているこの短編でも、ハルヒはわがままを言い、みくるはコスプレし、キョンはブツブツとぼやきつつ、右往左往しながら活躍しています。
+
+
+
+
+
+　この『涼宮ハルヒの憂鬱』を読んで、もしあなたが気に入っていただけたならば、ぜひお友達に本書を勧すすめてください。そして『ザ・スニーカー』の連載も読んでみてください。一人でも多くの人にこの物語が読まれること、それが作者と編集部の一番の願いであるのです。
+
+
+
+
+
+スニーカー文庫編集部
+
+
+
+
+
+涼すず宮みやハルヒの憂ゆう鬱うつ
+
+
+
+
+
+谷たに川がわ　流ながる
+
+
+
+
+
+* * *
+
+
+
+角川スニーカー文庫
+
+
+
+平成21年3月1日　発行
+
+
+
+発行者　新名　新
+
+発行所　株式会社角川書店
+
+〒102-8078　東京都千代田区富士見2-13-3
+
+http://www.kadokawa.co.jp/
+
+
+
+(C) Nagaru TANIGAWA 2003
+
+
+
+本電子書籍は下記にもとづいて制作しました
+
+角川スニーカー文庫『涼宮ハルヒの憂鬱』平成15年6月10日初版発行
+
+平成21年2月15日46版発行
+
+
+
+
+
+
+`;
+        const chunkSize = 400;
+        let textChunks = [];
+        let currentPage = 0;
+
+        const textDisplay = document.getElementById('text-display');
+        const inputBox = document.getElementById('input-box');
+        const pageInfo = document.getElementById('page-info');
+
+        // 文章を約400文字ずつの配列に分割する
+        function chunkText() {
+            for (let i = 0; i < fullText.length; i += chunkSize) {
+                textChunks.push(fullText.substring(i, i + chunkSize));
+            }
         }
-        return array;
-    }
 
-    function startGame(category) {
-        currentQuestions = shuffleArray(JSON.parse(JSON.stringify(questionDatabase[category])));
-        currentIndex = 0;
-        switchScreen(typingScreen);
-        loadQuestion();
-    }
-
-    function loadQuestion() {
-        if (currentIndex >= currentQuestions.length) {
-            endGame();
-            return;
+        // 指定されたページの文章を表示する
+        function displayPage(pageNumber) {
+            if (pageNumber >= 0 && pageNumber < textChunks.length) {
+                textDisplay.textContent = textChunks[pageNumber];
+                pageInfo.textContent = `${pageNumber + 1} / ${textChunks.length}`;
+            }
         }
 
-        // 状態初期化
-        isWaitingForNext = false;
-        answerDisplay.style.display = "none";
-        nextPrompt.style.display = "none";
-        supportActions.style.display = "flex";
-        typingAreaContainer.style.opacity = "1";
-        hiddenInput.disabled = false;
-        
-        const qData = currentQuestions[currentIndex];
-        instructionEl.innerText = qData.inst;
-        questionEl.innerText = qData.q;
-        currentAnswer = qData.a;
-        
-        progressText.innerText = `課題: ${currentIndex + 1} / ${currentQuestions.length}`;
-
-        // 記号スキップ初期化
-        hiddenInput.value = "";
-        while (hiddenInput.value.length < currentAnswer.length && skipChars.test(currentAnswer[hiddenInput.value.length])) {
-            hiddenInput.value += currentAnswer[hiddenInput.value.length];
-        }
-        previousInputLength = hiddenInput.value.length;
-
-        renderTypingArea();
-        setTimeout(() => hiddenInput.focus(), 10);
-    }
-
-    function renderTypingArea() {
-        const typedText = hiddenInput.value;
-        typingAreaEl.innerHTML = ''; 
-
-        for (let i = 0; i < currentAnswer.length; i++) {
-            const span = document.createElement('span');
-            span.classList.add('char');
-            const expectedChar = currentAnswer[i];
-
-            if (expectedChar === ' ') span.classList.add('space');
-
-            if (i < typedText.length) {
-                const typedChar = typedText[i];
-                if (typedChar.toLowerCase() === expectedChar.toLowerCase()) {
-                    span.innerText = expectedChar; 
-                    span.classList.add('correct');
-                } else {
-                    span.innerText = expectedChar; 
-                    span.classList.add('incorrect');
+        // キーが押された時の処理
+        document.addEventListener('keydown', (e) => {
+            // Enterキーが押されたら次のページへ
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                if (currentPage < textChunks.length - 1) {
+                    currentPage++;
+                    displayPage(currentPage);
                 }
-            } else {
-                span.innerText = expectedChar === ' ' ? ' ' : '';
+                inputBox.value = '';
             }
 
-            if (i === typedText.length && !isWaitingForNext) span.classList.add('active');
-            typingAreaEl.appendChild(span);
-        }
-
-        if (typedText.length === currentAnswer.length) {
-            typingAreaEl.lastChild.classList.add('caret-end');
-        }
-
-        // ★正解判定
-        if (typedText.toLowerCase() === currentAnswer.toLowerCase() && !isWaitingForNext) {
-            isWaitingForNext = true;           // 待機状態に移行
-            hiddenInput.disabled = true;       // 入力をロック
-            typingAreaContainer.style.opacity = "0.5";
-            supportActions.style.display = "none"; // スキップボタン等を隠す
-            
-            // 解答と解説を表示（正解時フラグ：true）
-            showAnswerAndExp(true);
-        }
-    }
-
-    function formatTypedText(rawText) {
-        let formatted = "";
-        let rawIndex = 0;
-        
-        for (let i = 0; i < currentAnswer.length; i++) {
-            const expectedChar = currentAnswer[i];
-            
-            if (skipChars.test(expectedChar)) {
-                formatted += expectedChar;
-                if (rawIndex < rawText.length && rawText[rawIndex] === expectedChar) {
-                    rawIndex++;
-                }
-            } else {
-                if (rawIndex < rawText.length) {
-                    formatted += rawText[rawIndex];
-                    rawIndex++;
-                } else {
-                    break;
+            // Backspaceキーが押され、入力バーが空の時に前のページへ
+            if (e.key === 'Backspace') {
+                if (inputBox.value === '') {
+                    if (currentPage > 0) {
+                        currentPage--;
+                        displayPage(currentPage);
+                    }
                 }
             }
-        }
-        return formatted;
-    }
+        });
 
-    // --- 入力イベント監視 ---
-    hiddenInput.addEventListener('input', (e) => {
-        if(isWaitingForNext) return;
-
-        let val = hiddenInput.value;
-        if (val.length > previousInputLength) {
-            val = formatTypedText(val);
-            while (val.length < currentAnswer.length && skipChars.test(currentAnswer[val.length])) {
-                val += currentAnswer[val.length];
-            }
-        } else if (val.length < previousInputLength) {
-            while (val.length > 0 && skipChars.test(currentAnswer[val.length - 1])) {
-                val = val.slice(0, -1);
-            }
+        // ページ読み込み時の初期化処理
+        function init() {
+            chunkText();
+            displayPage(currentPage);
+            inputBox.focus();
         }
 
-        if (val.length > currentAnswer.length) {
-            val = val.substring(0, currentAnswer.length);
-        }
+        // 実行
+        init();
 
-        hiddenInput.value = val;
-        previousInputLength = val.length;
-        renderTypingArea();
-    });
-
-    // --- 解答と解説の表示 ---
-    function showAnswerAndExp(isCorrected = false) {
-        const qData = currentQuestions[currentIndex];
-        answerText.innerText = qData.a;
-        explanationText.innerText = "【解説】\n" + qData.exp;
-        answerDisplay.style.display = "block";
-        
-        if (isCorrected) {
-            // 正解してクリアした場合：Enter案内を出す
-            nextPrompt.style.display = "block";
-        } else {
-            // わからなくてボタンを押した場合：入力フォーカスを維持してタイピング続行
-            hiddenInput.focus();
-        }
-    }
-
-    function skipQuestion() {
-        currentIndex++;
-        loadQuestion();
-    }
-
-    // --- キーボード操作（Enter / Spaceで次へ） ---
-    document.addEventListener('keydown', (e) => {
-        if (isWaitingForNext && (e.key === 'Enter' || e.key === ' ')) {
-            e.preventDefault(); // スペースキーによるスクロールを防止
-            currentIndex++;
-            loadQuestion();
-        }
-    });
-
-    // --- マウス・タップ操作 ---
-    document.addEventListener('click', (e) => {
-        if(typingScreen.classList.contains('active')) {
-            // 正解待機中に画面のどこかをタップ/クリックしたら次へ進む
-            if (isWaitingForNext && !e.target.classList.contains('quit-btn')) {
-                currentIndex++;
-                loadQuestion();
-                return;
-            }
-
-            if(!e.target.classList.contains('quit-btn') && !e.target.classList.contains('action-btn')) {
-                hiddenInput.focus();
-            }
-        }
-    });
-
-    function endGame() {
-        switchScreen(resultScreen);
-        resultStats.innerText = `全 ${currentQuestions.length} 問のタイピング課題が終了しました。`;
-    }
-
-</script>
-
+    </script>
 </body>
 </html>
+
